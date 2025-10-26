@@ -1,11 +1,13 @@
 import { CourseModel } from "@/models/course-model";
 import { connectDB } from "@/services/connect-mongo";
 
+import { transformMongoDoc } from "@/lib/transform-mongo-doc";
 import "@/models/category-model";
 import "@/models/module-model";
 import "@/models/testimonial-model";
 import "@/models/user-model";
 
+// Fetch all courses from the database
 export const getCourses = async () => {
   await connectDB();
 
@@ -28,5 +30,5 @@ export const getCourses = async () => {
     })
     .lean();
 
-  return courses;
+  return transformMongoDoc(courses);
 };
