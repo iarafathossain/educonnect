@@ -1,5 +1,6 @@
 import { Toaster } from "@/components/ui/sonner";
 import { cn } from "@/lib/utils";
+import { connectDB } from "@/services/connect-mongo";
 import type { Metadata } from "next";
 import { Inter, Poppins } from "next/font/google";
 import "./globals.css";
@@ -20,11 +21,12 @@ export const metadata: Metadata = {
   description: "Explore || Learn || Build || Share",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  await connectDB();
   return (
     <html lang="en">
       <body
