@@ -15,7 +15,7 @@ const moduleSchema = new mongoose.Schema<IModule>({
     ref: "Course",
     required: true,
   },
-  lessonIds: [{ type: mongoose.Schema.Types.ObjectId, ref: "Lesson" }],
+  lessonIds: { required: true, type: [String] },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });

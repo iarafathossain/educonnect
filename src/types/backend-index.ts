@@ -41,7 +41,7 @@ export interface IModule {
   status: "locked" | "unlocked" | "completed";
   slug: string;
   course: { type: mongoose.Schema.Types.ObjectId; ref: "Course" };
-  lessonIds: { type: mongoose.Schema.Types.ObjectId; ref: "Lesson" }[];
+  lessonIds: string[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -61,5 +61,24 @@ export interface ITestimonial {
   content: string;
   createdAt: Date;
   updatedAt: Date;
+}
+
+export interface ILesson {
+  title: string;
+  description: string;
+  videoUrl: string;
+  duration: number;
+  published: boolean;
+  slug: string;
+  access: string;
+}
+
+export interface IEnrollment {
+  enrollmentDate: Date;
+  status: "active" | "completed" | "cancelled";
+  completionDate?: Date;
+  method: "credit_card" | "paypal" | "bank_transfer";
+  student: { type: mongoose.Schema.Types.ObjectId; ref: "User" };
+  course: { type: mongoose.Schema.Types.ObjectId; ref: "Course" };
 }
 // ===== BACKEND TYPES END ===== //
