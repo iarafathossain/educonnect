@@ -9,11 +9,7 @@ const { auth } = NextAuth(authConfig as any);
 export default auth((req) => {
   const { nextUrl } = req;
 
-  if (
-    nextUrl.pathname.startsWith("/api/auth") ||
-    nextUrl.pathname.startsWith("/_next") ||
-    nextUrl.pathname.startsWith("/api")
-  ) {
+  if (nextUrl.pathname.startsWith("/_next")) {
     return NextResponse.next();
   }
 

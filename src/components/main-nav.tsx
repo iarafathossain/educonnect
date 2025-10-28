@@ -27,6 +27,10 @@ const MainNav = ({ items }: Props) => {
 
   const { data: session } = useSession();
 
+  //   if (session?.error === "RefreshAccessTokenError") {
+  //     redirect("/login");
+  //   }
+
   useEffect(() => {
     setLoginSession(session);
   }, [session]);
