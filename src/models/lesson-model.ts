@@ -11,5 +11,5 @@ const lessonSchema = new mongoose.Schema<ILesson>({
   access: { type: String, required: true },
 });
 export const LessonModel =
-  (mongoose.models.Lesson as mongoose.Model<ILesson>) ||
+  (mongoose.models?.Lesson as mongoose.Model<ILesson>) ||
   mongoose.model<ILesson>("Lesson", lessonSchema);

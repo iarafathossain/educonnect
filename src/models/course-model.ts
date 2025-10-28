@@ -28,5 +28,5 @@ const courseSchema = new mongoose.Schema<ICourse>(
 );
 
 export const CourseModel =
-  (mongoose.models.Course as mongoose.Model<ICourse>) ||
+  (mongoose.models?.Course as mongoose.Model<ICourse>) ||
   mongoose.model<ICourse>("Course", courseSchema);

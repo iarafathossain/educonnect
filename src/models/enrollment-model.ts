@@ -27,5 +27,5 @@ const enrollmentSchema = new mongoose.Schema<IEnrollment>({
 });
 
 export const EnrollmentModel =
-  (mongoose.models.Enrollment as mongoose.Model<IEnrollment>) ||
+  (mongoose.models?.Enrollment as mongoose.Model<IEnrollment>) ||
   mongoose.model<IEnrollment>("Enrollment", enrollmentSchema);

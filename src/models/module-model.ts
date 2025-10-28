@@ -21,5 +21,5 @@ const moduleSchema = new mongoose.Schema<IModule>({
 });
 
 export const ModuleModel =
-  (mongoose.models.Module as mongoose.Model<IModule>) ||
+  (mongoose.models?.Module as mongoose.Model<IModule>) ||
   mongoose.model<IModule>("Module", moduleSchema);

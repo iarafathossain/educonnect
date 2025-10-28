@@ -8,10 +8,11 @@ export interface IUser {
   password: string;
   role: "student" | "instructor";
   phone?: string;
-  bio: string;
+  bio?: string;
   profilePictureUrl?: string;
-  createdAt: Date;
-  updatedAt: Date;
+  designation?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
   socialLinks?: {
     linkedin?: string;
     twitter?: string;

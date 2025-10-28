@@ -30,5 +30,5 @@ const testimonialSchema = new mongoose.Schema<ITestimonial>({
 });
 
 export const TestimonialModel =
-  (mongoose.models.Testimonial as mongoose.Model<ITestimonial>) ||
+  (mongoose.models?.Testimonial as mongoose.Model<ITestimonial>) ||
   mongoose.model<ITestimonial>("Testimonial", testimonialSchema);

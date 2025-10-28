@@ -9,8 +9,9 @@ const userSchema = new mongoose.Schema<IUser>(
     password: { type: String, required: true },
     role: { type: String, enum: ["student", "instructor"], required: true },
     phone: { type: String },
-    bio: { type: String, required: true },
+    bio: { type: String },
     profilePictureUrl: { type: String },
+    designation: { type: String },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now },
     socialLinks: {
@@ -24,5 +25,5 @@ const userSchema = new mongoose.Schema<IUser>(
 );
 
 export const UserModel =
-  (mongoose.models.User as mongoose.Model<IUser>) ||
+  (mongoose.models?.User as mongoose.Model<IUser>) ||
   mongoose.model<IUser>("User", userSchema);

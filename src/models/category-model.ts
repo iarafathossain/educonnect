@@ -13,5 +13,5 @@ const categoryModel = new mongoose.Schema<ICategory>(
 );
 
 export const CategoryModel =
-  (mongoose.models.Category as mongoose.Model<ICategory>) ||
+  (mongoose.models?.Category as mongoose.Model<ICategory>) ||
   mongoose.model<ICategory>("Category", categoryModel);
