@@ -43,6 +43,12 @@ const SignupForm = ({ role }: { role: string }) => {
         body: JSON.stringify({ ...formData, userRole }),
       });
 
+      const data = await response.json();
+
+      if (data.error) {
+        throw new Error(data.error);
+      }
+
       if (!response.ok || response.status !== 201) {
         throw new Error("Failed to register user");
       }

@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import { authConfig } from "./auth.config";
 import { UserModel } from "./models/user-model";
 
 export const {
@@ -9,9 +10,8 @@ export const {
   signOut,
   auth,
 } = NextAuth({
-  session: {
-    strategy: "jwt",
-  },
+  ...authConfig,
+  session: { strategy: "jwt" },
   providers: [
     CredentialsProvider({
       async authorize(credentials) {

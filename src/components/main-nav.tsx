@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 
 import { Menu, X } from "lucide-react";
 import { Session } from "next-auth";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import SiteLogo from "./logo";
 import MobileNav from "./mobile-nav";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
@@ -103,9 +103,13 @@ const MainNav = ({ items }: Props) => {
             <DropdownMenuItem className="cursor-pointer" asChild>
               <Link href="">Testimonials & Certificates</Link>
             </DropdownMenuItem>
-            <DropdownMenuItem className="cursor-pointer" asChild>
-              <Link href="">Logout</Link>
-            </DropdownMenuItem>
+            {loginSession && (
+              <DropdownMenuItem className="cursor-pointer" asChild>
+                <Link href="#" onClick={() => signOut()}>
+                  Logout
+                </Link>
+              </DropdownMenuItem>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
         <button
