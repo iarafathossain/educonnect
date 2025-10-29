@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-const StarRating = ({ rating }) => {
+const StarRating = ({ rating }: { rating: number }) => {
   const stars = new Array(rating).fill(0);
 
   return (

@@ -1,9 +1,10 @@
 import { MessageSquare, Presentation, Star, UsersRound } from "lucide-react";
 
 import { getCourseDetailsByInstructor } from "@/queries/courses";
+import { ICourseFrontend } from "@/types/frontend-index";
 import Image from "next/image";
 
-const CourseInstructor = async ({ course }) => {
+const CourseInstructor = async ({ course }: { course: ICourseFrontend }) => {
   const instructor = course?.instructor;
 
   const fullName = `${instructor?.firstName}  ${instructor?.lastName}`;
@@ -17,7 +18,10 @@ const CourseInstructor = async ({ course }) => {
         <div className="h-[310px] w-[270px] max-w-full relative flex-none rounded mb-5 md:mb-0">
           <Image
             className="rounded-full"
-            src="/assets/images/profile.jpg"
+            src={
+              course?.instructor?.profilePictureUrl ||
+              "/assets/images/profile.jpg"
+            }
             alt={course?.instructor?.firstName}
             fill
             objectFit="cover"

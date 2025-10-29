@@ -6,6 +6,7 @@ import "@/models/category-model";
 import "@/models/module-model";
 import "@/models/testimonial-model";
 import "@/models/user-model";
+import { ICourseFrontend } from "@/types/frontend-index";
 import { getEnrollmentsForCourse } from "./enrollments";
 import { getTestimonialsForCourse } from "./testimonials";
 
@@ -30,7 +31,7 @@ export const getCourses = async () => {
       path: "testimonials",
       model: "Testimonial",
     })
-    .lean();
+    .lean<ICourseFrontend[]>();
 
   return transformMongoDoc(courses);
 };
@@ -60,7 +61,7 @@ export const getCourse = async (id: string) => {
         model: "User",
       },
     })
-    .lean();
+    .lean<ICourseFrontend>();
 
   return transformMongoDoc(course);
 };
@@ -77,8 +78,8 @@ export const getCourseDetailsByInstructor = async (instructorId: string) => {
     })
   );
 
-  const totalEnrollments = enrollments.reduce((acc, currentValue) => {
-    return acc + currentValue.length;
+  const totalEnrollments = enrollments.reduce((acc, curr) => {
+    return acc + curr.length;
   }, 0);
 
   const testimonials = await Promise.all(

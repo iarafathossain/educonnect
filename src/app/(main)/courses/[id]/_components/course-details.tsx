@@ -1,12 +1,15 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { formatDate } from "@/lib/format-date";
+import { ICourseFrontend } from "@/types/frontend-index";
 import Image from "next/image";
 import CourseCurriculum from "./course-curriculum";
 import CourseInstructor from "./course-instructor";
 import CourseOverview from "./course-overview";
 
-const CourseDetails = ({ course }) => {
-  const lastModifiedDate = formatDate(course?.updatedAt);
+const CourseDetails = ({ course }: { course: ICourseFrontend }) => {
+  const lastModifiedDate = formatDate(
+    new Date(course.updatedAt!) || new Date()
+  );
   return (
     <section className="py-8 md:py-12 lg:py-24">
       <div className="container">
@@ -22,7 +25,10 @@ const CourseDetails = ({ course }) => {
           <div className="flex items-center gap-2">
             <Image
               className="w-[40px] h-[40px] rounded-full"
-              src="/assets/images/profile.jpg"
+              src={
+                course?.instructor?.profilePictureUrl ||
+                "/assets/images/profile.jpg"
+              }
               alt={course?.instructor?.firstName}
               width={20}
               height={20}

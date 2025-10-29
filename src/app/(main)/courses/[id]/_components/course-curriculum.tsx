@@ -1,8 +1,9 @@
+import { ICourseFrontend } from "@/types/frontend-index";
 import { Accordion } from "@radix-ui/react-accordion";
 import { BookCheck, Clock10 } from "lucide-react";
 import CourseModuleList from "./module/course-module";
 
-const CourseCurriculum = ({ course }) => {
+const CourseCurriculum = ({ course }: { course: ICourseFrontend }) => {
   const totalDuration = course?.modules.reduce(function (acc, obj) {
     return acc + Number(obj.duration);
   }, 0);
@@ -23,7 +24,6 @@ const CourseCurriculum = ({ course }) => {
       <Accordion
         defaultValue={["item-1", "item-2", "item-3"]}
         type="multiple"
-        collapsible
         className="w-full"
       >
         {course?.modules &&

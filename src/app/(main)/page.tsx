@@ -3,14 +3,15 @@ import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { getCategories } from "@/queries/categories";
 import { getCourses } from "@/queries/courses";
+import { ICategoryFrontend, ICourseFrontend } from "@/types/frontend-index";
 import { ArrowRightIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import CourseCard from "./courses/_components/course-card";
 
 const HomePage = async () => {
-  const courses = await getCourses();
-  const categories = await getCategories();
+  const courses: ICourseFrontend[] = await getCourses();
+  const categories: ICategoryFrontend[] = await getCategories();
 
   return (
     <>
@@ -75,8 +76,8 @@ const HomePage = async () => {
           </Link>
         </div>
         <div className="mx-auto grid justify-center gap-4 grid-cols-2  md:grid-cols-3 2xl:grid-cols-4">
-          {categories.map((category) => {
-            return (
+          {categories && categories.length > 0 ? (
+            categories.map((category) => (
               <Link
                 href={`/categories/${category.id}`}
                 key={category.id}
@@ -84,7 +85,7 @@ const HomePage = async () => {
               >
                 <div className="flex  flex-col gap-4 items-center justify-between rounded-md p-6">
                   <Image
-                    src="/business.jpg"
+                    src={`/assets/images/categories/${category.thumbnailUrl}`}
                     alt={category.title}
                     width={100}
                     height={100}
@@ -92,8 +93,10 @@ const HomePage = async () => {
                   <h3 className="font-bold">{category.title}</h3>
                 </div>
               </Link>
-            );
-          })}
+            ))
+          ) : (
+            <p className="text-sm">No categories available.</p>
+          )}
         </div>
       </section>
 
@@ -109,9 +112,13 @@ const HomePage = async () => {
           </Link>
         </div>
         <div className="grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-4">
-          {courses.map((course) => {
-            return <CourseCard key={course.id} course={course} />;
-          })}
+          {courses && courses.length > 0 ? (
+            courses.map((course) => (
+              <CourseCard key={course.id} course={course} />
+            ))
+          ) : (
+            <p className="text-sm">No courses available.</p>
+          )}
         </div>
       </section>
     </>

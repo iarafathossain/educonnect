@@ -1,6 +1,7 @@
+import { ICourseFrontend } from "@/types/frontend-index";
 import { CheckCheck } from "lucide-react";
 
-const CourseOverview = ({ course }) => {
+const CourseOverview = ({ course }: { course: ICourseFrontend }) => {
   return (
     <>
       <h3 className=" text-2xl">Course Description</h3>
@@ -9,8 +10,8 @@ const CourseOverview = ({ course }) => {
         <h4 className="text-2xl">What You will Learn?</h4>
         <ul className="grid sm:grid-cols-2 grid-cols-1 gap-6">
           {course?.learning &&
-            course?.learning.map((learning) => (
-              <li key={learning} className="flex space-x-3">
+            course?.learning.map((learning, index) => (
+              <li key={index} className="flex space-x-3">
                 <div className="flex-none relative top-1">
                   <CheckCheck />
                 </div>

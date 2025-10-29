@@ -32,17 +32,18 @@ export interface ICourse {
   category: { type: mongoose.Schema.Types.ObjectId; ref: "Category" };
   quizzes?: { type: mongoose.Schema.Types.ObjectId; ref: "Quiz" }[];
   testimonials?: { type: mongoose.Schema.Types.ObjectId; ref: "Testimonial" }[];
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
 }
 
 export interface IModule {
   title: string;
   description: string;
-  status: "locked" | "unlocked" | "completed";
+  status: "active" | "inactive" | "completed";
   slug: string;
   course: { type: mongoose.Schema.Types.ObjectId; ref: "Course" };
   lessonIds: string[];
+  duration: number;
   createdAt: Date;
   updatedAt: Date;
 }

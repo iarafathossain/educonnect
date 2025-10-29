@@ -3,9 +3,17 @@
 import { createCheckoutSessionAction } from "@/app/actions/stripe";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { ICourseFrontend } from "@/types/frontend-index";
 import { ArrowRight } from "lucide-react";
 
-const EnrollCourse = ({ asLink }: { asLink?: boolean }) => {
+const EnrollCourse = ({
+  asLink,
+  course,
+}: {
+  asLink?: boolean;
+  course: ICourseFrontend;
+}) => {
+  console.log(course, "from-enroll-comp");
   const formAction = async (formData: FormData) => {
     const { url } = await createCheckoutSessionAction(formData);
     if (url) {

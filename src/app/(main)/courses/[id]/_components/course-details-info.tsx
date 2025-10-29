@@ -1,10 +1,11 @@
 import EnrollCourse from "@/components/enroll-course";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { ICourseFrontend } from "@/types/frontend-index";
 import Image from "next/image";
 import Link from "next/link";
 
-const CourseDetailsInfo = ({ course }) => {
+const CourseDetailsInfo = ({ course }: { course: ICourseFrontend }) => {
   return (
     <div className="overflow-x-hidden  grainy">
       <section className="pt-12  sm:pt-16">
@@ -22,7 +23,7 @@ const CourseDetailsInfo = ({ course }) => {
               </p>
 
               <div className="mt-6 flex items-center justify-center flex-wrap gap-3">
-                <EnrollCourse />
+                <EnrollCourse course={course} />
                 <Link
                   href=""
                   className={cn(
@@ -44,8 +45,8 @@ const CourseDetailsInfo = ({ course }) => {
                     className="w-full rounded-lg"
                     width={768}
                     height={463}
-                    src={`/assets/images/courses/course_1.png`}
-                    alt=""
+                    src={course.thumbnailUrl!}
+                    alt={course.title}
                   />
                 </div>
               </div>
