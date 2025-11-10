@@ -8,6 +8,7 @@ export interface IUser {
   password: string;
   role: "student" | "instructor";
   phone?: string;
+  website?: string;
   bio?: string;
   profilePictureUrl?: string;
   designation?: string;

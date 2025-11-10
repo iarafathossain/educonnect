@@ -17,6 +17,7 @@ export interface IUserFrontend {
   email: string;
   role: "student" | "instructor";
   phone?: string;
+  website?: string;
   bio?: string;
   profilePictureUrl?: string;
   designation?: string;
@@ -92,5 +93,13 @@ export interface ICourseFrontend {
   createdAt?: Date | string;
   updatedAt?: Date | string;
 }
+
+export type PersonalDetailsFormData = {
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  designation?: string;
+  bio?: string;
+};
 
 // ===== Frontend Types End ===== //
