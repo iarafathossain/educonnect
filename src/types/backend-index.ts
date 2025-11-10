@@ -27,11 +27,11 @@ export interface ICourse {
   thumbnailUrl: string;
   price: number;
   active: boolean;
-  instructor: { type: mongoose.Schema.Types.ObjectId; ref: "User" };
-  modules: { type: mongoose.Schema.Types.ObjectId; ref: "Module" }[];
-  category: { type: mongoose.Schema.Types.ObjectId; ref: "Category" };
-  quizzes?: { type: mongoose.Schema.Types.ObjectId; ref: "Quiz" }[];
-  testimonials?: { type: mongoose.Schema.Types.ObjectId; ref: "Testimonial" }[];
+  instructor: mongoose.Types.ObjectId;
+  modules: mongoose.Types.ObjectId[];
+  category: mongoose.Types.ObjectId;
+  quizzes?: mongoose.Types.ObjectId[];
+  testimonials?: mongoose.Types.ObjectId[];
   createdAt?: Date | string;
   updatedAt?: Date | string;
 }
@@ -41,7 +41,7 @@ export interface IModule {
   description: string;
   status: "active" | "inactive" | "completed";
   slug: string;
-  course: { type: mongoose.Schema.Types.ObjectId; ref: "Course" };
+  course: mongoose.Types.ObjectId;
   lessonIds: string[];
   duration: number;
   createdAt: Date;
@@ -57,8 +57,8 @@ export interface ICategory {
 }
 
 export interface ITestimonial {
-  user: { type: mongoose.Schema.Types.ObjectId; ref: "User" };
-  course: { type: mongoose.Schema.Types.ObjectId; ref: "Course" };
+  user: mongoose.Types.ObjectId;
+  course: mongoose.Types.ObjectId;
   rating: number;
   content: string;
   createdAt: Date;
@@ -76,11 +76,12 @@ export interface ILesson {
 }
 
 export interface IEnrollment {
-  enrollmentDate: Date;
-  status: "active" | "completed" | "cancelled";
+  course: mongoose.Types.ObjectId;
+  student: mongoose.Types.ObjectId;
+  status: "not-started" | "completed" | "cancelled";
+  paymentMethod: "credit_card" | "paypal" | "stripe";
   completionDate?: Date;
-  method: "credit_card" | "paypal" | "bank_transfer";
-  student: { type: mongoose.Schema.Types.ObjectId; ref: "User" };
-  course: { type: mongoose.Schema.Types.ObjectId; ref: "Course" };
+  createdAt: Date;
+  updatedAt: Date;
 }
 // ===== BACKEND TYPES END ===== //

@@ -13,9 +13,13 @@ const EnrollCourse = ({
   asLink?: boolean;
   course: ICourseFrontend;
 }) => {
-  console.log(course, "from-enroll-comp");
   const formAction = async (formData: FormData) => {
-    const { url } = await createCheckoutSessionAction(formData);
+    const result = await createCheckoutSessionAction(formData);
+    if (result instanceof Error) {
+      console.error("Failed to create checkout session:", result);
+      return;
+    }
+    const url = result.url;
     if (url) {
       window.location.assign(url);
     }
@@ -23,6 +27,7 @@ const EnrollCourse = ({
   return (
     <>
       <form action={formAction}>
+        <input type="hidden" name="courseId" value={course.id} />
         {asLink ? (
           <Button
             type="submit"

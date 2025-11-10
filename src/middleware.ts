@@ -26,6 +26,6 @@ export default auth((req) => {
 });
 
 export const config = {
-  matcher: ["/((?!.+\\.[\\w]+$|_next).*)", "/"],
+  matcher: ["/((?!.+\\.[\\w]+$|_next|api).*)", "/"],
   runtime: "nodejs",
 };

@@ -2,13 +2,22 @@
 
 import { formatStripeAmount } from "@/lib/formate-stripe-amount";
 import { stripe } from "@/lib/stripe";
+import { getCourse } from "@/queries/courses";
 import { headers } from "next/headers";
 
 const CURRENCY = "BDT";
 
-export const createCheckoutSessionAction = async (data) => {
+export const createCheckoutSessionAction = async (formData: FormData) => {
+  const courseId = formData.get("courseId") as string;
   const ui_mode = "hosted";
   const origin = headers().get("origin");
+
+  const course = await getCourse(courseId);
+
+  if (!course) return new Error("Course not found!");
+
+  const courseName = course?.title;
+  const coursePrice = course?.price;
 
   const checkoutSession = await stripe.checkout.sessions.create({
     mode: "payment",
@@ -19,14 +28,14 @@ export const createCheckoutSessionAction = async (data) => {
         price_data: {
           currency: CURRENCY,
           product_data: {
-            name: "Happy Learning with Educonnect",
+            name: courseName,
           },
-          unit_amount: formatStripeAmount(1000, CURRENCY),
+          unit_amount: formatStripeAmount(Number(coursePrice), CURRENCY),
         },
       },
     ],
     ...(ui_mode === "hosted" && {
-      success_url: `${origin}/enroll-success?session_id={CHECKOUT_SESSION_ID}&course_id="123`,
+      success_url: `${origin}/enroll-success?session_id={CHECKOUT_SESSION_ID}&course_id=${courseId}`,
       cancel_url: `${origin}/courses`,
     }),
     ui_mode,
