@@ -10,11 +10,16 @@ const CourseDetails = ({ course }: { course: ICourseFrontend }) => {
   const lastModifiedDate = formatDate(
     new Date(course.updatedAt!) || new Date()
   );
+
+  const categoryTitle =
+    typeof course.category === "string"
+      ? course.category
+      : course.category?.title;
   return (
     <section className="py-8 md:py-12 lg:py-24">
       <div className="container">
         <span className="bg-success py-0.5 px-0.5 rounded-full text-xs font-medium inline-block text-white">
-          {course?.category?.title}
+          {categoryTitle}
         </span>
         <h3 className="text-2xl md:text-3xl lg:text-4xl font-bold 2xl:text-5xl mt-3">
           {course?.title}

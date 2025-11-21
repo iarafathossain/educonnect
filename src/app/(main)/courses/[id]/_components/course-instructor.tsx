@@ -1,8 +1,11 @@
 import { MessageSquare, Presentation, Star, UsersRound } from "lucide-react";
 
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { getCourseDetailsByInstructor } from "@/queries/courses";
 import { ICourseFrontend } from "@/types/frontend-index";
 import Image from "next/image";
+import Link from "next/link";
 
 const CourseInstructor = async ({ course }: { course: ICourseFrontend }) => {
   const instructor = course?.instructor;
@@ -55,6 +58,12 @@ const CourseInstructor = async ({ course }: { course: ICourseFrontend }) => {
               </li>
             </ul>
           </div>
+          <Link
+            href={`/inst-profile/${instructor?.id}`}
+            className={cn(buttonVariants({ variant: "outline" }), "mt-6")}
+          >
+            View Instructor Profile
+          </Link>
         </div>
       </div>
       <p className="text-gray-600">{instructor?.bio}</p>
