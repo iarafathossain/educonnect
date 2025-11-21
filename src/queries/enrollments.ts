@@ -5,6 +5,7 @@ import { transformMongoDoc } from "@/lib/transform-mongo-doc";
 import { EnrollmentModel } from "@/models/enrollment-model";
 import { connectDB } from "@/services/connect-mongo";
 import { IEnrollment } from "@/types/backend-index";
+import { IEnrollmentFrontend } from "@/types/frontend-index";
 
 export const getEnrollmentsForCourse = async (courseId: string) => {
   await connectDB();
@@ -30,9 +31,40 @@ export const createEnrollment = async (
       updatedAt: new Date(),
     };
 
+    //TODO: Check if enrollment already exists
+
     await EnrollmentModel.create(newEnrollment);
   } catch (e) {
     const error = catchError(e);
     throw new Error(error);
   }
+};
+
+export const getEnrollmentsForStudent = async (studentId: string) => {
+  await connectDB();
+
+  try {
+    const enrollments = await EnrollmentModel.find({ student: studentId })
+      .populate({
+        path: "course",
+        model: "Course",
+      })
+      .lean<IEnrollmentFrontend[]>();
+    return transformMongoDoc(enrollments);
+  } catch (e) {
+    const error = catchError(e);
+    throw new Error(error);
+  }
+};
+
+export const hasEnrollmentForCourse = async (
+  courseId: string,
+  userId: string
+) => {
+  await connectDB();
+  const enrollment = await EnrollmentModel.findOne({
+    course: courseId,
+    student: userId,
+  }).lean();
+  return enrollment !== null;
 };

@@ -85,4 +85,12 @@ export interface IEnrollment {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export interface IReport {
+  student: mongoose.Types.ObjectId;
+  course: mongoose.Types.ObjectId;
+  totalCompletedModules: mongoose.Types.ObjectId[];
+  totalCompletedLessons: mongoose.Types.ObjectId[];
+  quizAssessment: mongoose.Types.ObjectId;
+}
 // ===== BACKEND TYPES END ===== //

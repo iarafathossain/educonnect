@@ -11,3 +11,14 @@ export const getCategories = async () => {
 
   return transformMongoDoc(categories);
 };
+
+// Fetch a single category by its ID
+export const getCategoryById = async (categoryId: string) => {
+  await connectDB();
+
+  const category = await CategoryModel.findById(
+    categoryId
+  ).lean<ICategoryFrontend>();
+
+  return transformMongoDoc(category);
+};

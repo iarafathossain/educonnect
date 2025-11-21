@@ -88,7 +88,7 @@ export interface ICourseFrontend {
   instructor: IUserFrontend;
   modules: IModuleFrontend[];
   learning?: string[];
-  category: ICategoryFrontend;
+  category: ICategoryFrontend | string;
   testimonials?: ITestimonialFrontend[];
   createdAt?: Date | string;
   updatedAt?: Date | string;
@@ -101,5 +101,16 @@ export type PersonalDetailsFormData = {
   designation?: string;
   bio?: string;
 };
+
+export interface IEnrollmentFrontend {
+  id: string;
+  status: "not-started" | "completed" | "cancelled";
+  completionDate?: Date | string;
+  paymentMethod: "credit_card" | "paypal" | "stripe";
+  student: string;
+  course: ICourseFrontend;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+}
 
 // ===== Frontend Types End ===== //
