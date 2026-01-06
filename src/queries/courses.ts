@@ -40,6 +40,8 @@ export const getCourses = async () => {
 export const getCourse = async (id: string) => {
   await connectDB();
 
+  console.log({ id });
+
   const course = await CourseModel.findById(id)
     .populate({
       path: "instructor",
