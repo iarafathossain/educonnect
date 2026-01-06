@@ -1,7 +1,23 @@
+import { auth } from "@/auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatPrice } from "@/lib/formate-price";
+import { getCourseDetailsByInstructor } from "@/queries/courses";
+import { getUserByEmail } from "@/queries/users";
+import { redirect } from "next/navigation";
 
-const DashboardPage = () => {
+const DashboardPage = async () => {
+  const session = await auth();
+
+  if (!session?.user) redirect("/login");
+
+  const user = await getUserByEmail(session.user.email!);
+
+  if (user?.role !== "instructor") redirect("/login");
+
+  const courseStats = await getCourseDetailsByInstructor(user.id);
+
+  const { courses, enrollments, revenue } = courseStats;
+
   return (
     <div className="p-6">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
@@ -11,7 +27,7 @@ const DashboardPage = () => {
             <CardTitle className="text-sm font-medium">Total Courses</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">15</div>
+            <div className="text-2xl font-bold">{courses}</div>
           </CardContent>
         </Card>
         {/* total enrollments */}
@@ -22,7 +38,7 @@ const DashboardPage = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">1000</div>
+            <div className="text-2xl font-bold">{enrollments}</div>
           </CardContent>
         </Card>
         {/* total revinue */}
@@ -31,7 +47,7 @@ const DashboardPage = () => {
             <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{formatPrice(12000)}</div>
+            <div className="text-2xl font-bold">{formatPrice(revenue)}</div>
           </CardContent>
         </Card>
       </div>

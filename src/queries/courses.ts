@@ -80,6 +80,9 @@ export const getCourseDetailsByInstructor = async (instructorId: string) => {
     })
   );
 
+  console.log("Enrollments for instructor courses:");
+  console.log(enrollments);
+
   const totalEnrollments = enrollments.reduce((acc, curr) => {
     return acc + curr.length;
   }, 0);
@@ -91,16 +94,26 @@ export const getCourseDetailsByInstructor = async (instructorId: string) => {
     })
   );
 
-  const totalTestimonials = testimonials.flat();
+  const totalTestimonials = testimonials.flat() ?? [];
   const avgRating =
     totalTestimonials.reduce(function (acc, obj) {
       return acc + obj.rating;
     }, 0) / totalTestimonials.length;
+
+  const groupByCourse = Object.groupBy(enrollments.flat(), (enrollment) =>
+    enrollment.course.toString()
+  );
+  const totalRevenue = courses.reduce((acc, course) => {
+    return (
+      acc + (groupByCourse[course._id.toString()]?.length ?? 0) * course.price
+    );
+  }, 0);
 
   return {
     courses: courses.length,
     enrollments: totalEnrollments,
     reviews: totalTestimonials.length,
     ratings: avgRating.toPrecision(2),
+    revenue: totalRevenue,
   };
 };
