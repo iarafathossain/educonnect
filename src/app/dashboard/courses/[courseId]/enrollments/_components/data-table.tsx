@@ -1,10 +1,12 @@
 "use client";
 import {
+  ColumnFiltersState,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
+  SortingState,
   useReactTable,
 } from "@tanstack/react-table";
 import * as React from "react";
@@ -21,8 +23,10 @@ import {
 } from "@/components/ui/table";
 
 export function DataTable({ columns, data }) {
-  const [sorting, setSorting] = React.useState([]);
-  const [columnFilters, setColumnFilters] = React.useState([]);
+  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    []
+  );
 
   const table = useReactTable({
     data,
@@ -39,15 +43,14 @@ export function DataTable({ columns, data }) {
     },
   });
 
-  console.log(table.getColumn("name"));
   return (
     <div>
       <div className="flex items-center justify-between py-4">
         <Input
           placeholder="Filter by student name..."
-          value={table.getColumn("name")?.getFilterValue() ?? ""}
+          value={table.getColumn("studentName")?.getFilterValue() ?? ""}
           onChange={(event) =>
-            table.getColumn("name")?.setFilterValue(event.target.value)
+            table.getColumn("studentName")?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
         />

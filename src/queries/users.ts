@@ -10,6 +10,13 @@ export const getUserByEmail = async (email: string) => {
   return transformMongoDoc(user);
 };
 
+export async function getUserDetails(userId: string) {
+  console.log({ userId });
+  const user = await UserModel.findById(userId).select("-password").lean();
+  console.log("user: ", user);
+  return transformMongoDoc(user);
+}
+
 export const validatePassword = async (email: string, oldPassword: string) => {
   connectDB();
   const user = await getUserByEmail(email);

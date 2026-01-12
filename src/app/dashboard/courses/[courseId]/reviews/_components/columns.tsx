@@ -5,8 +5,8 @@ import { ArrowUpDown } from "lucide-react";
 
 export const columns = [
   {
-    id: "name",
-    accessorKey: "student.name",
+    id: "studentName",
+    accessorKey: "studentName",
     header: ({ column }) => {
       return (
         <Button
@@ -32,7 +32,7 @@ export const columns = [
     },
   },
   {
-    accessorKey: "review",
+    accessorKey: "content",
     header: ({ column }) => {
       return (
         <Button

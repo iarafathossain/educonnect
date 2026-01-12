@@ -11,11 +11,13 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
+  ColumnFiltersState,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
+  SortingState,
   useReactTable,
 } from "@tanstack/react-table";
 import { PlusCircle } from "lucide-react";
@@ -23,8 +25,10 @@ import Link from "next/link";
 import React from "react";
 
 const DataTable = ({ columns, data }) => {
-  const [sorting, setSorting] = React.useState([]);
-  const [columnFilters, setColumnFilters] = React.useState([]);
+  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    []
+  );
 
   const table = useReactTable({
     data,
@@ -40,6 +44,7 @@ const DataTable = ({ columns, data }) => {
       columnFilters,
     },
   });
+
   return (
     <div>
       <div className="flex items-center justify-between py-4">

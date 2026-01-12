@@ -8,6 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { formatPrice } from "@/lib/formate-price";
 import { cn } from "@/lib/utils";
 import {
   ArrowUpDown,
@@ -46,15 +47,11 @@ export const columns = [
     },
     cell: ({ row }: { row: any }) => {
       const price = parseFloat(row.getValue("price") || "0");
-      const formatted = new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-      }).format(price);
-      return <div>{formatted}</div>;
+      return <div>{formatPrice(price)}</div>;
     },
   },
   {
-    accessorKey: "isPublished",
+    accessorKey: "active",
     header: ({ column }: { column: any }) => {
       return (
         <Button
@@ -66,8 +63,7 @@ export const columns = [
       );
     },
     cell: ({ row }: { row: any }) => {
-      const isPublished = row.getValue("isPublished") || false;
-
+      const isPublished = row.getValue("active") || false;
       return (
         <Badge className={cn("bg-gray-500", isPublished && "bg-success")}>
           {isPublished ? "Published" : "Unpublished"}

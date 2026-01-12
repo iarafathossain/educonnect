@@ -1,12 +1,13 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { formatDate } from "@/lib/format-date";
 import { ArrowUpDown } from "lucide-react";
 
 export const columns = [
   {
-    id: "name",
-    accessorKey: "student.name",
+    id: "studentName",
+    accessorKey: "studentName",
     header: ({ column }) => {
       return (
         <Button
@@ -19,7 +20,7 @@ export const columns = [
     },
   },
   {
-    accessorKey: "student.email",
+    accessorKey: "studentEmail",
     header: ({ column }) => {
       return (
         <Button
@@ -32,7 +33,7 @@ export const columns = [
     },
   },
   {
-    accessorKey: "student.quizMark",
+    accessorKey: "quizMark",
     header: ({ column }) => {
       return (
         <Button
@@ -45,7 +46,7 @@ export const columns = [
     },
   },
   {
-    accessorKey: "student.progress",
+    accessorKey: "progress",
     header: ({ column }) => {
       return (
         <Button
@@ -56,9 +57,13 @@ export const columns = [
         </Button>
       );
     },
+    cell: ({ row }) => {
+      const progress = row.getValue("progress");
+      return `${progress}%`;
+    },
   },
   {
-    accessorKey: "date",
+    accessorKey: "createdAt",
     header: ({ column }) => {
       return (
         <Button
@@ -68,6 +73,10 @@ export const columns = [
           Enroll Date <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
+    },
+    cell: ({ row }) => {
+      const enrollmentDate = row.getValue("createdAt");
+      return formatDate(enrollmentDate);
     },
   },
   // {

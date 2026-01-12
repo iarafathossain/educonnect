@@ -40,8 +40,6 @@ export const getCourses = async () => {
 export const getCourse = async (id: string) => {
   await connectDB();
 
-  console.log({ id });
-
   const course = await CourseModel.findById(id)
     .populate({
       path: "instructor",
@@ -69,7 +67,10 @@ export const getCourse = async (id: string) => {
 };
 
 // Fetch course details by instructor
-export const getCourseDetailsByInstructor = async (instructorId: string) => {
+export const getCourseDetailsByInstructor = async (
+  instructorId: string,
+  expand: boolean
+) => {
   await connectDB();
   const courses = await CourseModel.find({ instructor: instructorId }).lean();
 
@@ -79,9 +80,6 @@ export const getCourseDetailsByInstructor = async (instructorId: string) => {
       return enrollment;
     })
   );
-
-  console.log("Enrollments for instructor courses:");
-  console.log(enrollments);
 
   const totalEnrollments = enrollments.reduce((acc, curr) => {
     return acc + curr.length;
@@ -108,6 +106,14 @@ export const getCourseDetailsByInstructor = async (instructorId: string) => {
       acc + (groupByCourse[course._id.toString()]?.length ?? 0) * course.price
     );
   }, 0);
+
+  if (expand) {
+    return {
+      courses: transformMongoDoc(courses?.flat()),
+      enrollments: transformMongoDoc(enrollments.flat()),
+      reviews: totalTestimonials,
+    };
+  }
 
   return {
     courses: courses.length,
