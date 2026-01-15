@@ -8,11 +8,9 @@ import { useDropzone } from "react-dropzone";
 import { toast } from "sonner";
 
 export const UploadDropzone = (props) => {
-  const { isMulti = false, label } = props;
+  const { isMulti = false, label, onUpload } = props;
 
   const [droppedFiles, setDroppedFiles] = useState(null);
-
-  console.log(droppedFiles);
 
   const [isUploading, setIsUploading] = useState(false);
 
@@ -50,6 +48,8 @@ export const UploadDropzone = (props) => {
     // });
     setUploadProgress(100);
     clearInterval(progressInterval);
+    onUpload(acceptedFiles);
+    setIsUploading(false);
   }, []);
 
   const { getRootProps, getInputProps, fileRejections } = useDropzone({

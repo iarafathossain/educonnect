@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
+import { updateCourseAction } from "@/app/actions/course";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -33,7 +34,7 @@ export const PriceForm = ({ initialData, courseId }) => {
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      price: initialData?.price || undefined,
+      price: initialData?.price ?? undefined,
     },
   });
 
@@ -41,6 +42,7 @@ export const PriceForm = ({ initialData, courseId }) => {
 
   const onSubmit = async (values) => {
     try {
+      await updateCourseAction(courseId, { price: values.price });
       toast.success("Course updated");
       toggleEdit();
       router.refresh();

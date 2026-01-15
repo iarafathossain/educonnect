@@ -63,7 +63,7 @@ export const getCourse = async (id: string) => {
     })
     .lean<ICourseFrontend>();
 
-  return transformMongoDoc(course);
+  return JSON.parse(JSON.stringify(course));
 };
 
 // Fetch course details by instructor
@@ -122,4 +122,12 @@ export const getCourseDetailsByInstructor = async (
     ratings: avgRating.toPrecision(2),
     revenue: totalRevenue,
   };
+};
+
+// create a new course
+export const createCourse = async (data: Partial<ICourseFrontend>) => {
+  await connectDB();
+  const newCourse = await CourseModel.create(data);
+
+  return JSON.parse(JSON.stringify(newCourse));
 };

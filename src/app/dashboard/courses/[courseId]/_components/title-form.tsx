@@ -5,6 +5,7 @@ import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
+import { updateCourseAction } from "@/app/actions/course";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -17,6 +18,7 @@ import { Input } from "@/components/ui/input";
 import { Pencil } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
 
 const formSchema = z.object({
   title: z.string().min(1, {
@@ -39,11 +41,11 @@ export const TitleForm = ({ initialData = {}, courseId }) => {
 
   const onSubmit = async (values) => {
     try {
-      //   await axios.patch(`/api/courses/${courseId}`, values);
-
+      await updateCourseAction(courseId, values);
       toggleEdit();
       router.refresh();
     } catch (error) {
+      console.log("error", error);
       toast.error("Something went wrong");
     }
   };

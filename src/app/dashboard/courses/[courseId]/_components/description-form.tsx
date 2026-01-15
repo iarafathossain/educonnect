@@ -1,5 +1,6 @@
 "use client";
 
+import { updateCourseAction } from "@/app/actions/course";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -41,6 +42,7 @@ export const DescriptionForm = ({ initialData, courseId }) => {
 
   const onSubmit = async (values) => {
     try {
+      await updateCourseAction(courseId, values);
       toast.success("Course updated");
       toggleEdit();
       router.refresh();

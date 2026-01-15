@@ -1,5 +1,6 @@
 "use client";
 
+import { createCourseAction } from "@/app/actions/course";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -43,13 +44,13 @@ const AddCoursePage = () => {
 
   const onSubmit = async (values) => {
     try {
-      router.push(`/dashboard/courses/${1}`);
+      const course = await createCourseAction(values);
+      router.push(`/dashboard/courses/${course._id}`);
       toast.success("Course created");
     } catch (error) {
       console.log(error);
       toast.error("Something went wrong");
     }
-    console.log(values);
   };
   return (
     <div className="max-w-5xl mx-auto flex md:items-center md:justify-center h-full p-6">

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 // import axios from "axios";
 import { ImageIcon, Pencil, PlusCircle } from "lucide-react";
@@ -21,6 +21,8 @@ const formSchema = z.object({
 export const ImageForm = ({ initialData, courseId }) => {
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
+  const [file, setFile] = useState(null);
+  const [imageUrl, setImageUrl] = useState(initialData.imageUrl);
 
   const toggleEdit = () => setIsEditing((current) => !current);
 
@@ -34,19 +36,52 @@ export const ImageForm = ({ initialData, courseId }) => {
     }
   };
 
+  useEffect(() => {
+    if (!file) return;
+
+    const uploadImage = async () => {
+      try {
+        const formData = new FormData();
+        formData.append("file", file[0]);
+        formData.append("destination", "./public/assets/images/courses");
+        formData.append("courseId", courseId);
+
+        const response = await fetch("/api/upload", {
+          method: "POST",
+          body: formData,
+        });
+        if (!response.ok) {
+          throw new Error("Upload failed");
+        }
+        const data = await response.json();
+
+        setImageUrl(data.path.replace("./public", ""));
+        setFile(null);
+        toast.success("Image uploaded successfully");
+        toggleEdit();
+        router.refresh();
+      } catch (error) {
+        console.error("Upload error:", error);
+        toast.error("Failed to upload image");
+      }
+    };
+
+    uploadImage();
+  }, [file]);
+
   return (
     <div className="mt-6 border bg-gray-50 rounded-md p-4">
       <div className="font-medium flex items-center justify-between">
         Course Image
         <Button variant="ghost" onClick={toggleEdit}>
           {isEditing && <>Cancel</>}
-          {!isEditing && !initialData.imageUrl && (
+          {!isEditing && !imageUrl && (
             <>
               <PlusCircle className="h-4 w-4 mr-2" />
               Add an image
             </>
           )}
-          {!isEditing && initialData.imageUrl && (
+          {!isEditing && imageUrl && (
             <>
               <Pencil className="h-4 w-4 mr-2" />
               Edit image
@@ -55,7 +90,7 @@ export const ImageForm = ({ initialData, courseId }) => {
         </Button>
       </div>
       {!isEditing &&
-        (!initialData.imageUrl ? (
+        (!imageUrl ? (
           <div className="flex items-center justify-center h-60 bg-slate-200 rounded-md">
             <ImageIcon className="h-10 w-10 text-slate-500" />
           </div>
@@ -65,13 +100,13 @@ export const ImageForm = ({ initialData, courseId }) => {
               alt="Upload"
               fill
               className="object-cover rounded-md"
-              src={initialData.imageUrl}
+              src={imageUrl}
             />
           </div>
         ))}
       {isEditing && (
         <div>
-          <UploadDropzone />
+          <UploadDropzone onUpload={(file) => setFile(file)} />
           <div className="text-xs text-muted-foreground mt-4">
             16:9 aspect ratio recommended
           </div>

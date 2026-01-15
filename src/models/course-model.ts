@@ -1,32 +1,51 @@
-import { ICourse } from "@/types/backend-index";
 import mongoose from "mongoose";
 
-const courseSchema = new mongoose.Schema<ICourse>(
+const courseSchema = new mongoose.Schema(
   {
-    title: { type: String, required: true },
-    description: { type: String, required: true },
-    thumbnailUrl: { type: String, required: true },
-    price: { type: Number, required: true },
-    active: { type: Boolean, default: true },
-    instructor: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+    title: {
       required: true,
+      type: String,
+    },
+    subtitle: {
+      type: String,
+    },
+    description: {
+      required: true,
+      type: String,
+    },
+    thumbnail: {
+      type: String,
     },
     modules: [{ type: mongoose.Schema.Types.ObjectId, ref: "Module" }],
-    category: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Category",
+
+    price: {
       required: true,
+      default: 0,
+      type: Number,
     },
-    quizzes: [{ type: mongoose.Schema.Types.ObjectId, ref: "Quiz" }],
+    active: {
+      required: true,
+      default: false,
+      type: Boolean,
+    },
+
+    category: { type: mongoose.Schema.Types.ObjectId, ref: "Category" },
+
+    instructor: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+
+    quizSet: { type: mongoose.Schema.Types.ObjectId, ref: "Quizset" },
     testimonials: [
       { type: mongoose.Schema.Types.ObjectId, ref: "Testimonial" },
     ],
+
+    learning: {
+      type: [String],
+    },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+  }
 );
 
 export const CourseModel =
-  (mongoose.models?.Course as mongoose.Model<ICourse>) ||
-  mongoose.model<ICourse>("Course", courseSchema);
+  mongoose.models.Course ?? mongoose.model("Course", courseSchema);
