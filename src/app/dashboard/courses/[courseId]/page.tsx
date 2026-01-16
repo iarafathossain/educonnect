@@ -30,6 +30,10 @@ const EditCoursePage = async ({
     return { label, value, id: category.id };
   });
 
+  const sortedModules = course.modules
+    ? course.modules.sort((a, b) => a.order - b.order)
+    : [];
+
   return (
     <>
       <AlertBanner
@@ -77,7 +81,7 @@ const EditCoursePage = async ({
                 <h2 className="text-xl">Course Modules</h2>
               </div>
 
-              <ModulesForm initialData={[]} courseId={[]} />
+              <ModulesForm initialData={sortedModules} courseId={courseId} />
             </div>
             <div>
               <div className="flex items-center gap-x-2">

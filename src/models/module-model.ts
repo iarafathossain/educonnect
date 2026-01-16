@@ -1,26 +1,36 @@
 import { IModule } from "@/types/backend-index";
 import mongoose from "mongoose";
 
-const moduleSchema = new mongoose.Schema<IModule>({
-  title: { type: String, required: true },
-  description: { type: String, required: true },
-  status: {
+const moduleSchema = new mongoose.Schema({
+  title: {
+    required: true,
     type: String,
-    enum: ["locked", "unlocked", "completed"],
-    required: true,
   },
-  slug: { type: String, required: true },
+  description: {
+    type: String,
+  },
+  active: {
+    required: true,
+    default: false,
+    type: Boolean,
+  },
+  slug: {
+    required: true,
+    type: String,
+  },
   course: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Course",
     required: true,
+    type: mongoose.Schema.Types.ObjectId,
   },
-  lessonIds: { required: true, type: [String] },
-  duration: { type: Number, required: true },
-  createdAt: { type: Date, default: Date.now },
-  updatedAt: { type: Date, default: Date.now },
+  lessonIds: {
+    required: true,
+    type: [mongoose.Schema.Types.ObjectId],
+  },
+  order: {
+    required: true,
+    type: Number,
+  },
 });
 
 export const ModuleModel =
-  (mongoose.models?.Module as mongoose.Model<IModule>) ||
-  mongoose.model<IModule>("Module", moduleSchema);
+  mongoose.models.Module ?? mongoose.model<IModule>("Module", moduleSchema);
