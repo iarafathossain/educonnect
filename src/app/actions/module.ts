@@ -44,3 +44,11 @@ export const reorderModules = async (data) => {
     throw new Error("Error reordering modules: " + error.message);
   }
 };
+
+export const updateModule = async (moduleId, data) => {
+  try {
+    await ModuleModel.findByIdAndUpdate(moduleId, data);
+  } catch (error) {
+    throw new Error("Error updating module: " + error.message);
+  }
+};

@@ -1,4 +1,3 @@
-import { IModule } from "@/types/backend-index";
 import mongoose from "mongoose";
 
 const moduleSchema = new mongoose.Schema({
@@ -22,10 +21,7 @@ const moduleSchema = new mongoose.Schema({
     required: true,
     type: mongoose.Schema.Types.ObjectId,
   },
-  lessonIds: {
-    required: true,
-    type: [mongoose.Schema.Types.ObjectId],
-  },
+  lessonIds: [{ type: mongoose.Schema.Types.ObjectId, ref: "Lesson" }],
   order: {
     required: true,
     type: Number,
@@ -33,4 +29,4 @@ const moduleSchema = new mongoose.Schema({
 });
 
 export const ModuleModel =
-  mongoose.models.Module ?? mongoose.model<IModule>("Module", moduleSchema);
+  mongoose.models?.Module ?? mongoose.model("Module", moduleSchema);

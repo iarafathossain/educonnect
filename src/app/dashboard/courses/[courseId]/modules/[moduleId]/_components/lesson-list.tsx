@@ -12,6 +12,8 @@ export const LessonList = ({ items, onReorder, onEdit }) => {
   const [isMounted, setIsMounted] = useState(false);
   const [modules, setModules] = useState(items);
 
+  console.log("LessonList items:", items);
+
   useEffect(() => {
     setIsMounted(true);
   }, []);
@@ -35,8 +37,8 @@ export const LessonList = ({ items, onReorder, onEdit }) => {
     setModules(items);
 
     const bulkUpdateData = updatedModules.map((module) => ({
-      id: module.id,
-      position: items.findIndex((item) => item.id === module.id),
+      _id: module._id,
+      position: items.findIndex((item) => item._id === module._id),
     }));
 
     onReorder(bulkUpdateData);
@@ -52,7 +54,11 @@ export const LessonList = ({ items, onReorder, onEdit }) => {
         {(provided) => (
           <div {...provided.droppableProps} ref={provided.innerRef}>
             {modules.map((module, index) => (
-              <Draggable key={module.id} draggableId={module.id} index={index}>
+              <Draggable
+                key={module._id}
+                draggableId={module._id}
+                index={index}
+              >
                 {(provided) => (
                   <div
                     className={cn(

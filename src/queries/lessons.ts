@@ -7,3 +7,14 @@ export const getLesson = async (id: string) => {
   const lesson = await LessonModel.findById(id).lean();
   return transformMongoDoc(lesson);
 };
+
+export const create = async (data) => {
+  try {
+    await connectDB();
+    const lesson = await LessonModel.create(data);
+    return JSON.parse(JSON.stringify(lesson));
+  } catch (err) {
+    console.error("Error creating lesson:", err);
+    throw new Error(err);
+  }
+};

@@ -1,12 +1,22 @@
 import AlertBanner from "@/components/alert-banner";
 import { IconBadge } from "@/components/icon-badge";
+import { modulesQueries } from "@/queries/modules";
 import { ArrowLeft, BookOpenCheck, LayoutDashboard } from "lucide-react";
 import Link from "next/link";
 import { CourseActions } from "../../_components/course-action";
 import { LessonForm } from "./_components/lesson-form";
 import { ModuleTitleForm } from "./_components/module-title-form";
 
-const Module = async ({ params }) => {
+const ModulePage = async ({
+  params: { courseId, moduleId },
+}: {
+  params: { courseId: string; moduleId: string };
+}) => {
+  const moduleDetails = await modulesQueries.getModule(moduleId);
+  const sortedModuleLessons = moduleDetails.lessonIds.sort(
+    (a, b) => a.order - b.order
+  );
+  console.log("Sorted Lessons:", sortedModuleLessons);
   return (
     <>
       <AlertBanner
@@ -18,7 +28,7 @@ const Module = async ({ params }) => {
         <div className="flex items-center justify-between">
           <div className="w-full">
             <Link
-              href={`/dashboard/courses/${1}`}
+              href={`/dashboard/courses/${courseId}`}
               className="flex items-center text-sm hover:opacity-75 transition mb-6"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
@@ -36,14 +46,21 @@ const Module = async ({ params }) => {
                 <IconBadge icon={LayoutDashboard} />
                 <h2 className="text-xl">Customize Your module</h2>
               </div>
-              <ModuleTitleForm initialData={{}} courseId={1} chapterId={1} />
+              <ModuleTitleForm
+                initialData={{ title: moduleDetails?.title }}
+                courseId={courseId}
+                moduleId={moduleId}
+              />
             </div>
             <div>
               <div className="flex items-center gap-x-2">
                 <IconBadge icon={BookOpenCheck} />
                 <h2 className="text-xl">Module Lessons</h2>
               </div>
-              <LessonForm />
+              <LessonForm
+                initialData={sortedModuleLessons}
+                moduleId={moduleId}
+              />
             </div>
           </div>
           <div>
@@ -63,4 +80,4 @@ const Module = async ({ params }) => {
   );
 };
 
-export default Module;
+export default ModulePage;

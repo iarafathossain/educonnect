@@ -1,15 +1,41 @@
 import { ILesson } from "@/types/backend-index";
 import mongoose from "mongoose";
 
-const lessonSchema = new mongoose.Schema<ILesson>({
-  title: { type: String, required: true },
-  description: { type: String, required: true },
-  videoUrl: { type: String, required: true },
-  duration: { type: Number, required: true },
-  published: { type: Boolean, required: true },
-  slug: { type: String, required: true },
-  access: { type: String, required: true },
+const lessonSchema = new mongoose.Schema({
+  title: {
+    required: true,
+    type: String,
+  },
+  description: {
+    type: String,
+  },
+  duration: {
+    required: true,
+    default: 0,
+    type: Number,
+  },
+  video_url: {
+    type: String,
+  },
+  active: {
+    required: true,
+    default: false,
+    type: Boolean,
+  },
+  slug: {
+    required: true,
+    type: String,
+  },
+  access: {
+    required: true,
+    default: "private",
+    type: String,
+  },
+  order: {
+    required: true,
+    type: Number,
+  },
 });
+
 export const LessonModel =
-  (mongoose.models?.Lesson as mongoose.Model<ILesson>) ||
-  mongoose.model<ILesson>("Lesson", lessonSchema);
+  mongoose.models?.Lesson ?? mongoose.model<ILesson>("Lesson", lessonSchema);
