@@ -35,9 +35,18 @@ export const reorderLessons = async (data) => {
         await LessonModel.findByIdAndUpdate(element._id, {
           order: element.position,
         });
-      })
+      }),
     );
   } catch (err) {
     throw new Error(err);
+  }
+};
+
+export const updateLesson = async (lessonId, data) => {
+  await connectDB();
+  try {
+    await LessonModel.findByIdAndUpdate(lessonId, data);
+  } catch (error) {
+    throw new Error(error);
   }
 };

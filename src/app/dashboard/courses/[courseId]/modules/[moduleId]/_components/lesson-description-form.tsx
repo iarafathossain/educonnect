@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
+import { updateLesson } from "@/app/actions/lesson";
 import { Editor } from "@/components/editor";
 import { Preview } from "@/components/preview";
 import { Button } from "@/components/ui/button";
@@ -27,6 +28,7 @@ const formSchema = z.object({
 export const LessonDescriptionForm = ({ initialData, courseId, lessonId }) => {
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
+  const [description, setDescription] = useState(initialData.description);
 
   const toggleEdit = () => setIsEditing((current) => !current);
 
@@ -40,7 +42,10 @@ export const LessonDescriptionForm = ({ initialData, courseId, lessonId }) => {
   const { isSubmitting, isValid } = form.formState;
 
   const onSubmit = async (values) => {
+    console.log({ values });
     try {
+      await updateLesson(lessonId, values);
+      setDescription(values.description);
       toast.success("Lesson updated");
       toggleEdit();
       router.refresh();
@@ -68,13 +73,11 @@ export const LessonDescriptionForm = ({ initialData, courseId, lessonId }) => {
         <div
           className={cn(
             "text-sm mt-2",
-            !initialData.description && "text-slate-500 italic"
+            !description && "text-slate-500 italic",
           )}
         >
-          {!initialData.description && "No description"}
-          {initialData.description && (
-            <Preview value={initialData.description} />
-          )}
+          {!description && "No description"}
+          {description && <Preview value={description} />}
         </div>
       )}
       {isEditing && (

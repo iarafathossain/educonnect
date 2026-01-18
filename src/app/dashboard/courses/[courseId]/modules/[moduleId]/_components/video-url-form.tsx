@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
+import { updateLesson } from "@/app/actions/lesson";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -15,6 +16,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { VideoPlayer } from "@/components/video-player";
+import { formatDuration } from "date-fns";
 import { Pencil } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -32,18 +34,43 @@ const formSchema = z.object({
 export const VideoUrlForm = ({ initialData, courseId, lessonId }) => {
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
+  const [state, setState] = useState({
+    url: initialData?.url,
+    duration: formatDuration(initialData?.duration),
+  });
 
   const toggleEdit = () => setIsEditing((current) => !current);
 
   const form = useForm({
     resolver: zodResolver(formSchema),
-    defaultValues: initialData,
+    defaultValues: state,
   });
 
   const { isSubmitting, isValid } = form.formState;
 
   const onSubmit = async (values) => {
     try {
+      const payload = {};
+      payload.video_url = values.url;
+
+      const durationParts = values.duration.split(":").map(Number);
+      console.log("durationParts", durationParts);
+      let totalSeconds = 0;
+      if (durationParts.length === 3) {
+        totalSeconds =
+          durationParts[0] * 3600 + durationParts[1] * 60 + durationParts[2];
+      } else if (durationParts.length === 2) {
+        totalSeconds = durationParts[0] * 60 + durationParts[1];
+      } else if (durationParts.length === 1) {
+        totalSeconds = durationParts[0];
+      }
+      payload.duration = totalSeconds;
+
+      await updateLesson(lessonId, payload);
+      setState({
+        url: values.url,
+        duration: values.duration,
+      });
       toast.success("Lesson updated");
       toggleEdit();
       router.refresh();
@@ -73,7 +100,7 @@ export const VideoUrlForm = ({ initialData, courseId, lessonId }) => {
             {"https://www.youtube.com/embed/Cn4G2lZ_g2I?si=8FxqU8_NU6rYOrG1"}
           </p>
           <div className="mt-6">
-            <VideoPlayer />
+            <VideoPlayer url={state.url} />
           </div>
         </>
       )}
@@ -112,6 +139,7 @@ export const VideoUrlForm = ({ initialData, courseId, lessonId }) => {
                     <Input
                       disabled={isSubmitting}
                       placeholder="e.g. '10:30:18'"
+                      defaultValue={state.duration}
                       {...field}
                     />
                   </FormControl>

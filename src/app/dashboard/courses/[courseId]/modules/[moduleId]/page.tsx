@@ -14,7 +14,7 @@ const ModulePage = async ({
 }) => {
   const moduleDetails = await modulesQueries.getModule(moduleId);
   const sortedModuleLessons = moduleDetails.lessonIds.sort(
-    (a, b) => a.order - b.order
+    (a, b) => a.order - b.order,
   );
   console.log("Sorted Lessons:", sortedModuleLessons);
   return (
@@ -60,6 +60,7 @@ const ModulePage = async ({
               <LessonForm
                 initialData={sortedModuleLessons}
                 moduleId={moduleId}
+                courseId={courseId}
               />
             </div>
           </div>

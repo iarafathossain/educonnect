@@ -27,12 +27,14 @@ const formSchema = z.object({
   title: z.string().min(1),
 });
 
-export const LessonForm = ({ initialData, moduleId }) => {
+export const LessonForm = ({ initialData, moduleId, courseId }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [lessons, setLessons] = useState(initialData);
   const router = useRouter();
   const [isCreating, setIsCreating] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
+
+  const [lessonToEdit, setLessonToEdit] = useState(null);
 
   const toggleCreating = () => setIsCreating((current) => !current);
   const toggleEditing = () => setIsEditing((current) => !current);
@@ -90,6 +92,8 @@ export const LessonForm = ({ initialData, moduleId }) => {
   };
 
   const onEdit = (id) => {
+    const foundLesson = lessons.find((lesson) => lesson._id === id);
+    setLessonToEdit(foundLesson);
     setIsEditing(true);
   };
 
@@ -146,7 +150,7 @@ export const LessonForm = ({ initialData, moduleId }) => {
         <div
           className={cn(
             "text-sm mt-2",
-            !lessons?.length && "text-slate-500 italic"
+            !lessons?.length && "text-slate-500 italic",
           )}
         >
           {!lessons?.length && "No lessons"}
@@ -162,7 +166,12 @@ export const LessonForm = ({ initialData, moduleId }) => {
           Drag & Drop to reorder the modules
         </p>
       )}
-      <LessonModal open={isEditing} setOpen={setIsEditing} />
+      <LessonModal
+        open={isEditing}
+        setOpen={setIsEditing}
+        lesson={lessonToEdit}
+        courseId={courseId}
+      />
     </div>
   );
 };
