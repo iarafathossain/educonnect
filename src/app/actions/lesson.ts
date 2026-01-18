@@ -50,3 +50,37 @@ export const updateLesson = async (lessonId, data) => {
     throw new Error(error);
   }
 };
+
+export const changeLessonPublishState = async (lessonId) => {
+  await connectDB();
+  try {
+    const lesson = await LessonModel.findById(lessonId);
+    lesson.active = !lesson.active;
+    await lesson.save();
+    return lesson.active;
+  } catch (error) {
+    console.error(error);
+    throw new Error(error);
+  }
+};
+
+export const deleteLesson = async (lessonId, moduleId) => {
+  await connectDB();
+  console.log({ lessonId, moduleId });
+  try {
+    const existingModule = await ModuleModel.findById(moduleId);
+    if (!existingModule) {
+      throw new Error("Module not found");
+    }
+    // Remove lessonId from module's lessonIds array by filtering it out
+    existingModule.lessonIds = existingModule.lessonIds.filter(
+      (id) => id.toString() !== lessonId,
+    );
+    // remove the lesson document by pulling it from the database
+    // existingModule.lessonIds.pull(new mongoose.Types.ObjectId(lessonId));
+    await LessonModel.findByIdAndDelete(lessonId);
+    await existingModule.save();
+  } catch (error) {
+    throw new Error(error);
+  }
+};

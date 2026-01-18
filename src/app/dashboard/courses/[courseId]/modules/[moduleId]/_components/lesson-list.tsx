@@ -12,8 +12,6 @@ export const LessonList = ({ items, onReorder, onEdit }) => {
   const [isMounted, setIsMounted] = useState(false);
   const [modules, setModules] = useState(items);
 
-  console.log("LessonList items:", items);
-
   useEffect(() => {
     setIsMounted(true);
   }, []);

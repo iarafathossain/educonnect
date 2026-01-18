@@ -38,7 +38,7 @@ export const reorderModules = async (data) => {
         await ModuleModel.findByIdAndUpdate(module._id, {
           order: module.position,
         });
-      })
+      }),
     );
   } catch (error) {
     throw new Error("Error reordering modules: " + error.message);
@@ -50,5 +50,41 @@ export const updateModule = async (moduleId, data) => {
     await ModuleModel.findByIdAndUpdate(moduleId, data);
   } catch (error) {
     throw new Error("Error updating module: " + error.message);
+  }
+};
+
+export const changeModulePublishState = async (moduleId) => {
+  try {
+    const existingModule = await modulesQueries.getModule(moduleId);
+    if (!existingModule) {
+      throw new Error("Module not found");
+    }
+    const updatedModule = await ModuleModel.findByIdAndUpdate(
+      moduleId,
+      {
+        active: !existingModule.active,
+      },
+      { new: true, lean: true },
+    );
+
+    return updatedModule.active;
+  } catch (error) {
+    throw new Error("Error changing module publish state: " + error.message);
+  }
+};
+
+export const deleteModule = async (moduleId, courseId) => {
+  try {
+    const existingCourse = await CourseModel.findById(courseId);
+    if (!existingCourse) {
+      throw new Error("Course not found");
+    }
+    existingCourse.modules = existingCourse.modules.filter(
+      (id) => id.toString() !== moduleId,
+    );
+    await ModuleModel.findByIdAndDelete(moduleId);
+    await existingCourse.save();
+  } catch (error) {
+    throw new Error("Error deleting module: " + error.message);
   }
 };

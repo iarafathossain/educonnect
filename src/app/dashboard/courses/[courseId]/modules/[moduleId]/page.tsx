@@ -3,8 +3,8 @@ import { IconBadge } from "@/components/icon-badge";
 import { modulesQueries } from "@/queries/modules";
 import { ArrowLeft, BookOpenCheck, LayoutDashboard } from "lucide-react";
 import Link from "next/link";
-import { CourseActions } from "../../_components/course-action";
 import { LessonForm } from "./_components/lesson-form";
+import { ModuleActions } from "./_components/module-action";
 import { ModuleTitleForm } from "./_components/module-title-form";
 
 const ModulePage = async ({
@@ -12,11 +12,12 @@ const ModulePage = async ({
 }: {
   params: { courseId: string; moduleId: string };
 }) => {
+  console.log({ moduleId });
   const moduleDetails = await modulesQueries.getModule(moduleId);
   const sortedModuleLessons = moduleDetails.lessonIds.sort(
     (a, b) => a.order - b.order,
   );
-  console.log("Sorted Lessons:", sortedModuleLessons);
+
   return (
     <>
       <AlertBanner
@@ -35,7 +36,7 @@ const ModulePage = async ({
               Back to course setup
             </Link>
             <div className="flex items-center justify-end">
-              <CourseActions />
+              <ModuleActions module={moduleDetails} courseId={courseId} />
             </div>
           </div>
         </div>

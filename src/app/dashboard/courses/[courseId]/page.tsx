@@ -4,7 +4,8 @@ import { getCategories } from "@/queries/categories";
 import { getCourse } from "@/queries/courses";
 import { CircleDollarSign, LayoutDashboard, ListChecks } from "lucide-react";
 import { CategoryForm } from "./_components/category-form";
-import { CourseActions } from "./_components/course-action";
+
+import { CourseActions } from "./_components/course-actions";
 import { DescriptionForm } from "./_components/description-form";
 import { ImageForm } from "./_components/image-form";
 import { ModulesForm } from "./_components/module-form";
@@ -42,7 +43,7 @@ const EditCoursePage = async ({
       />
       <div className="p-6">
         <div className="flex items-center justify-end">
-          <CourseActions />
+          <CourseActions courseId={courseId} isActive={course.isActive} />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-16">
           <div>

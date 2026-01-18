@@ -35,3 +35,27 @@ export const updateCourseAction = async (courseId, data) => {
     throw new Error("Failed to update course title");
   }
 };
+
+export const changeCoursePublishState = async (courseId) => {
+  try {
+    const course = await CourseModel.findById(courseId);
+    if (!course) {
+      throw new Error("Course not found");
+    }
+    course.active = !course.active;
+    await course.save();
+    return course.active;
+  } catch (error) {
+    console.log(error);
+    throw new Error("Failed to change course publish state");
+  }
+};
+
+export const deleteCourse = async (courseId) => {
+  try {
+    await CourseModel.findByIdAndDelete(courseId);
+  } catch (error) {
+    console.log(error);
+    throw new Error("Failed to delete course");
+  }
+};
