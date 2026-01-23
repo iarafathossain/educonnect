@@ -1,6 +1,7 @@
 "use client";
 import * as z from "zod";
 // import axios from "axios";
+import { createQuizSet } from "@/app/actions/quiz";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -34,11 +35,13 @@ const AddQuizSet = () => {
 
   const { isSubmitting, isValid } = form.formState;
 
-  const onSubmit = async (values) => {
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      router.push(`/dashboard/quiz-sets/${1}`);
+      const createdQuizSetId = await createQuizSet(values);
+      router.push(`/dashboard/quiz-sets/${createdQuizSetId}`);
       toast.success("Quiz Set Created");
     } catch (error) {
+      console.error("Error submitting form:", error);
       toast.error("Something went wrong");
     }
   };

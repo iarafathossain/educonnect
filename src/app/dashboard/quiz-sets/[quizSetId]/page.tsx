@@ -1,60 +1,30 @@
-"use client";
 import AlertBanner from "@/components/alert-banner";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Circle, CircleCheck, Pencil, Trash } from "lucide-react";
-import { useState } from "react";
+import { quizQueries } from "@/queries/quiz";
+import { Circle, CircleCheck } from "lucide-react";
 import { AddQuizForm } from "./_components/add-quiz-form";
+import { QuizCardActions } from "./_components/quiz-card-actions";
 import { QuizSetAction } from "./_components/quiz-set-action";
 import { TitleForm } from "./_components/title-form";
-const initialQuizes = [
-  {
-    id: 1,
-    title: "What is HTML ?",
-    options: [
-      {
-        label: "A programming language",
-        isTrue: false,
-      },
-      {
-        label: "A markup language",
-        isTrue: true,
-      },
-      {
-        label: "A famous book",
-        isTrue: false,
-      },
-      {
-        label: "A famous tv show",
-        isTrue: false,
-      },
-    ],
-  },
-  {
-    id: 2,
-    title: "What is Javascript ?",
-    options: [
-      {
-        label: "A programming language",
-        isTrue: true,
-      },
-      {
-        label: "A markup language",
-        isTrue: false,
-      },
-      {
-        label: "A famous book",
-        isTrue: false,
-      },
-      {
-        label: "A famous tv show",
-        isTrue: false,
-      },
-    ],
-  },
-];
-const EditQuizSet = () => {
-  const [quizes, setQuizes] = useState(initialQuizes);
+
+const EditQuizSet = async ({
+  params: { quizSetId },
+}: {
+  params: { quizSetId: string };
+}) => {
+  const quizSet = await quizQueries.getQuizSetById(quizSetId);
+  const quizzes = quizSet.quizIds.map((quiz) => {
+    return {
+      id: quiz._id,
+      title: quiz.title,
+      options: quiz.options.map((option) => {
+        return {
+          label: option.text,
+          isTrue: option.is_correct,
+        };
+      }),
+    };
+  });
   return (
     <>
       <AlertBanner
@@ -75,7 +45,7 @@ const EditQuizSet = () => {
               className="rounded mb-6"
             />
             <div className="space-y-6">
-              {quizes.map((quiz) => {
+              {quizzes.map((quiz) => {
                 return (
                   <div
                     key={quiz.id}
@@ -88,7 +58,7 @@ const EditQuizSet = () => {
                         return (
                           <div
                             className={cn(
-                              "py-1.5 rounded-sm  text-sm flex items-center gap-1 text-gray-600"
+                              "py-1.5 rounded-sm  text-sm flex items-center gap-1 text-gray-600",
                             )}
                             key={option.label}
                           >
@@ -104,16 +74,7 @@ const EditQuizSet = () => {
                       })}
                     </div>
                     <div className="flex items-center justify-end gap-2 mt-6">
-                      <Button variant="ghost" size="sm">
-                        <Pencil className="w-3 mr-1" /> Edit
-                      </Button>
-                      <Button
-                        size="sm"
-                        className="text-destructive"
-                        variant="ghost"
-                      >
-                        <Trash className="w-3 mr-1" /> Delete
-                      </Button>
+                      <QuizCardActions quiz={quiz} quizSetId={quizSetId} />
                     </div>
                   </div>
                 );
@@ -128,13 +89,14 @@ const EditQuizSet = () => {
             <div className="max-w-[800px]">
               <TitleForm
                 initialData={{
-                  title: "Reactive Accelerator",
+                  title: quizSet.title,
                 }}
+                quizSetId={quizSetId}
               />
             </div>
 
             <div className="max-w-[800px]">
-              <AddQuizForm setQuizes={setQuizes} />
+              <AddQuizForm quizSetId={quizSetId} />
             </div>
           </div>
         </div>

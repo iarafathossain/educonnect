@@ -1,3 +1,4 @@
+import { quizQueries } from "@/queries/quiz";
 import { columns } from "./_components/columns";
 import { DataTable } from "./_components/data-table";
 
@@ -18,10 +19,19 @@ const quizSets = [
   },
 ];
 
-const QuizSetsPage = () => {
+const QuizSetsPage = async () => {
+  const quizzes = await quizQueries.getAllQuiSets(false);
+  const mappedQuizzes =
+    quizzes?.map((quizSet) => ({
+      id: quizSet._id,
+      title: quizSet.title,
+      isPublished: quizSet.active,
+      totalQuiz: quizSet.quizIds.length,
+    })) || [];
+
   return (
     <div className="p-6">
-      <DataTable columns={columns} data={quizSets} />
+      <DataTable columns={columns} data={mappedQuizzes} />
     </div>
   );
 };

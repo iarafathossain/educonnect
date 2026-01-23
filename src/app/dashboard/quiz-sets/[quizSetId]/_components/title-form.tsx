@@ -5,6 +5,7 @@ import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
+import { updateQuizSet } from "@/app/actions/quiz";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -24,7 +25,7 @@ const formSchema = z.object({
   }),
 });
 
-export const TitleForm = ({ initialData = {} }) => {
+export const TitleForm = ({ initialData = {}, quizSetId }) => {
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
 
@@ -39,6 +40,7 @@ export const TitleForm = ({ initialData = {} }) => {
 
   const onSubmit = async (values) => {
     try {
+      await updateQuizSet(quizSetId, values);
       toggleEdit();
       router.refresh();
     } catch (error) {
