@@ -5,6 +5,7 @@ import { LessonModel } from "@/models/lesson-model";
 import { ModuleModel } from "@/models/module-model";
 import { create } from "@/queries/lessons";
 import { connectDB } from "@/services/connect-mongo";
+import { IReorderItem } from "@/types/shared-index";
 
 export const createLesson = async (payload: FormData) => {
   try {
@@ -26,19 +27,18 @@ export const createLesson = async (payload: FormData) => {
   }
 };
 
-export const reorderLessons = async (data) => {
-  console.log("Reordering lessons with data:", data);
+export const reorderLessons = async (data: IReorderItem[]) => {
   await connectDB();
   try {
     await Promise.all(
       data.map(async (element) => {
-        await LessonModel.findByIdAndUpdate(element._id, {
+        await LessonModel.findByIdAndUpdate(element.id, {
           order: element.position,
         });
       }),
     );
-  } catch (err) {
-    throw new Error(err);
+  } catch (error: unknown) {
+    throw new Error(catchError(error));
   }
 };
 

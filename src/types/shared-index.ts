@@ -73,4 +73,9 @@ export interface IEnrollmentBase {
   updatedAt?: Date | string;
 }
 
+export interface IReorderItem {
+  id: string;
+  position: number;
+}
+
 // ===== Shared Domain Types End ===== //

@@ -5,6 +5,7 @@ import { CourseModel } from "@/models/course-model";
 import { ModuleModel } from "@/models/module-model";
 import { createModule, getModule } from "@/queries/modules";
 import { IModuleFrontend } from "@/types/frontend-index";
+import { IReorderItem } from "@/types/shared-index";
 
 export const createModuleAction = async (payload: FormData) => {
   try {
@@ -33,17 +34,17 @@ export const createModuleAction = async (payload: FormData) => {
   }
 };
 
-export const reorderModules = async (data) => {
+export const reorderModules = async (data: IReorderItem[]) => {
   try {
     await Promise.all(
       data.map(async (module) => {
-        await ModuleModel.findByIdAndUpdate(module._id, {
+        await ModuleModel.findByIdAndUpdate(module.id, {
           order: module.position,
         });
       }),
     );
-  } catch (error) {
-    throw new Error("Error reordering modules: " + error.message);
+  } catch (error: unknown) {
+    throw new Error(catchError(error));
   }
 };
 

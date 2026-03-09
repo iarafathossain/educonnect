@@ -18,6 +18,7 @@ import { catchError } from "@/lib/catch-error";
 import { getSlug } from "@/lib/get-slug";
 import { cn } from "@/lib/utils";
 import { IModuleFrontend } from "@/types/frontend-index";
+import { IReorderItem } from "@/types/shared-index";
 import { Loader2, PlusCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -81,7 +82,7 @@ export const ModulesForm = ({ initialData, courseId }: ModulesFormProps) => {
     }
   };
 
-  const onReorder = async (updateData: { id: string; position: number }[]) => {
+  const onReorder = async (updateData: IReorderItem[]) => {
     try {
       await reorderModules(updateData);
       setIsUpdating(true);
