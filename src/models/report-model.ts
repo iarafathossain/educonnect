@@ -1,3 +1,4 @@
+import { mongooseTransform } from "@/lib/mongoose-transform.plugin";
 import { IReport } from "@/types/backend-index";
 import mongoose from "mongoose";
 
@@ -30,9 +31,10 @@ const reportSchema = new mongoose.Schema<IReport>(
       ref: "Assessment",
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
+reportSchema.plugin(mongooseTransform);
+
 export const ReportModel =
-  (mongoose.models?.Report as mongoose.Model<IReport>) ||
-  mongoose.model<IReport>("Report", reportSchema);
+  mongoose.models.Report ?? mongoose.model("Report", reportSchema);

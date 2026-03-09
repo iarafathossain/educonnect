@@ -6,33 +6,37 @@ import { useEffect, useState } from "react";
 import { ImageIcon, Pencil, PlusCircle } from "lucide-react";
 import Image from "next/image";
 import { toast } from "sonner";
-import * as z from "zod";
 
+import { updateCourseAction } from "@/app/actions/course";
 import { UploadDropzone } from "@/components/file-upload";
 import { Button } from "@/components/ui/button";
+import { catchError } from "@/lib/catch-error";
+import { UpdateCourseImagePayload } from "@/validators/course-validator";
 import { useRouter } from "next/navigation";
 
-const formSchema = z.object({
-  imageUrl: z.string().min(1, {
-    message: "Image is required",
-  }),
-});
+interface ImageFormProps {
+  initialData: {
+    imageUrl?: string;
+  };
+  courseId: string;
+}
 
-export const ImageForm = ({ initialData, courseId }) => {
+export const ImageForm = ({ initialData, courseId }: ImageFormProps) => {
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
-  const [file, setFile] = useState(null);
+  const [file, setFile] = useState<File[] | null>(null);
   const [imageUrl, setImageUrl] = useState(initialData.imageUrl);
 
   const toggleEdit = () => setIsEditing((current) => !current);
 
-  const onSubmit = async (values) => {
+  const onSubmit = async (values: UpdateCourseImagePayload) => {
     try {
+      await updateCourseAction(courseId, values);
       toast.success("Course updated");
       toggleEdit();
       router.refresh();
-    } catch (error) {
-      toast.error("Something went wrong");
+    } catch (error: unknown) {
+      toast.error(catchError(error));
     }
   };
 
@@ -60,9 +64,8 @@ export const ImageForm = ({ initialData, courseId }) => {
         toast.success("Image uploaded successfully");
         toggleEdit();
         router.refresh();
-      } catch (error) {
-        console.error("Upload error:", error);
-        toast.error("Failed to upload image");
+      } catch (error: unknown) {
+        toast.error(catchError(error));
       }
     };
 
@@ -106,7 +109,7 @@ export const ImageForm = ({ initialData, courseId }) => {
         ))}
       {isEditing && (
         <div>
-          <UploadDropzone onUpload={(file) => setFile(file)} />
+          <UploadDropzone onUpload={(file: File[]) => setFile(file)} />
           <div className="text-xs text-muted-foreground mt-4">
             16:9 aspect ratio recommended
           </div>

@@ -52,7 +52,7 @@ const HomePage = async () => {
                 buttonVariants({
                   variant: "outline",
                   size: "lg",
-                })
+                }),
               )}
             >
               Become An Instructor
@@ -85,12 +85,12 @@ const HomePage = async () => {
               >
                 <div className="flex  flex-col gap-4 items-center justify-between rounded-md p-6">
                   <Image
-                    src={`/assets/images/categories/${category.thumbnailUrl}`}
-                    alt={category.title}
+                    src={category.thumbnailUrl}
+                    alt={category.label}
                     width={100}
                     height={100}
                   />
-                  <h3 className="font-bold">{category.title}</h3>
+                  <h3 className="font-bold">{category.label}</h3>
                 </div>
               </Link>
             ))

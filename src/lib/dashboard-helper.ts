@@ -13,7 +13,7 @@ const populateReviewData = async (reviews) => {
       const student = await getUserDetails(review?.user);
       review["studentName"] = `${student?.firstName} ${student?.lastName}`;
       return review;
-    })
+    }),
   );
 
   return populatedReviews;
@@ -61,7 +61,7 @@ const populateEnrollmentData = async (enrollments) => {
         enrollment["quizMark"] = marksFromQuizees;
       }
       return enrollment;
-    })
+    }),
   );
 
   return populatedEnrollments;

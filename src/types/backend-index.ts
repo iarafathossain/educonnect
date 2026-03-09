@@ -1,86 +1,72 @@
+import {
+  ICategoryBase,
+  ICourseBase,
+  IEnrollmentBase,
+  ILessonBase,
+  IModuleBase,
+  ITestimonialBase,
+  IUserBase,
+} from "@/types/shared-index";
 import mongoose from "mongoose";
 
 // ===== BACKEND TYPES START ===== //
-export interface IUser {
-  firstName: string;
-  lastName: string;
-  email: string;
+export interface IUser extends IUserBase {
   password: string;
-  role: "student" | "instructor";
-  phone?: string;
-  website?: string;
-  bio?: string;
-  profilePictureUrl?: string;
-  designation?: string;
   createdAt?: Date;
   updatedAt?: Date;
-  socialLinks?: {
-    linkedin?: string;
-    twitter?: string;
-    facebook?: string;
-    instagram?: string;
-  };
 }
 
-export interface ICourse {
-  title: string;
-  description: string;
+export interface ICourse extends ICourseBase {
   thumbnailUrl: string;
-  price: number;
-  active: boolean;
   instructor: mongoose.Types.ObjectId;
   modules: mongoose.Types.ObjectId[];
   category: mongoose.Types.ObjectId;
   quizzes?: mongoose.Types.ObjectId[];
   testimonials?: mongoose.Types.ObjectId[];
-  createdAt?: Date | string;
-  updatedAt?: Date | string;
 }
 
-export interface IModule {
-  title: string;
+export interface IModule extends Omit<
+  IModuleBase,
+  "description" | "createdAt" | "updatedAt"
+> {
   description: string;
-  status: "active" | "inactive" | "completed";
-  slug: string;
   course: mongoose.Types.ObjectId;
-  lessonIds: string[];
-  duration: number;
   createdAt: Date;
   updatedAt: Date;
 }
 
-export interface ICategory {
-  title: string;
-  description?: string;
+export interface ICategory extends Omit<
+  ICategoryBase,
+  "thumbnailUrl" | "createdAt" | "updatedAt"
+> {
   thumbnailUrl: string;
   createdAt: Date;
   updatedAt: Date;
 }
 
-export interface ITestimonial {
+export interface ITestimonial extends Omit<
+  ITestimonialBase,
+  "createdAt" | "updatedAt"
+> {
   user: mongoose.Types.ObjectId;
   course: mongoose.Types.ObjectId;
-  rating: number;
-  content: string;
   createdAt: Date;
   updatedAt: Date;
 }
 
-export interface ILesson {
-  title: string;
+export interface ILesson extends Omit<
+  ILessonBase,
+  "description" | "createdAt" | "updatedAt"
+> {
   description: string;
-  videoUrl: string;
-  duration: number;
-  published: boolean;
-  slug: string;
-  access: string;
 }
 
-export interface IEnrollment {
+export interface IEnrollment extends Omit<
+  IEnrollmentBase,
+  "completionDate" | "createdAt" | "updatedAt"
+> {
   course: mongoose.Types.ObjectId;
   student: mongoose.Types.ObjectId;
-  status: "not-started" | "completed" | "cancelled";
-  paymentMethod: "credit_card" | "paypal" | "stripe";
   completionDate?: Date;
   createdAt: Date;
   updatedAt: Date;

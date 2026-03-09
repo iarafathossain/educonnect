@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
-import { createModule, reorderModules } from "@/app/actions/module";
+import { createModuleAction, reorderModules } from "@/app/actions/module";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -14,8 +14,10 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { catchError } from "@/lib/catch-error";
 import { getSlug } from "@/lib/get-slug";
 import { cn } from "@/lib/utils";
+import { IModuleFrontend } from "@/types/frontend-index";
 import { Loader2, PlusCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -26,7 +28,12 @@ const formSchema = z.object({
   title: z.string().min(1),
 });
 
-export const ModulesForm = ({ initialData, courseId }) => {
+interface ModulesFormProps {
+  initialData: IModuleFrontend[];
+  courseId: string;
+}
+
+export const ModulesForm = ({ initialData, courseId }: ModulesFormProps) => {
   const [modules, setModules] = useState(initialData);
   const router = useRouter();
   const [isCreating, setIsCreating] = useState(false);
@@ -43,47 +50,52 @@ export const ModulesForm = ({ initialData, courseId }) => {
 
   const { isSubmitting, isValid } = form.formState;
 
-  const onSubmit = async (values) => {
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       const formData = new FormData();
       formData.append("title", values.title);
       formData.append("courseId", courseId);
       formData.append("slug", getSlug(values.title));
-      formData.append("order", modules.length);
+      formData.append("order", modules.length.toString());
 
-      const newModule = await createModule(formData);
+      const newModule = await createModuleAction(formData);
 
       setModules((modules) => [
         ...modules,
         {
-          _id: newModule._id,
+          id: newModule.id,
           title: values.title,
+          order: modules.length,
+          active: newModule.active,
+          courseId: courseId,
+          slug: getSlug(values.title),
+          lessonIds: [],
+          duration: 0,
         },
       ]);
-      toast.success("Module created");
+      toast.success("Module created successfully!");
       toggleCreating();
       router.refresh();
-    } catch (error) {
-      console.error("Error creating module:01", error);
-      toast.error("Something went wrong");
+    } catch (error: unknown) {
+      toast.error(catchError(error));
     }
   };
 
-  const onReorder = async (updateData) => {
+  const onReorder = async (updateData: { id: string; position: number }[]) => {
     try {
       await reorderModules(updateData);
       setIsUpdating(true);
 
       toast.success("Chapters reordered");
       router.refresh();
-    } catch {
-      toast.error("Something went wrong");
+    } catch (error: unknown) {
+      toast.error(catchError(error));
     } finally {
       setIsUpdating(false);
     }
   };
 
-  const onEdit = (id) => {
+  const onEdit = (id: string) => {
     router.push(`/dashboard/courses/${courseId}/modules/${id}`);
   };
 
@@ -140,7 +152,7 @@ export const ModulesForm = ({ initialData, courseId }) => {
         <div
           className={cn(
             "text-sm mt-2",
-            !modules?.length && "text-slate-500 italic"
+            !modules?.length && "text-slate-500 italic",
           )}
         >
           {!modules?.length && "No module"}

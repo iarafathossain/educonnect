@@ -10,9 +10,11 @@ import Link from "next/link";
 const CourseInstructor = async ({ course }: { course: ICourseFrontend }) => {
   const instructor = course?.instructor;
 
+  console.log("instructor", instructor);
+
   const fullName = `${instructor?.firstName}  ${instructor?.lastName}`;
   const courseDetailsByInstructor = await getCourseDetailsByInstructor(
-    instructor.id.toString()
+    instructor?.id,
   );
 
   return (
@@ -50,7 +52,7 @@ const CourseInstructor = async ({ course }: { course: ICourseFrontend }) => {
               </li>
               <li className="flex space-x-3">
                 <MessageSquare className="text-gray-600" />
-                <div>{courseDetailsByInstructor?.reviews} Reviews</div>
+                <div>{Array.isArray(courseDetailsByInstructor?.reviews) ? courseDetailsByInstructor.reviews.length : courseDetailsByInstructor?.reviews} Reviews</div>
               </li>
               <li className="flex space-x-3">
                 <Star className="text-gray-600" />

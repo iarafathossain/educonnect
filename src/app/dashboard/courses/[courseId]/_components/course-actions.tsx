@@ -9,14 +9,20 @@ import { changeCoursePublishState, deleteCourse } from "@/app/actions/course";
 
 import { toast } from "sonner";
 
+import { catchError } from "@/lib/catch-error";
 import { useRouter } from "next/navigation";
 
-export const CourseActions = ({ courseId, isActive }) => {
+interface CourseActionsProps {
+  courseId: string;
+  isActive: boolean;
+}
+
+export const CourseActions = ({ courseId, isActive }: CourseActionsProps) => {
   const router = useRouter();
-  const [action, setAction] = useState(null);
+  const [action, setAction] = useState<"change-active" | "delete" | null>(null);
   const [published, setPublished] = useState(isActive);
 
-  async function handleSubmit(event) {
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     try {
@@ -48,8 +54,8 @@ export const CourseActions = ({ courseId, isActive }) => {
           throw new Error("Invalid Course Action");
         }
       }
-    } catch (e) {
-      toast.error(e.message);
+    } catch (error: unknown) {
+      toast.error(catchError(error));
     }
   }
 
@@ -57,6 +63,7 @@ export const CourseActions = ({ courseId, isActive }) => {
     <form onSubmit={handleSubmit}>
       <div className="flex items-center gap-x-2">
         <Button
+          type="button"
           variant="outline"
           size="sm"
           onClick={() => setAction("change-active")}
@@ -65,7 +72,7 @@ export const CourseActions = ({ courseId, isActive }) => {
         </Button>
 
         <Button
-          type="submit"
+          type="button"
           name="action"
           value="delete"
           size="sm"

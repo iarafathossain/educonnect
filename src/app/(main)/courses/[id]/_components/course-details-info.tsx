@@ -22,8 +22,10 @@ const CourseDetailsInfo = async ({ course }: { course: ICourseFrontend }) => {
 
   const hasEnrollment = await hasEnrollmentForCourse(
     course.id,
-    loggedInUser.id
+    loggedInUser.id,
   );
+
+  console.log("Course:", course);
 
   return (
     <div className="overflow-x-hidden  grainy">
@@ -52,7 +54,7 @@ const CourseDetailsInfo = async ({ course }: { course: ICourseFrontend }) => {
                 <Link
                   href=""
                   className={cn(
-                    buttonVariants({ variant: "outline", size: "lg" })
+                    buttonVariants({ variant: "outline", size: "lg" }),
                   )}
                 >
                   See Intro

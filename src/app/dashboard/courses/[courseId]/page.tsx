@@ -1,10 +1,16 @@
-import AlertBanner from "@/components/alert-banner";
 import { IconBadge } from "@/components/icon-badge";
 import { getCategories } from "@/queries/categories";
 import { getCourse } from "@/queries/courses";
-import { CircleDollarSign, LayoutDashboard, ListChecks } from "lucide-react";
+import {
+  AlertTriangleIcon,
+  CircleDollarSign,
+  LayoutDashboard,
+  ListChecks,
+} from "lucide-react";
 import { CategoryForm } from "./_components/category-form";
 
+import { Alert, AlertTitle } from "@/components/ui/alert";
+import { IModuleFrontend } from "@/types/frontend-index";
 import { CourseActions } from "./_components/course-actions";
 import { DescriptionForm } from "./_components/description-form";
 import { ImageForm } from "./_components/image-form";
@@ -19,36 +25,40 @@ const EditCoursePage = async ({
   params: { courseId: string };
 }) => {
   const course = await getCourse(courseId);
+
+  if (!course) {
+    return (
+      <Alert className="border-red-200 bg-red-50 text-red-900 dark:border-red-900 dark:bg-red-950 dark:text-red-50 rounded-none shadow-lg">
+        <AlertTriangleIcon />
+        <AlertTitle>Course not found.</AlertTitle>
+      </Alert>
+    );
+  }
+
   const categories = await getCategories();
-  const mappedCategories = categories.map((category) => {
-    // create label with first letter capitalized and underscores replaced with spaces
-    const label = category.title
-      .split("_")
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-      .join(" ");
 
-    const value = category.title.toLowerCase();
-    return { label, value, id: category.id };
-  });
-
-  const sortedModules = course.modules
-    ? course.modules.sort((a, b) => a.order - b.order)
+  const sortedModules: IModuleFrontend[] = course.modules
+    ? course.modules.sort(
+        (a: { order: number }, b: { order: number }) => a.order - b.order,
+      )
     : [];
 
   return (
     <>
-      <AlertBanner
-        label="This course is unpublished. It will not be visible in the course."
-        variant="warning"
-      />
+      <Alert className="border-amber-200 bg-amber-50 text-amber-900 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-50 rounded-none shadow-lg">
+        <AlertTriangleIcon />
+        <AlertTitle>
+          This course is unpublished. It will not be visible in the course.
+        </AlertTitle>
+      </Alert>
       <div className="p-6">
         <div className="flex items-center justify-end">
-          <CourseActions courseId={courseId} isActive={course.isActive} />
+          <CourseActions courseId={courseId} isActive={course?.active} />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-16">
           <div>
             <div className="flex items-center gap-x-2">
-              <IconBadge icon={LayoutDashboard} />
+              <IconBadge icon={LayoutDashboard} variant="default" size="md" />
               <h2 className="text-xl">Customize your course</h2>
             </div>
             <TitleForm
@@ -68,9 +78,9 @@ const EditCoursePage = async ({
               courseId={courseId}
             />
             <CategoryForm
-              initialData={{ value: course?.category?.title }}
+              initialData={{ value: course?.category?.value }}
               courseId={courseId}
-              options={mappedCategories}
+              options={categories}
             />
 
             <QuizSetForm initialData={{}} courseId={courseId} />
@@ -78,7 +88,7 @@ const EditCoursePage = async ({
           <div className="space-y-6">
             <div>
               <div className="flex items-center gap-x-2 mb-6">
-                <IconBadge icon={ListChecks} />
+                <IconBadge icon={ListChecks} variant="default" size="md" />
                 <h2 className="text-xl">Course Modules</h2>
               </div>
 
@@ -86,7 +96,11 @@ const EditCoursePage = async ({
             </div>
             <div>
               <div className="flex items-center gap-x-2">
-                <IconBadge icon={CircleDollarSign} />
+                <IconBadge
+                  icon={CircleDollarSign}
+                  variant="default"
+                  size="md"
+                />
                 <h2 className="text-xl">Sell you course</h2>
               </div>
               <PriceForm

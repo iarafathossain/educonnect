@@ -1,3 +1,4 @@
+import { mongooseTransform } from "@/lib/mongoose-transform.plugin";
 import mongoose from "mongoose";
 
 const quizSetSchema = new mongoose.Schema({
@@ -20,6 +21,8 @@ const quizSetSchema = new mongoose.Schema({
     default: false,
   },
 });
+
+quizSetSchema.plugin(mongooseTransform);
 
 export const QuizSet =
   mongoose.models.QuizSet ?? mongoose.model("QuizSet", quizSetSchema);

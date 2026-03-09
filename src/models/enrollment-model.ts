@@ -1,3 +1,4 @@
+import { mongooseTransform } from "@/lib/mongoose-transform.plugin";
 import { IEnrollment } from "@/types/backend-index";
 import mongoose from "mongoose";
 
@@ -25,9 +26,10 @@ const enrollmentSchema = new mongoose.Schema<IEnrollment>(
       required: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
+enrollmentSchema.plugin(mongooseTransform);
+
 export const EnrollmentModel =
-  (mongoose.models?.Enrollment as mongoose.Model<IEnrollment>) ||
-  mongoose.model<IEnrollment>("Enrollment", enrollmentSchema);
+  mongoose.models.Enrollment ?? mongoose.model("Enrollment", enrollmentSchema);

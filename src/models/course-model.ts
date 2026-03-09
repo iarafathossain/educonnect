@@ -1,3 +1,4 @@
+import { mongooseTransform } from "@/lib/mongoose-transform.plugin";
 import mongoose from "mongoose";
 
 const courseSchema = new mongoose.Schema(
@@ -44,8 +45,10 @@ const courseSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
+
+courseSchema.plugin(mongooseTransform);
 
 export const CourseModel =
   mongoose.models.Course ?? mongoose.model("Course", courseSchema);

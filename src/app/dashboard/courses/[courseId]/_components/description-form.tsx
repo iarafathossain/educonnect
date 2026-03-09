@@ -10,29 +10,37 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
+import { catchError } from "@/lib/catch-error";
 import { cn } from "@/lib/utils";
+import {
+  UpdateCourseDescriptionPayload,
+  updateCourseDescriptionZodSchema,
+} from "@/validators/course-validator";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Pencil } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import * as z from "zod";
 
-const formSchema = z.object({
-  description: z.string().min(1, {
-    message: "Description is required",
-  }),
-});
+interface DescriptionFormProps {
+  initialData: {
+    description?: string;
+  };
+  courseId: string;
+}
 
-export const DescriptionForm = ({ initialData, courseId }) => {
+export const DescriptionForm = ({
+  initialData,
+  courseId,
+}: DescriptionFormProps) => {
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
 
   const toggleEdit = () => setIsEditing((current) => !current);
 
   const form = useForm({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(updateCourseDescriptionZodSchema),
     defaultValues: {
       description: initialData?.description || "",
     },
@@ -40,14 +48,14 @@ export const DescriptionForm = ({ initialData, courseId }) => {
 
   const { isSubmitting, isValid } = form.formState;
 
-  const onSubmit = async (values) => {
+  const onSubmit = async (values: UpdateCourseDescriptionPayload) => {
     try {
       await updateCourseAction(courseId, values);
       toast.success("Course updated");
       toggleEdit();
       router.refresh();
-    } catch (error) {
-      toast.error("Something went wrong");
+    } catch (error: unknown) {
+      toast.error(catchError(error));
     }
   };
 
@@ -70,7 +78,7 @@ export const DescriptionForm = ({ initialData, courseId }) => {
         <p
           className={cn(
             "text-sm mt-2",
-            !initialData.description && "text-slate-500 italic"
+            !initialData.description && "text-slate-500 italic",
           )}
         >
           {initialData.description || "No description"}

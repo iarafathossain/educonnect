@@ -33,7 +33,7 @@ export default async function RootLayout({
         className={cn(
           inter.className,
           poppins.className,
-          "font-sans bg-white text-slate-900 antialiased"
+          "font-sans bg-white text-slate-900 antialiased",
         )}
       >
         {children}

@@ -1,17 +1,19 @@
 "use server";
 
+import { catchError } from "@/lib/catch-error";
 import { CourseModel } from "@/models/course-model";
 import { ModuleModel } from "@/models/module-model";
-import { modulesQueries } from "@/queries/modules";
+import { createModule, getModule } from "@/queries/modules";
+import { IModuleFrontend } from "@/types/frontend-index";
 
-export const createModule = async (data: FormData) => {
+export const createModuleAction = async (payload: FormData) => {
   try {
-    const title = data.get("title") as string;
-    const courseId = data.get("courseId") as string;
-    const slug = data.get("slug") as string;
-    const order = Number(data.get("order"));
+    const title = payload.get("title") as string;
+    const courseId = payload.get("courseId") as string;
+    const slug = payload.get("slug") as string;
+    const order = Number(payload.get("order"));
 
-    const createdModule = await modulesQueries.create({
+    const createdModule = await createModule({
       title,
       course: courseId,
       slug,
@@ -23,11 +25,11 @@ export const createModule = async (data: FormData) => {
     if (!course) {
       throw new Error("Course not found");
     }
-    course.modules.push(createdModule._id);
+    course.modules.push(createdModule.id);
     await course.save();
     return createdModule;
-  } catch (error) {
-    console.error("Error creating module:", error);
+  } catch (error: unknown) {
+    throw new Error(catchError(error));
   }
 };
 
@@ -45,46 +47,49 @@ export const reorderModules = async (data) => {
   }
 };
 
-export const updateModule = async (moduleId, data) => {
+export const updateModule = async (
+  moduleId: string,
+  data: Partial<IModuleFrontend>,
+) => {
   try {
     await ModuleModel.findByIdAndUpdate(moduleId, data);
-  } catch (error) {
-    throw new Error("Error updating module: " + error.message);
+  } catch (error: unknown) {
+    throw new Error(catchError(error));
   }
 };
 
-export const changeModulePublishState = async (moduleId) => {
+export const changeModulePublishState = async (moduleId: string) => {
   try {
-    const existingModule = await modulesQueries.getModule(moduleId);
+    const existingModule = await getModule(moduleId);
     if (!existingModule) {
       throw new Error("Module not found");
     }
-    const updatedModule = await ModuleModel.findByIdAndUpdate(
+    const updatedModule = (await ModuleModel.findByIdAndUpdate(
       moduleId,
       {
         active: !existingModule.active,
       },
       { new: true, lean: true },
-    );
+    )) as IModuleFrontend | null;
 
-    return updatedModule.active;
-  } catch (error) {
-    throw new Error("Error changing module publish state: " + error.message);
+    return updatedModule?.active;
+  } catch (error: unknown) {
+    throw new Error(catchError(error));
   }
 };
 
-export const deleteModule = async (moduleId, courseId) => {
+export const deleteModule = async (moduleId: string, courseId: string) => {
   try {
     const existingCourse = await CourseModel.findById(courseId);
     if (!existingCourse) {
       throw new Error("Course not found");
     }
     existingCourse.modules = existingCourse.modules.filter(
-      (id) => id.toString() !== moduleId,
+      (id: string) => id !== moduleId,
     );
     await ModuleModel.findByIdAndDelete(moduleId);
     await existingCourse.save();
-  } catch (error) {
-    throw new Error("Error deleting module: " + error.message);
+  } catch (error: unknown) {
+    throw new Error(catchError(error));
   }
 };

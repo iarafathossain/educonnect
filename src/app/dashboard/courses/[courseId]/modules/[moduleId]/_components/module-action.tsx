@@ -8,20 +8,31 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 import { changeModulePublishState, deleteModule } from "@/app/actions/module";
+import { catchError } from "@/lib/catch-error";
+import { IModuleFrontend } from "@/types/frontend-index";
 import { useRouter } from "next/navigation";
 
-export const ModuleActions = ({ module, courseId }) => {
-  const [action, setAction] = useState(null);
-  const [published, setPublished] = useState(module?.active);
+interface ModuleActionsProps {
+  moduleDetails: IModuleFrontend;
+  courseId: string;
+}
+
+export const ModuleActions = ({
+  moduleDetails,
+  courseId,
+}: ModuleActionsProps) => {
+  const [action, setAction] = useState<null | "change-active" | "delete">(null);
+  const [published, setPublished] = useState(moduleDetails?.active);
   const router = useRouter();
 
-  async function handleSubmit(event) {
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     try {
       switch (action) {
         case "change-active": {
-          const activeState = await changeModulePublishState(module._id);
+          const activeState = await changeModulePublishState(moduleDetails.id);
+
           setPublished(!activeState);
           toast.success("The module has been updated successfully.");
           router.refresh();
@@ -34,7 +45,7 @@ export const ModuleActions = ({ module, courseId }) => {
               "A published module can not be deleted. First unpublish it, then delete.",
             );
           } else {
-            await deleteModule(module._id, courseId);
+            await deleteModule(moduleDetails.id, courseId);
             // router.refresh();
             router.push(`/dashboard/courses/${courseId}`);
           }
@@ -45,8 +56,9 @@ export const ModuleActions = ({ module, courseId }) => {
           throw new Error("Invalid Module Action");
         }
       }
-    } catch (e) {
-      toast.error(e.message);
+    } catch (error: unknown) {
+      console.error("Error handling module action:", error);
+      toast.error(catchError(error));
     }
   }
 
@@ -55,13 +67,14 @@ export const ModuleActions = ({ module, courseId }) => {
       <div className="flex items-center gap-x-2">
         <Button
           variant="outline"
+          type="submit"
           size="sm"
           onClick={() => setAction("change-active")}
         >
           {published ? "Unpublish" : "Publish"}
         </Button>
 
-        <Button size="sm" onClick={() => setAction("delete")}>
+        <Button size="sm" type="submit" onClick={() => setAction("delete")}>
           <Trash className="h-4 w-4" />
         </Button>
       </div>

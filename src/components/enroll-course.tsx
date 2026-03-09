@@ -24,6 +24,9 @@ const EnrollCourse = ({
       window.location.assign(url);
     }
   };
+
+  //TODO: prevent enrollment from instructor role
+
   return (
     <>
       <form action={formAction}>

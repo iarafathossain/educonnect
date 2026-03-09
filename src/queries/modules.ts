@@ -1,34 +1,28 @@
+import { catchError } from "@/lib/catch-error";
 import "@/models/lesson-model";
 import { ModuleModel } from "@/models/module-model";
 import { connectDB } from "@/services/connect-mongo";
 
-const create = async (data) => {
+export const createModule = async (data) => {
   try {
     await connectDB();
     const newModule = await ModuleModel.create(data);
-    return JSON.parse(JSON.stringify(newModule));
-  } catch (error) {
-    throw new Error("Error creating module");
+    return newModule.toJSON();
+  } catch (error: unknown) {
+    throw new Error(catchError(error));
   }
 };
 
-const getModule = async (moduleId) => {
+export const getModule = async (moduleId: string) => {
   try {
     await connectDB();
-    const result = await ModuleModel.findById(moduleId)
-      .populate({
-        path: "lessonIds",
-        model: "Lesson",
-      })
-      .lean();
+    const result = await ModuleModel.findById(moduleId).populate({
+      path: "lessonIds",
+      model: "Lesson",
+    });
 
-    return JSON.parse(JSON.stringify(result));
-  } catch (e) {
-    throw new Error(e);
+    return result ? result.toJSON() : null;
+  } catch (error: unknown) {
+    throw new Error(catchError(error));
   }
-};
-
-export const modulesQueries = {
-  create,
-  getModule,
 };

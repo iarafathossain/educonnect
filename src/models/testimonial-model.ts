@@ -1,3 +1,4 @@
+import { mongooseTransform } from "@/lib/mongoose-transform.plugin";
 import { ITestimonial } from "@/types/backend-index";
 import mongoose from "mongoose";
 
@@ -29,6 +30,8 @@ const testimonialSchema = new mongoose.Schema<ITestimonial>({
   },
 });
 
+testimonialSchema.plugin(mongooseTransform);
+
 export const TestimonialModel =
-  (mongoose.models?.Testimonial as mongoose.Model<ITestimonial>) ||
-  mongoose.model<ITestimonial>("Testimonial", testimonialSchema);
+  mongoose.models.Testimonial ??
+  mongoose.model("Testimonial", testimonialSchema);

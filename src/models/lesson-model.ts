@@ -1,4 +1,4 @@
-import { ILesson } from "@/types/backend-index";
+import { mongooseTransform } from "@/lib/mongoose-transform.plugin";
 import mongoose from "mongoose";
 
 const lessonSchema = new mongoose.Schema({
@@ -37,5 +37,7 @@ const lessonSchema = new mongoose.Schema({
   },
 });
 
+lessonSchema.plugin(mongooseTransform);
+
 export const LessonModel =
-  mongoose.models?.Lesson ?? mongoose.model<ILesson>("Lesson", lessonSchema);
+  mongoose.models.Lesson ?? mongoose.model("Lesson", lessonSchema);

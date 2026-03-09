@@ -3,8 +3,9 @@
 import { getLoggedInUser } from "@/lib/get-loggedin-user";
 import { CourseModel } from "@/models/course-model";
 import { createCourse } from "@/queries/courses";
+import { CreateCoursePayload } from "@/validators/course-validator";
 
-export const createCourseAction = async (data) => {
+export const createCourseAction = async (payload: CreateCoursePayload) => {
   try {
     const loggedInUser = await getLoggedInUser();
 
@@ -14,8 +15,8 @@ export const createCourseAction = async (data) => {
 
     // add instructor id to data
     const courseData = {
-      ...data,
-      instructorId: loggedInUser.id,
+      ...payload,
+      instructor: loggedInUser.id,
     };
 
     // call create course function
@@ -27,16 +28,23 @@ export const createCourseAction = async (data) => {
   }
 };
 
-export const updateCourseAction = async (courseId, data) => {
+export const updateCourseAction = async <T>(
+  courseId: string,
+  payload: T,
+): Promise<void> => {
   try {
-    await CourseModel.findByIdAndUpdate(courseId, data);
+    await CourseModel.findByIdAndUpdate(
+      courseId,
+      payload as Record<string, unknown>,
+      { new: true },
+    );
   } catch (error) {
     console.log(error);
-    throw new Error("Failed to update course title");
+    throw new Error("Failed to update course");
   }
 };
 
-export const changeCoursePublishState = async (courseId) => {
+export const changeCoursePublishState = async (courseId: string) => {
   try {
     const course = await CourseModel.findById(courseId);
     if (!course) {
@@ -51,7 +59,7 @@ export const changeCoursePublishState = async (courseId) => {
   }
 };
 
-export const deleteCourse = async (courseId) => {
+export const deleteCourse = async (courseId: string) => {
   try {
     await CourseModel.findByIdAndDelete(courseId);
   } catch (error) {

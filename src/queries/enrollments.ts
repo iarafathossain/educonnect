@@ -1,23 +1,21 @@
 import mongoose from "mongoose";
 
 import { catchError } from "@/lib/catch-error";
-import { transformMongoDoc } from "@/lib/transform-mongo-doc";
 import { EnrollmentModel } from "@/models/enrollment-model";
 import { connectDB } from "@/services/connect-mongo";
 import { IEnrollment } from "@/types/backend-index";
-import { IEnrollmentFrontend } from "@/types/frontend-index";
 
 export const getEnrollmentsForCourse = async (courseId: string) => {
   await connectDB();
 
-  const enrollments = await EnrollmentModel.find({ course: courseId }).lean();
-  return transformMongoDoc(enrollments);
+  const enrollments = await EnrollmentModel.find({ course: courseId });
+  return enrollments.map((enrollment) => enrollment.toJSON());
 };
 
 export const createEnrollment = async (
   courseId: string,
   userId: string,
-  paymentMethod: "credit_card" | "paypal" | "stripe"
+  paymentMethod: "credit_card" | "paypal" | "stripe",
 ) => {
   try {
     await connectDB();
@@ -44,13 +42,14 @@ export const getEnrollmentsForStudent = async (studentId: string) => {
   await connectDB();
 
   try {
-    const enrollments = await EnrollmentModel.find({ student: studentId })
-      .populate({
-        path: "course",
-        model: "Course",
-      })
-      .lean<IEnrollmentFrontend[]>();
-    return transformMongoDoc(enrollments);
+    const enrollments = await EnrollmentModel.find({
+      student: studentId,
+    }).populate({
+      path: "course",
+      model: "Course",
+    });
+
+    return enrollments.map((enrollment) => enrollment.toJSON());
   } catch (e) {
     const error = catchError(e);
     throw new Error(error);
@@ -59,12 +58,12 @@ export const getEnrollmentsForStudent = async (studentId: string) => {
 
 export const hasEnrollmentForCourse = async (
   courseId: string,
-  userId: string
+  userId: string,
 ) => {
   await connectDB();
   const enrollment = await EnrollmentModel.findOne({
     course: courseId,
     student: userId,
-  }).lean();
-  return enrollment !== null;
+  });
+  return enrollment ? enrollment.toJSON() : null;
 };

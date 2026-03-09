@@ -1,3 +1,4 @@
+import { mongooseTransform } from "@/lib/mongoose-transform.plugin";
 import mongoose from "mongoose";
 
 const moduleSchema = new mongoose.Schema({
@@ -27,6 +28,8 @@ const moduleSchema = new mongoose.Schema({
     type: Number,
   },
 });
+
+moduleSchema.plugin(mongooseTransform);
 
 export const ModuleModel =
   mongoose.models?.Module ?? mongoose.model("Module", moduleSchema);

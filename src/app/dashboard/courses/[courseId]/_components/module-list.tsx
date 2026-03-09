@@ -6,12 +6,17 @@ import { useEffect, useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { IModuleFrontend } from "@/types/frontend-index";
 
-export const ModuleList = ({ items, onReorder, onEdit }) => {
+interface ModuleListProps {
+  items: IModuleFrontend[];
+  onReorder: (data: { id: string; position: number }[]) => void;
+  onEdit: (id: string) => void;
+}
+
+export const ModuleList = ({ items, onReorder, onEdit }: ModuleListProps) => {
   const [isMounted, setIsMounted] = useState(false);
   const [modules, setModules] = useState(items);
-
-  console.log("modules", modules);
 
   useEffect(() => {
     setIsMounted(true);
@@ -21,7 +26,9 @@ export const ModuleList = ({ items, onReorder, onEdit }) => {
     setModules(items);
   }, [items]);
 
-  const onDragEnd = (result) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const onDragEnd = (result: any) => {
+    console.log("Drag result:", result);
     if (!result.destination) return;
 
     const items = Array.from(modules);
@@ -36,8 +43,8 @@ export const ModuleList = ({ items, onReorder, onEdit }) => {
     setModules(items);
 
     const bulkUpdateData = updatedModules.map((module) => ({
-      _id: module._id,
-      position: items.findIndex((item) => item._id === module._id),
+      id: module.id,
+      position: items.findIndex((item) => item.id === module.id),
     }));
 
     onReorder(bulkUpdateData);
@@ -53,17 +60,12 @@ export const ModuleList = ({ items, onReorder, onEdit }) => {
         {(provided) => (
           <div {...provided.droppableProps} ref={provided.innerRef}>
             {modules.map((module, index) => (
-              <Draggable
-                key={module._id}
-                draggableId={module._id}
-                index={index}
-              >
+              <Draggable key={module.id} draggableId={module.id} index={index}>
                 {(provided) => (
                   <div
                     className={cn(
                       "flex items-center gap-x-2 bg-slate-200 border-slate-200 border text-slate-700 rounded-md mb-4 text-sm",
-                      module.isPublished &&
-                        "bg-sky-100 border-sky-200 text-sky-700"
+                      module.active && "bg-sky-100 border-sky-200 text-sky-700",
                     )}
                     ref={provided.innerRef}
                     {...provided.draggableProps}
@@ -71,8 +73,7 @@ export const ModuleList = ({ items, onReorder, onEdit }) => {
                     <div
                       className={cn(
                         "px-2 py-3 border-r border-r-slate-200 hover:bg-slate-300 rounded-l-md transition",
-                        module.isPublished &&
-                          "border-r-sky-200 hover:bg-sky-200"
+                        module.active && "border-r-sky-200 hover:bg-sky-200",
                       )}
                       {...provided.dragHandleProps}
                     >
@@ -83,13 +84,13 @@ export const ModuleList = ({ items, onReorder, onEdit }) => {
                       <Badge
                         className={cn(
                           "bg-gray-500",
-                          module.isPublished && "bg-emerald-600"
+                          module.active && "bg-emerald-600",
                         )}
                       >
-                        {module.isPublished ? "Published" : "Draft"}
+                        {module.active ? "Active" : "Inactive"}
                       </Badge>
                       <Pencil
-                        onClick={() => onEdit(module._id)}
+                        onClick={() => onEdit(module.id)}
                         className="w-4 h-4 cursor-pointer hover:opacity-75 transition"
                       />
                     </div>

@@ -1,3 +1,4 @@
+import { mongooseTransform } from "@/lib/mongoose-transform.plugin";
 import { IUser } from "@/types/backend-index";
 import mongoose from "mongoose";
 
@@ -23,9 +24,10 @@ const userSchema = new mongoose.Schema<IUser>(
       instagram: { type: String },
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
+userSchema.plugin(mongooseTransform);
+
 export const UserModel =
-  (mongoose.models?.User as mongoose.Model<IUser>) ||
-  mongoose.model<IUser>("User", userSchema);
+  mongoose.models.User ?? mongoose.model("User", userSchema);

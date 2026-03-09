@@ -14,6 +14,7 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
+import { catchError } from "@/lib/catch-error";
 import { cn } from "@/lib/utils";
 import { Pencil } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -24,7 +25,23 @@ const formSchema = z.object({
   value: z.string().min(1),
 });
 
-export const CategoryForm = ({ initialData, courseId, options }) => {
+interface CategoryFormProps {
+  initialData: {
+    value: string;
+  };
+  courseId: string;
+  options: {
+    id: string;
+    label: string;
+    value: string;
+  }[];
+}
+
+export const CategoryForm = ({
+  initialData,
+  courseId,
+  options,
+}: CategoryFormProps) => {
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
 
@@ -39,23 +56,23 @@ export const CategoryForm = ({ initialData, courseId, options }) => {
 
   const { isSubmitting, isValid } = form.formState;
 
-  const onSubmit = async (values) => {
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       const selectedCategory = options.find(
-        (option) => option.value === values.value
+        (option) => option.value === values.value,
       );
 
-      await updateCourseAction(courseId, { category: selectedCategory.id });
+      await updateCourseAction(courseId, { category: selectedCategory!.id });
       toast.success("Course updated");
       toggleEdit();
       router.refresh();
-    } catch (error) {
-      toast.error("Something went wrong");
+    } catch (error: unknown) {
+      toast.error(catchError(error));
     }
   };
 
   const selectedOptions = options.find(
-    (option) => option.value === initialData.value
+    (option) => option.value === initialData.value,
   );
 
   return (
@@ -77,7 +94,7 @@ export const CategoryForm = ({ initialData, courseId, options }) => {
         <p
           className={cn(
             "text-sm mt-2",
-            !initialData.value && "text-slate-500 italic"
+            !initialData.value && "text-slate-500 italic",
           )}
         >
           {selectedOptions?.label || "No category"}

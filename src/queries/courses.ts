@@ -1,11 +1,9 @@
-import { CourseModel } from "@/models/course-model";
-import { connectDB } from "@/services/connect-mongo";
-
-import { transformMongoDoc } from "@/lib/transform-mongo-doc";
 import "@/models/category-model";
+import { CourseModel } from "@/models/course-model";
 import "@/models/module-model";
 import "@/models/testimonial-model";
 import "@/models/user-model";
+import { connectDB } from "@/services/connect-mongo";
 import { ICourseFrontend } from "@/types/frontend-index";
 import { getEnrollmentsForCourse } from "./enrollments";
 import { getTestimonialsForCourse } from "./testimonials";
@@ -30,10 +28,9 @@ export const getCourses = async () => {
     .populate({
       path: "testimonials",
       model: "Testimonial",
-    })
-    .lean<ICourseFrontend[]>();
+    });
 
-  return transformMongoDoc(courses);
+  return courses.map((course) => course.toJSON());
 };
 
 // Fetch single course from the database
@@ -60,25 +57,24 @@ export const getCourse = async (id: string) => {
         path: "user",
         model: "User",
       },
-    })
-    .lean<ICourseFrontend>();
+    });
 
-  return JSON.parse(JSON.stringify(course));
+  return course ? (course.toJSON() as ICourseFrontend) : null;
 };
 
 // Fetch course details by instructor
 export const getCourseDetailsByInstructor = async (
   instructorId: string,
-  expand: boolean
+  expand?: boolean,
 ) => {
   await connectDB();
-  const courses = await CourseModel.find({ instructor: instructorId }).lean();
+  const courses = await CourseModel.find({ instructor: instructorId });
 
   const enrollments = await Promise.all(
     courses.map(async (course) => {
-      const enrollment = await getEnrollmentsForCourse(course._id.toString());
+      const enrollment = await getEnrollmentsForCourse(course.id);
       return enrollment;
-    })
+    }),
   );
 
   const totalEnrollments = enrollments.reduce((acc, curr) => {
@@ -87,9 +83,9 @@ export const getCourseDetailsByInstructor = async (
 
   const testimonials = await Promise.all(
     courses.map(async (course) => {
-      const testimonial = await getTestimonialsForCourse(course._id.toString());
+      const testimonial = await getTestimonialsForCourse(course.id);
       return testimonial;
-    })
+    }),
   );
 
   const totalTestimonials = testimonials.flat() ?? [];
@@ -99,18 +95,16 @@ export const getCourseDetailsByInstructor = async (
     }, 0) / totalTestimonials.length;
 
   const groupByCourse = Object.groupBy(enrollments.flat(), (enrollment) =>
-    enrollment.course.toString()
+    enrollment.course.toString(),
   );
   const totalRevenue = courses.reduce((acc, course) => {
-    return (
-      acc + (groupByCourse[course._id.toString()]?.length ?? 0) * course.price
-    );
+    return acc + (groupByCourse[course.id]?.length ?? 0) * course.price;
   }, 0);
 
   if (expand) {
     return {
-      courses: transformMongoDoc(courses?.flat()),
-      enrollments: transformMongoDoc(enrollments.flat()),
+      courses: courses.map((course) => course.toJSON()),
+      enrollments: enrollments.flat(),
       reviews: totalTestimonials,
     };
   }
@@ -129,5 +123,5 @@ export const createCourse = async (data: Partial<ICourseFrontend>) => {
   await connectDB();
   const newCourse = await CourseModel.create(data);
 
-  return JSON.parse(JSON.stringify(newCourse));
+  return newCourse.toJSON();
 };

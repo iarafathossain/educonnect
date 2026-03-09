@@ -1,6 +1,5 @@
 "use client";
 
-import * as z from "zod";
 // import axios from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -15,33 +14,38 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import {
+  UpdateCourseTitlePayload,
+  updateCourseTitleZodSchema,
+} from "@/validators/course-validator";
 import { Pencil } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
-const formSchema = z.object({
-  title: z.string().min(1, {
-    message: "Title is required",
-  }),
-});
+interface TitleFormProps {
+  initialData: {
+    title: string;
+  };
+  courseId: string;
+}
 
-export const TitleForm = ({ initialData = {}, courseId }) => {
+export const TitleForm = ({ initialData, courseId }: TitleFormProps) => {
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
 
   const toggleEdit = () => setIsEditing((current) => !current);
 
   const form = useForm({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(updateCourseTitleZodSchema),
     defaultValues: initialData,
   });
 
   const { isSubmitting, isValid } = form.formState;
 
-  const onSubmit = async (values) => {
+  const onSubmit = async (values: UpdateCourseTitlePayload) => {
     try {
-      await updateCourseAction(courseId, values);
+      await updateCourseAction<UpdateCourseTitlePayload>(courseId, values);
       toggleEdit();
       router.refresh();
     } catch (error) {
