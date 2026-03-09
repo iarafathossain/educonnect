@@ -68,9 +68,12 @@ export interface ITestimonialBase {
 export interface IEnrollmentBase {
   status: EnrollmentStatus;
   paymentMethod: PaymentMethod;
-  completionDate?: Date | string;
   createdAt?: Date | string;
   updatedAt?: Date | string;
+  studentName?: string;
+  studentEmail?: string;
+  progress?: number;
+  quizMark?: number;
 }
 
 export interface IReorderItem {

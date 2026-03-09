@@ -2,6 +2,7 @@ import { auth } from "@/auth";
 import { getCourse, getCourseDetailsByInstructor } from "@/queries/courses";
 import { getReportsForStudent } from "@/queries/reports";
 import { getUserByEmail, getUserDetails } from "@/queries/users";
+import { IEnrollmentFrontend } from "@/types/frontend-index";
 
 export const COURSE_DATA = "course";
 export const ENROLLMENT_DATA = "enrollment";
@@ -19,19 +20,18 @@ const populateReviewData = async (reviews) => {
   return populatedReviews;
 };
 
-const populateEnrollmentData = async (enrollments) => {
-  console.log(enrollments, "enrollments");
+const populateEnrollmentData = async (enrollments: IEnrollmentFrontend[]) => {
   const populatedEnrollments = await Promise.all(
     enrollments.map(async (enrollment) => {
       // Update Student Information
-      const student = await getUserDetails(enrollment.student);
-      enrollment["studentName"] = `${student?.firstName} ${student?.lastName}`;
-      enrollment["studentEmail"] = student?.email;
+      enrollment["studentName"] =
+        `${enrollment.student?.firstName} ${enrollment.student?.lastName}`;
+      enrollment["studentEmail"] = enrollment.student?.email;
 
       // Update Quiz and Progress Info
       const filter = {
-        course: enrollment?.course?._id,
-        student: enrollment?.student?._id,
+        course: enrollment?.course?.id,
+        student: enrollment?.student?.id,
       };
       const report = await getReportsForStudent(filter);
 
@@ -39,10 +39,12 @@ const populateEnrollmentData = async (enrollments) => {
       enrollment["quizMark"] = 0;
       if (report) {
         // Calculate progress
-        const course = await getCourse(enrollment?.course?._id);
-        const totalModeules = course?.modules?.length;
-        const totalCompletedModules = report?.totalCompletedModeules?.length;
-        const progress = (totalCompletedModules / totalModeules) * 100;
+        const course = await getCourse(enrollment?.course?.id);
+        const totalModules = course?.modules?.length || 0;
+        const totalCompletedModules =
+          report?.totalCompletedModules?.length || 0;
+        const progress =
+          totalModules > 0 ? (totalCompletedModules / totalModules) * 100 : 0;
         enrollment["progress"] = progress;
 
         // Calculate Quiz Marks
@@ -82,13 +84,17 @@ export async function getInstructorDashboardData(dataType: string) {
 
     const data = await getCourseDetailsByInstructor(instructor.id, true);
 
+    console.log("Dashboard Data:", data);
+
     switch (dataType) {
       case COURSE_DATA:
         return data?.courses;
       case REVIEW_DATA:
         return populateReviewData(data?.reviews);
       case ENROLLMENT_DATA:
-        return populateEnrollmentData(data?.enrollments);
+        return populateEnrollmentData(
+          data?.enrollments as IEnrollmentFrontend[],
+        );
 
       default:
         return data;

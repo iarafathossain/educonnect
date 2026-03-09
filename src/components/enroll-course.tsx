@@ -6,13 +6,12 @@ import { cn } from "@/lib/utils";
 import { ICourseFrontend } from "@/types/frontend-index";
 import { ArrowRight } from "lucide-react";
 
-const EnrollCourse = ({
-  asLink,
-  course,
-}: {
+interface EnrollCourseProps {
   asLink?: boolean;
   course: ICourseFrontend;
-}) => {
+}
+
+const EnrollCourse = ({ asLink, course }: EnrollCourseProps) => {
   const formAction = async (formData: FormData) => {
     const result = await createCheckoutSessionAction(formData);
     if (result instanceof Error) {

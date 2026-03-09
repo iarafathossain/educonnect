@@ -70,8 +70,8 @@ export type PersonalDetailsFormData = {
 
 export interface IEnrollmentFrontend extends IEnrollmentBase {
   id: string;
-  student: string;
   course: ICourseFrontend;
+  student: IUserFrontend;
 }
 
 export interface ILessonPayload {

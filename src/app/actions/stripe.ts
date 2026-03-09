@@ -19,7 +19,8 @@ export const createCheckoutSessionAction = async (formData: FormData) => {
   const courseName = course?.title;
   const coursePrice = course?.price;
 
-  const checkoutSession = await stripe.checkout.sessions.create({
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const checkoutSession: any = await stripe.checkout.sessions.create({
     mode: "payment",
     submit_type: "pay",
     line_items: [

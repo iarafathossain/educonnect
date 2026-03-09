@@ -8,7 +8,12 @@ import { IEnrollment } from "@/types/backend-index";
 export const getEnrollmentsForCourse = async (courseId: string) => {
   await connectDB();
 
-  const enrollments = await EnrollmentModel.find({ course: courseId });
+  const enrollments = await EnrollmentModel.find({ course: courseId }).populate(
+    {
+      path: "course",
+      model: "Course",
+    },
+  );
   return enrollments.map((enrollment) => enrollment.toJSON());
 };
 
