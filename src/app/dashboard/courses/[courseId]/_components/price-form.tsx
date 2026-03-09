@@ -14,6 +14,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { catchError } from "@/lib/catch-error";
 import { formatPrice } from "@/lib/formate-price";
 import { cn } from "@/lib/utils";
 import { Pencil } from "lucide-react";
@@ -22,10 +23,17 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 const formSchema = z.object({
-  price: z.coerce.number(),
+  price: z.coerce.number().min(0),
 });
 
-export const PriceForm = ({ initialData, courseId }) => {
+interface PriceFormProps {
+  initialData: {
+    price: number;
+  };
+  courseId: string;
+}
+
+export const PriceForm = ({ initialData, courseId }: PriceFormProps) => {
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
 
@@ -34,20 +42,20 @@ export const PriceForm = ({ initialData, courseId }) => {
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      price: initialData?.price ?? undefined,
+      price: initialData?.price ?? 0,
     },
   });
 
   const { isSubmitting, isValid } = form.formState;
 
-  const onSubmit = async (values) => {
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       await updateCourseAction(courseId, { price: values.price });
       toast.success("Course updated");
       toggleEdit();
       router.refresh();
-    } catch (error) {
-      toast.error("Something went wrong");
+    } catch (error: unknown) {
+      toast.error(catchError(error));
     }
   };
 
@@ -70,7 +78,7 @@ export const PriceForm = ({ initialData, courseId }) => {
         <p
           className={cn(
             "text-sm mt-2",
-            !initialData.price && "text-slate-500 italic"
+            !initialData.price && "text-slate-500 italic",
           )}
         >
           {initialData.price ? formatPrice(initialData.price) : "No price"}
@@ -94,6 +102,7 @@ export const PriceForm = ({ initialData, courseId }) => {
                       disabled={isSubmitting}
                       placeholder="Set a price for your course"
                       {...field}
+                      value={String(field.value ?? 0)}
                     />
                   </FormControl>
                   <FormMessage />
