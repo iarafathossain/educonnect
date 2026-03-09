@@ -49,11 +49,11 @@ export interface IModuleBase {
 export interface ILessonBase {
   title: string;
   description?: string;
-  videoUrl: string;
-  duration: number;
-  published: boolean;
+  videoURL?: string;
+  duration?: number;
+  active?: boolean;
   slug: string;
-  access: string;
+  access?: string;
   createdAt?: Date | string;
   updatedAt?: Date | string;
 }

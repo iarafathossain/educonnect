@@ -14,27 +14,41 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { catchError } from "@/lib/catch-error";
 import { getSlug } from "@/lib/get-slug";
 import { cn } from "@/lib/utils";
+import { ILessonFrontend } from "@/types/frontend-index";
 import { Loader2, PlusCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import { LessonList } from "./lesson-list";
-import { LessonModal } from "./lesson-model";
+import { LessonModal } from "./lesson-modal";
 
 const formSchema = z.object({
   title: z.string().min(1),
 });
 
-export const LessonForm = ({ initialData, moduleId, courseId }) => {
+interface LessonFormProps {
+  initialData: ILessonFrontend[];
+  moduleId: string;
+  courseId: string;
+}
+
+export const LessonForm = ({
+  initialData,
+  moduleId,
+  courseId,
+}: LessonFormProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [lessons, setLessons] = useState(initialData);
   const router = useRouter();
   const [isCreating, setIsCreating] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
 
-  const [lessonToEdit, setLessonToEdit] = useState(null);
+  const [lessonToEdit, setLessonToEdit] = useState<ILessonFrontend>(
+    {} as ILessonFrontend,
+  );
 
   const toggleCreating = () => setIsCreating((current) => !current);
   const toggleEditing = () => setIsEditing((current) => !current);
@@ -48,35 +62,34 @@ export const LessonForm = ({ initialData, moduleId, courseId }) => {
 
   const { isSubmitting, isValid } = form.formState;
 
-  const onSubmit = async (values) => {
-    console.log({ values });
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       const formData = new FormData();
 
       formData.append("title", values.title);
       formData.append("slug", getSlug(values.title));
       formData.append("moduleId", moduleId);
-      formData.append("order", lessons.length);
+      formData.append("order", lessons.length.toString());
 
       const lesson = await createLesson(formData);
 
       setLessons((lessons) => [
         ...lessons,
         {
-          id: lesson._id,
+          id: lesson.id,
           title: values.title,
+          slug: getSlug(values.title),
         },
       ]);
       toast.success("Lesson created");
       toggleCreating();
       router.refresh();
-    } catch (error) {
-      console.error(error);
-      toast.error("Something went wrong");
+    } catch (error: unknown) {
+      toast.error(catchError(error));
     }
   };
 
-  const onReorder = async (updateData) => {
+  const onReorder = async (updateData: { id: string; position: number }[]) => {
     console.log({ updateData });
     try {
       setIsUpdating(true);
@@ -84,17 +97,21 @@ export const LessonForm = ({ initialData, moduleId, courseId }) => {
       await reorderLessons(updateData);
       toast.success("Lesson reordered");
       router.refresh();
-    } catch {
-      toast.error("Something went wrong");
+    } catch (error: unknown) {
+      toast.error(catchError(error));
     } finally {
       setIsUpdating(false);
     }
   };
 
-  const onEdit = (id) => {
-    const foundLesson = lessons.find((lesson) => lesson._id === id);
-    setLessonToEdit(foundLesson);
-    setIsEditing(true);
+  const onEdit = (id: string) => {
+    const foundLesson = lessons.find((lesson) => lesson.id === id);
+    if (foundLesson) {
+      setLessonToEdit(foundLesson);
+      toggleEditing();
+    } else {
+      toast.error("Lesson not found");
+    }
   };
 
   return (
@@ -157,7 +174,7 @@ export const LessonForm = ({ initialData, moduleId, courseId }) => {
           <LessonList
             onEdit={onEdit}
             onReorder={onReorder}
-            items={lessons || []}
+            lessonList={lessons || []}
           />
         </div>
       )}

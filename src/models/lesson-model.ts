@@ -14,7 +14,7 @@ const lessonSchema = new mongoose.Schema({
     default: 0,
     type: Number,
   },
-  video_url: {
+  videoURL: {
     type: String,
   },
   active: {

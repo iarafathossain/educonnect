@@ -9,20 +9,30 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 import { changeLessonPublishState, deleteLesson } from "@/app/actions/lesson";
+import { catchError } from "@/lib/catch-error";
+import { ILessonFrontend } from "@/types/frontend-index";
 
-export const LessonActions = ({ lesson, moduleId, onDelete }) => {
-  console.log({ moduleId });
-  const [action, setAction] = useState(null);
+interface LessonActionsProps {
+  lesson: ILessonFrontend;
+  moduleId: string;
+  onDelete: () => void;
+}
+
+export const LessonActions = ({
+  lesson,
+  moduleId,
+  onDelete,
+}: LessonActionsProps) => {
+  const [action, setAction] = useState<"change-active" | "delete" | null>(null);
   const [published, setPublished] = useState(lesson?.active);
 
-  async function handleSubmit(event) {
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    console.log(action);
 
     try {
       switch (action) {
         case "change-active": {
-          const activeState = await changeLessonPublishState(lesson._id);
+          const activeState = await changeLessonPublishState(lesson.id);
           setPublished(!activeState);
           toast.success("The lesson has been updated");
           break;
@@ -34,7 +44,7 @@ export const LessonActions = ({ lesson, moduleId, onDelete }) => {
               "A published lesson can not be deleted. First unpublish it, then delete.",
             );
           } else {
-            await deleteLesson(lesson._id, moduleId);
+            await deleteLesson(lesson.id, moduleId);
             onDelete();
           }
           break;
@@ -44,8 +54,8 @@ export const LessonActions = ({ lesson, moduleId, onDelete }) => {
           throw new Error("Invalid Lesson Action");
         }
       }
-    } catch (e) {
-      toast.error(e.message);
+    } catch (error: unknown) {
+      toast.error(catchError(error));
     }
   }
 

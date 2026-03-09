@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { VideoPlayer } from "@/components/video-player";
-import { formatDuration } from "date-fns";
+import { catchError } from "@/lib/catch-error";
 import { Pencil } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -31,30 +31,57 @@ const formSchema = z.object({
   }),
 });
 
-export const VideoUrlForm = ({ initialData, courseId, lessonId }) => {
+interface VideoUrlFormProps {
+  initialData: {
+    url: string;
+    duration: string;
+  };
+  lessonId: string;
+}
+
+const formatSecondsToString = (seconds: number): string => {
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  const secs = seconds % 60;
+
+  if (hours > 0) {
+    return `${hours}:${String(minutes).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+  }
+  return `${minutes}:${String(secs).padStart(2, "0")}`;
+};
+
+export const VideoUrlForm = ({ initialData, lessonId }: VideoUrlFormProps) => {
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
   const [state, setState] = useState({
     url: initialData?.url,
-    duration: formatDuration(initialData?.duration),
+    ...(initialData?.duration && {
+      duration: formatSecondsToString(Number(initialData.duration)),
+    }),
   });
 
   const toggleEdit = () => setIsEditing((current) => !current);
 
   const form = useForm({
     resolver: zodResolver(formSchema),
-    defaultValues: state,
+    defaultValues: {
+      url: state.url || "",
+      duration: state.duration || "",
+    },
   });
 
   const { isSubmitting, isValid } = form.formState;
 
-  const onSubmit = async (values) => {
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      const payload = {};
-      payload.video_url = values.url;
+      const payload = {
+        videoURL: "",
+        duration: 0,
+      };
+      payload.videoURL = values.url;
 
       const durationParts = values.duration.split(":").map(Number);
-      console.log("durationParts", durationParts);
+
       let totalSeconds = 0;
       if (durationParts.length === 3) {
         totalSeconds =
@@ -74,8 +101,8 @@ export const VideoUrlForm = ({ initialData, courseId, lessonId }) => {
       toast.success("Lesson updated");
       toggleEdit();
       router.refresh();
-    } catch {
-      toast.error("Something went wrong");
+    } catch (error: unknown) {
+      toast.error(catchError(error));
     }
   };
 

@@ -14,6 +14,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { catchError } from "@/lib/catch-error";
 import { getSlug } from "@/lib/get-slug";
 import { Pencil } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -22,9 +23,20 @@ import { toast } from "sonner";
 
 const formSchema = z.object({
   title: z.string().min(1),
+  slug: z.string().optional(),
 });
 
-export const LessonTitleForm = ({ initialData, courseId, lessonId }) => {
+interface LessonTitleFormProps {
+  initialData: {
+    title: string;
+  };
+  lessonId: string;
+}
+
+export const LessonTitleForm = ({
+  initialData,
+  lessonId,
+}: LessonTitleFormProps) => {
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState(initialData.title);
@@ -38,7 +50,7 @@ export const LessonTitleForm = ({ initialData, courseId, lessonId }) => {
 
   const { isSubmitting, isValid } = form.formState;
 
-  const onSubmit = async (values) => {
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       values["slug"] = getSlug(values.title);
 
@@ -47,8 +59,8 @@ export const LessonTitleForm = ({ initialData, courseId, lessonId }) => {
       toast.success("Lesson updated");
       toggleEdit();
       router.refresh();
-    } catch {
-      toast.error("Something went wrong");
+    } catch (error: unknown) {
+      toast.error(catchError(error));
     }
   };
 

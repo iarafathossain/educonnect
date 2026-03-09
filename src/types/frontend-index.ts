@@ -40,7 +40,6 @@ export interface ICategoryFrontend {
 
 export interface ILessonFrontend extends ILessonBase {
   id: string;
-  duration: number; // seconds
 }
 
 export interface ITestimonialFrontend extends ITestimonialBase {
@@ -73,6 +72,13 @@ export interface IEnrollmentFrontend extends IEnrollmentBase {
   id: string;
   student: string;
   course: ICourseFrontend;
+}
+
+export interface ILessonPayload {
+  title: string;
+  slug: string;
+  moduleId: string;
+  order: number;
 }
 
 // ===== Frontend Types End ===== //

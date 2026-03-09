@@ -1,5 +1,6 @@
 import { IconBadge } from "@/components/icon-badge";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { ILessonFrontend } from "@/types/frontend-index";
 import { ArrowLeft, Eye, LayoutDashboard, Video } from "lucide-react";
 import Link from "next/link";
 import { LessonAccessForm } from "./lesson-access-form";
@@ -7,6 +8,16 @@ import { LessonActions } from "./lesson-action";
 import { LessonDescriptionForm } from "./lesson-description-form";
 import { LessonTitleForm } from "./lesson-title-form";
 import { VideoUrlForm } from "./video-url-form";
+
+interface LessonModalProps {
+  open: boolean;
+  setOpen: (open: boolean) => void;
+  lesson: ILessonFrontend;
+  courseId: string;
+  moduleId: string;
+  onClose?: () => void;
+}
+
 export const LessonModal = ({
   open,
   setOpen,
@@ -14,7 +25,7 @@ export const LessonModal = ({
   courseId,
   moduleId,
   onClose,
-}) => {
+}: LessonModalProps) => {
   const onPostDelete = () => {
     setOpen(false);
     if (onClose) {
@@ -58,13 +69,11 @@ export const LessonModal = ({
                 </div>
                 <LessonTitleForm
                   initialData={{ title: lesson?.title }}
-                  courseId={courseId}
-                  lessonId={lesson?._id}
+                  lessonId={lesson?.id}
                 />
                 <LessonDescriptionForm
                   initialData={{ description: lesson?.description }}
-                  courseId={courseId}
-                  lessonId={lesson?._id}
+                  lessonId={lesson?.id}
                 />
               </div>
               <div>
@@ -74,8 +83,7 @@ export const LessonModal = ({
                 </div>
                 <LessonAccessForm
                   initialData={{ isFree: lesson?.access !== "private" }}
-                  courseId={courseId}
-                  lessonId={lesson?._id}
+                  lessonId={lesson?.id}
                 />
               </div>
             </div>
@@ -86,11 +94,10 @@ export const LessonModal = ({
               </div>
               <VideoUrlForm
                 initialData={{
-                  url: lesson?.video_url || "",
-                  duration: lesson?.duration || "",
+                  url: lesson?.videoURL || "",
+                  duration: lesson?.duration ? String(lesson.duration) : "",
                 }}
-                courseId={courseId}
-                lessonId={lesson?._id}
+                lessonId={lesson?.id}
               />
             </div>
           </div>

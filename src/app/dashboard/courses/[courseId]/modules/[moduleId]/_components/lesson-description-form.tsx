@@ -15,6 +15,7 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
+import { catchError } from "@/lib/catch-error";
 import { cn } from "@/lib/utils";
 import { Pencil } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -25,7 +26,17 @@ const formSchema = z.object({
   description: z.string().min(1),
 });
 
-export const LessonDescriptionForm = ({ initialData, courseId, lessonId }) => {
+interface LessonDescriptionFormProps {
+  initialData: {
+    description?: string;
+  };
+  lessonId: string;
+}
+
+export const LessonDescriptionForm = ({
+  initialData,
+  lessonId,
+}: LessonDescriptionFormProps) => {
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
   const [description, setDescription] = useState(initialData.description);
@@ -41,16 +52,15 @@ export const LessonDescriptionForm = ({ initialData, courseId, lessonId }) => {
 
   const { isSubmitting, isValid } = form.formState;
 
-  const onSubmit = async (values) => {
-    console.log({ values });
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       await updateLesson(lessonId, values);
       setDescription(values.description);
       toast.success("Lesson updated");
       toggleEdit();
       router.refresh();
-    } catch (error) {
-      toast.error("Something went wrong");
+    } catch (error: unknown) {
+      toast.error(catchError(error));
     }
   };
 

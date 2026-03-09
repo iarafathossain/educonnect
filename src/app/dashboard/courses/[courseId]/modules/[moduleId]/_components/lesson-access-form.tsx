@@ -14,6 +14,7 @@ import {
   FormField,
   FormItem,
 } from "@/components/ui/form";
+import { catchError } from "@/lib/catch-error";
 import { cn } from "@/lib/utils";
 import { Pencil } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -24,7 +25,17 @@ const formSchema = z.object({
   isFree: z.boolean().default(false),
 });
 
-export const LessonAccessForm = ({ initialData, courseId, lessonId }) => {
+interface LessonAccessFormProps {
+  initialData: {
+    isFree?: boolean;
+  };
+  lessonId: string;
+}
+
+export const LessonAccessForm = ({
+  initialData,
+  lessonId,
+}: LessonAccessFormProps) => {
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
   const [free, setFree] = useState(!!initialData.isFree);
@@ -40,17 +51,19 @@ export const LessonAccessForm = ({ initialData, courseId, lessonId }) => {
 
   const { isSubmitting, isValid } = form.formState;
 
-  const onSubmit = async (values) => {
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      const payload = {};
-      payload.access = values.isFree ? "public" : "private";
+      const payload = {
+        isFree: values.isFree,
+        access: values.isFree ? "public" : "private",
+      };
       await updateLesson(lessonId, payload);
       setFree(!free);
       toast.success("Lesson updated");
       toggleEdit();
       router.refresh();
-    } catch (error) {
-      toast.error("Something went wrong");
+    } catch (error: unknown) {
+      toast.error(catchError(error));
     }
   };
 

@@ -1,6 +1,7 @@
 import { IconBadge } from "@/components/icon-badge";
 import { Alert, AlertTitle } from "@/components/ui/alert";
 import { getModule } from "@/queries/modules";
+import { ILessonFrontend } from "@/types/frontend-index";
 import {
   AlertTriangleIcon,
   ArrowLeft,
@@ -23,7 +24,7 @@ const ModulePage = async ({
   params: { courseId, moduleId },
 }: ModulePageParams) => {
   const moduleDetails = await getModule(moduleId);
-  const sortedModuleLessons = moduleDetails.lessonIds.sort(
+  const sortedModuleLessons: ILessonFrontend[] = moduleDetails.lessonIds.sort(
     (a: { order: number }, b: { order: number }) => a.order - b.order,
   );
 
