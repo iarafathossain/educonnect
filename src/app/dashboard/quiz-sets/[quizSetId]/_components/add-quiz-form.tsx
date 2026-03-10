@@ -1,6 +1,5 @@
 "use client";
 
-import * as z from "zod";
 // import axios from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -10,79 +9,27 @@ import { addQuizToQuizSet } from "@/app/actions/quiz";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
+    Form,
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { catchError } from "@/lib/catch-error";
+import {
+    QuizFormValues,
+    quizFormZodValidator,
+} from "@/validations/quiz-validator";
 import { useRouter } from "next/navigation";
-
-const formSchema = z.object({
-  title: z
-    .string({
-      message: "Question is required",
-    })
-    .min(1, {
-      message: "Title is required",
-    }),
-  description: z
-    .string({
-      message: "Description is required",
-    })
-    .min(1, {
-      message: "Description is required",
-    }),
-  optionA: z.object({
-    label: z
-      .string({
-        message: "Option label is required",
-      })
-      .min(1, {
-        message: "Option label is required",
-      }),
-    isTrue: z.boolean().default(false),
-  }),
-  optionB: z.object({
-    label: z
-      .string({
-        message: "Option label is required",
-      })
-      .min(1, {
-        message: "Option label is required",
-      }),
-    isTrue: z.boolean().default(false),
-  }),
-  optionC: z.object({
-    label: z
-      .string({
-        message: "Option label is required",
-      })
-      .min(1, {
-        message: "Option label is required",
-      }),
-    isTrue: z.boolean().default(false),
-  }),
-  optionD: z.object({
-    label: z
-      .string({
-        message: "Option label is required",
-      })
-      .min(1, {
-        message: "Option label is required",
-      }),
-    isTrue: z.boolean().default(false),
-  }),
-});
 
 export const AddQuizForm = ({ quizSetId }: { quizSetId: string }) => {
   const router = useRouter();
 
   const form = useForm({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(quizFormZodValidator),
     mode: "all",
     defaultValues: {
       title: "",
@@ -106,10 +53,9 @@ export const AddQuizForm = ({ quizSetId }: { quizSetId: string }) => {
     },
   });
 
-  const { isSubmitting, isValid, errors } = form.formState;
-  console.log(errors);
+  const { isSubmitting } = form.formState;
 
-  const onSubmit = async (values) => {
+  const onSubmit = async (values: QuizFormValues) => {
     try {
       const hasTrueOption =
         values.optionA.isTrue ||
@@ -123,6 +69,7 @@ export const AddQuizForm = ({ quizSetId }: { quizSetId: string }) => {
       }
 
       await addQuizToQuizSet(quizSetId, values);
+      toast.success("Quiz added to the set successfully!");
       form.reset({
         title: "",
         description: "",
@@ -144,9 +91,8 @@ export const AddQuizForm = ({ quizSetId }: { quizSetId: string }) => {
         },
       });
       router.refresh();
-    } catch (error) {
-      console.log({ error });
-      toast.error("Something went wrong");
+    } catch (error: unknown) {
+      toast.error(catchError(error));
     }
   };
 

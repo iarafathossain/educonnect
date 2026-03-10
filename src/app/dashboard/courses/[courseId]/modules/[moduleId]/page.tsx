@@ -1,13 +1,8 @@
+import AlertBanner from "@/components/alert-banner";
 import { IconBadge } from "@/components/icon-badge";
-import { Alert, AlertTitle } from "@/components/ui/alert";
 import { getModule } from "@/queries/modules";
 import { ILessonFrontend } from "@/types/frontend-index";
-import {
-  AlertTriangleIcon,
-  ArrowLeft,
-  BookOpenCheck,
-  LayoutDashboard,
-} from "lucide-react";
+import { ArrowLeft, BookOpenCheck, LayoutDashboard } from "lucide-react";
 import Link from "next/link";
 import { LessonForm } from "./_components/lesson-form";
 import { ModuleActions } from "./_components/module-action";
@@ -30,12 +25,10 @@ const ModulePage = async ({
 
   return (
     <>
-      <Alert className="border-amber-200 bg-amber-50 text-amber-900 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-50 rounded-none">
-        <AlertTriangleIcon />
-        <AlertTitle>
-          This module is unpublished. It will not be visible in the course.
-        </AlertTitle>
-      </Alert>
+      <AlertBanner
+        label="This module is unpublished. It will not be visible in the course."
+        variant="warning"
+      />
 
       <div className="p-6">
         <div className="flex items-center justify-between">

@@ -14,7 +14,7 @@ const bannerVariants = cva(
     defaultVariants: {
       variant: "warning",
     },
-  }
+  },
 );
 
 const iconMap = {
@@ -22,7 +22,13 @@ const iconMap = {
   success: CheckCircleIcon,
 };
 
-const AlertBanner = ({ label, variant, className }) => {
+interface AlertBannerProps {
+  label: string;
+  variant?: "warning" | "success";
+  className?: string;
+}
+
+const AlertBanner = ({ label, variant, className }: AlertBannerProps) => {
   const Icon = iconMap[variant || "warning"];
   return (
     <div className={cn(bannerVariants({ variant }), className)}>

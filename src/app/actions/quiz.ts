@@ -1,9 +1,12 @@
 "use server";
 
+import { catchError } from "@/lib/catch-error";
 import { getSlug } from "@/lib/get-slug";
 import { QuizSet } from "@/models/quiz-set-model";
 import { quizQueries } from "@/queries/quiz";
 import { connectDB } from "@/services/connect-mongo";
+import { QuizFormValues } from "@/validations/quiz-validator";
+import { TitleFormValues } from "../dashboard/quiz-sets/[quizSetId]/_components/title-form";
 
 export const createQuizSet = async (data: { title: string }) => {
   try {
@@ -30,31 +33,34 @@ export const createQuizSet = async (data: { title: string }) => {
   }
 };
 
-export const addQuizToQuizSet = async (quizSetId: string, quizData: any) => {
+export const addQuizToQuizSet = async (
+  quizSetId: string,
+  payload: QuizFormValues,
+) => {
   try {
-    const transformedQuizData: Record<string, any> = {};
+    const transformedQuizData: Record<string, unknown> = {};
 
-    transformedQuizData.title = quizData.title;
-    transformedQuizData.slug = getSlug(quizData.title);
-    transformedQuizData.explanation = quizData.explanation || "";
-    transformedQuizData.description = quizData.description || "";
-    transformedQuizData.mark = Number(quizData.mark) || 5;
+    transformedQuizData.title = payload.title;
+    transformedQuizData.slug = getSlug(payload.title);
+    transformedQuizData.explanation = "";
+    transformedQuizData.description = payload.description || "";
+    transformedQuizData.mark = 5;
     transformedQuizData.options = [
       {
-        text: quizData.optionA.label,
-        is_correct: quizData.optionA.isTrue || false,
+        text: payload.optionA.label,
+        is_correct: payload.optionA.isTrue || false,
       },
       {
-        text: quizData.optionB.label,
-        is_correct: quizData.optionB.isTrue || false,
+        text: payload.optionB.label,
+        is_correct: payload.optionB.isTrue || false,
       },
       {
-        text: quizData.optionC.label,
-        is_correct: quizData.optionC.isTrue || false,
+        text: payload.optionC.label,
+        is_correct: payload.optionC.isTrue || false,
       },
       {
-        text: quizData.optionD.label,
-        is_correct: quizData.optionD.isTrue || false,
+        text: payload.optionD.label,
+        is_correct: payload.optionD.isTrue || false,
       },
     ];
 
@@ -65,17 +71,19 @@ export const addQuizToQuizSet = async (quizSetId: string, quizData: any) => {
     }
     quizSet.quizIds.push(createdQuizId);
     await quizSet.save();
-  } catch (error) {
-    console.error("Error adding quiz to quiz set:", error);
-    throw new Error(error);
+  } catch (error: unknown) {
+    throw new Error(catchError(error));
   }
 };
 
-export const updateQuizSet = async (quizSetId: string, dataToUpdate: any) => {
+export const updateQuizSet = async (
+  quizSetId: string,
+  payload: TitleFormValues,
+) => {
   try {
     await connectDB();
-    await QuizSet.findByIdAndUpdate(quizSetId, dataToUpdate);
-  } catch (error) {
-    throw new Error(error);
+    await QuizSet.findByIdAndUpdate(quizSetId, payload);
+  } catch (error: unknown) {
+    throw new Error(catchError(error));
   }
 };

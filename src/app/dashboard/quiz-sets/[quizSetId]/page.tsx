@@ -1,34 +1,41 @@
 import AlertBanner from "@/components/alert-banner";
 import { cn } from "@/lib/utils";
 import { quizQueries } from "@/queries/quiz";
+import { IQuizFrontend } from "@/types/frontend-index";
 import { Circle, CircleCheck } from "lucide-react";
 import { AddQuizForm } from "./_components/add-quiz-form";
 import { QuizCardActions } from "./_components/quiz-card-actions";
 import { QuizSetAction } from "./_components/quiz-set-action";
 import { TitleForm } from "./_components/title-form";
 
-const EditQuizSet = async ({
-  params: { quizSetId },
-}: {
-  params: { quizSetId: string };
-}) => {
+interface EditQuizSetProps {
+  params: {
+    quizSetId: string;
+  };
+}
+
+const EditQuizSet = async ({ params: { quizSetId } }: EditQuizSetProps) => {
   const quizSet = await quizQueries.getQuizSetById(quizSetId);
-  const quizzes = quizSet.quizIds.map((quiz) => {
-    return {
-      id: quiz._id,
-      title: quiz.title,
-      options: quiz.options.map((option) => {
-        return {
-          label: option.text,
-          isTrue: option.is_correct,
-        };
-      }),
-    };
-  });
+
+  const quizzes: IQuizFrontend[] = quizSet.quizIds.map(
+    (quiz: IQuizFrontend) => {
+      return {
+        id: quiz.id,
+        title: quiz.title,
+        options: quiz.options.map((option) => {
+          return {
+            text: option.text,
+            is_correct: option.is_correct,
+          };
+        }),
+      };
+    },
+  );
+
   return (
     <>
       <AlertBanner
-        label="This course is unpublished. It will not be visible in the course."
+        label="This quiz set is unpublished. It will not be visible in the course."
         variant="warning"
       />
       <div className="p-6">
@@ -60,15 +67,15 @@ const EditQuizSet = async ({
                             className={cn(
                               "py-1.5 rounded-sm  text-sm flex items-center gap-1 text-gray-600",
                             )}
-                            key={option.label}
+                            key={option.text}
                           >
-                            {option.isTrue ? (
+                            {option.is_correct ? (
                               <CircleCheck className="size-4 text-emerald-500 " />
                             ) : (
                               <Circle className="size-4" />
                             )}
 
-                            <p>{option.label}</p>
+                            <p>{option.text}</p>
                           </div>
                         );
                       })}

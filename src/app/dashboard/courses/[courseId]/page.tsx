@@ -1,15 +1,10 @@
 import { IconBadge } from "@/components/icon-badge";
 import { getCategories } from "@/queries/categories";
 import { getCourse } from "@/queries/courses";
-import {
-  AlertTriangleIcon,
-  CircleDollarSign,
-  LayoutDashboard,
-  ListChecks,
-} from "lucide-react";
+import { CircleDollarSign, LayoutDashboard, ListChecks } from "lucide-react";
 import { CategoryForm } from "./_components/category-form";
 
-import { Alert, AlertTitle } from "@/components/ui/alert";
+import AlertBanner from "@/components/alert-banner";
 import { IModuleFrontend } from "@/types/frontend-index";
 import { CourseActions } from "./_components/course-actions";
 import { DescriptionForm } from "./_components/description-form";
@@ -27,12 +22,7 @@ const EditCoursePage = async ({
   const course = await getCourse(courseId);
 
   if (!course) {
-    return (
-      <Alert className="border-red-200 bg-red-50 text-red-900 dark:border-red-900 dark:bg-red-950 dark:text-red-50 rounded-none shadow-lg">
-        <AlertTriangleIcon />
-        <AlertTitle>Course not found.</AlertTitle>
-      </Alert>
-    );
+    return <AlertBanner label="Course not found." variant="warning" />;
   }
 
   const categories = await getCategories();
@@ -45,12 +35,10 @@ const EditCoursePage = async ({
 
   return (
     <>
-      <Alert className="border-amber-200 bg-amber-50 text-amber-900 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-50 rounded-none shadow-lg">
-        <AlertTriangleIcon />
-        <AlertTitle>
-          This course is unpublished. It will not be visible in the course.
-        </AlertTitle>
-      </Alert>
+      <AlertBanner
+        label="This course is unpublished. It will not be visible in the course."
+        variant="warning"
+      />
       <div className="p-6">
         <div className="flex items-center justify-end">
           <CourseActions courseId={courseId} isActive={course?.active} />

@@ -9,13 +9,19 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
+import { IQuizSetFrontend } from "@/types/frontend-index";
+import type {
+  CellContext,
+  ColumnDef,
+  HeaderContext,
+} from "@tanstack/react-table";
 import { ArrowUpDown, MoreHorizontal, Pencil } from "lucide-react";
 import Link from "next/link";
 
-export const columns = [
+export const columns: ColumnDef<IQuizSetFrontend>[] = [
   {
     accessorKey: "title",
-    header: ({ column }) => {
+    header: ({ column }: HeaderContext<IQuizSetFrontend, unknown>) => {
       return (
         <Button
           variant="ghost"
@@ -28,7 +34,7 @@ export const columns = [
   },
   {
     accessorKey: "totalQuiz",
-    header: ({ column }) => {
+    header: ({ column }: HeaderContext<IQuizSetFrontend, unknown>) => {
       return (
         <Button
           variant="ghost"
@@ -41,7 +47,7 @@ export const columns = [
   },
   {
     accessorKey: "isPublished",
-    header: ({ column }) => {
+    header: ({ column }: HeaderContext<IQuizSetFrontend, unknown>) => {
       return (
         <Button
           variant="ghost"
@@ -51,7 +57,7 @@ export const columns = [
         </Button>
       );
     },
-    cell: ({ row }) => {
+    cell: ({ row }: CellContext<IQuizSetFrontend, unknown>) => {
       const isPublished = row.getValue("isPublished") || false;
 
       return (
@@ -63,8 +69,9 @@ export const columns = [
   },
   {
     id: "actions",
-    cell: ({ row }) => {
+    cell: ({ row }: CellContext<IQuizSetFrontend, unknown>) => {
       const { id } = row.original;
+
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

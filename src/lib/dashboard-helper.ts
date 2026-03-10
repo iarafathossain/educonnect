@@ -84,8 +84,6 @@ export async function getInstructorDashboardData(dataType: string) {
 
     const data = await getCourseDetailsByInstructor(instructor.id, true);
 
-    console.log("Dashboard Data:", data);
-
     switch (dataType) {
       case COURSE_DATA:
         return data?.courses;

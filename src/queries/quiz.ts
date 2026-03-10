@@ -1,3 +1,4 @@
+import { catchError } from "@/lib/catch-error";
 import { Quiz } from "@/models/quiz-model";
 import { QuizSet } from "@/models/quiz-set-model";
 import { connectDB } from "@/services/connect-mongo";
@@ -9,41 +10,38 @@ export const quizQueries = {
       let quizzes = [];
 
       if (excludeUnpublished) {
-        quizzes = await QuizSet.find({ active: true }).lean();
+        quizzes = await QuizSet.find({ active: true });
       } else {
-        quizzes = await QuizSet.find().lean();
+        quizzes = await QuizSet.find();
       }
 
-      return JSON.parse(JSON.stringify(quizzes));
-    } catch (error) {
-      console.error("Error fetching quiz sets:", error);
+      return quizzes.map((quizSet) => quizSet.toJSON());
+    } catch (error: unknown) {
+      throw new Error(catchError(error));
     }
   },
-  createQuiz: async (quizData: Record<string, any>) => {
+  createQuiz: async (quizData: Record<string, unknown>) => {
     try {
       await connectDB();
       const quiz = await Quiz.create(quizData);
-      return quiz._id.toString();
-    } catch (error) {
-      console.error("Error creating quiz:", error);
-      throw new Error(error);
+      return quiz.id;
+    } catch (error: unknown) {
+      throw new Error(catchError(error));
     }
   },
   getQuizSetById: async (quizSetId: string) => {
     try {
       await connectDB();
-      const quizSet = await QuizSet.findById(quizSetId)
-        .populate({
-          path: "quizIds",
-          model: "Quiz",
-        })
-        .lean();
+      const quizSet = await QuizSet.findById(quizSetId).populate({
+        path: "quizIds",
+        model: "Quiz",
+      });
       if (!quizSet) {
         throw new Error("Quiz set not found");
       }
-      return JSON.parse(JSON.stringify(quizSet));
-    } catch (error) {
-      throw new Error(error);
+      return quizSet.toJSON();
+    } catch (error: unknown) {
+      throw new Error(catchError(error));
     }
   },
 };

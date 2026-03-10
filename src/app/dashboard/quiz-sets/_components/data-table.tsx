@@ -1,13 +1,15 @@
 "use client";
 import {
+  ColumnDef,
+  ColumnFiltersState,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
+  SortingState,
   useReactTable,
 } from "@tanstack/react-table";
-import * as React from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,12 +21,22 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { IQuizSetFrontend } from "@/types/frontend-index";
 import { PlusCircle } from "lucide-react";
 import Link from "next/link";
+import { useState } from "react";
 
-export function DataTable({ columns, data }) {
-  const [sorting, setSorting] = React.useState([]);
-  const [columnFilters, setColumnFilters] = React.useState([]);
+interface DataTableProps<TData, TValue> {
+  columns: ColumnDef<TData, TValue>[];
+  data: TData[];
+}
+
+export function DataTable({
+  columns,
+  data,
+}: DataTableProps<IQuizSetFrontend, unknown>) {
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
   const table = useReactTable({
     data,
@@ -46,7 +58,7 @@ export function DataTable({ columns, data }) {
       <div className="flex items-center justify-between py-4">
         <Input
           placeholder="Filter courses..."
-          value={table.getColumn("title")?.getFilterValue() ?? ""}
+          value={(table.getColumn("title")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
             table.getColumn("title")?.setFilterValue(event.target.value)
           }

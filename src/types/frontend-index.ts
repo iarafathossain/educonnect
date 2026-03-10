@@ -81,4 +81,20 @@ export interface ILessonPayload {
   order: number;
 }
 
+export interface IQuizSetFrontend {
+  id: string;
+  title: string;
+  isPublished: boolean;
+  totalQuiz: number;
+}
+
+export interface IQuizFrontend {
+  id: string;
+  title: string;
+  options: {
+    text: string;
+    is_correct: boolean;
+  }[];
+}
+
 // ===== Frontend Types End ===== //

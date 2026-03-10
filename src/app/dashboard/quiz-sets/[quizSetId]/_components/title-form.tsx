@@ -15,9 +15,11 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { catchError } from "@/lib/catch-error";
 import { Pencil } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
 
 const formSchema = z.object({
   title: z.string().min(1, {
@@ -25,7 +27,16 @@ const formSchema = z.object({
   }),
 });
 
-export const TitleForm = ({ initialData = {}, quizSetId }) => {
+export type TitleFormValues = z.infer<typeof formSchema>;
+
+interface TitleFormProps {
+  initialData: {
+    title: string;
+  };
+  quizSetId: string;
+}
+
+export const TitleForm = ({ initialData, quizSetId }: TitleFormProps) => {
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
 
@@ -38,13 +49,14 @@ export const TitleForm = ({ initialData = {}, quizSetId }) => {
 
   const { isSubmitting, isValid } = form.formState;
 
-  const onSubmit = async (values) => {
+  const onSubmit = async (values: TitleFormValues) => {
     try {
       await updateQuizSet(quizSetId, values);
       toggleEdit();
+      toast.success("Quiz set title updated successfully");
       router.refresh();
-    } catch (error) {
-      toast.error("Something went wrong");
+    } catch (error: unknown) {
+      toast.error(catchError(error));
     }
   };
 
