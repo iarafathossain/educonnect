@@ -17,7 +17,6 @@ export interface IUser extends IUserBase {
 }
 
 export interface ICourse extends ICourseBase {
-  thumbnailUrl: string;
   instructor: mongoose.Types.ObjectId;
   modules: mongoose.Types.ObjectId[];
   category: mongoose.Types.ObjectId;
@@ -37,9 +36,9 @@ export interface IModule extends Omit<
 
 export interface ICategory extends Omit<
   ICategoryBase,
-  "thumbnailUrl" | "createdAt" | "updatedAt"
+  "image" | "createdAt" | "updatedAt"
 > {
-  thumbnailUrl: string;
+  image: string;
   createdAt: Date;
   updatedAt: Date;
 }

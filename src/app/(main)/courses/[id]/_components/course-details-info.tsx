@@ -25,8 +25,6 @@ const CourseDetailsInfo = async ({ course }: { course: ICourseFrontend }) => {
     loggedInUser.id,
   );
 
-  console.log("Course:", course);
-
   return (
     <div className="overflow-x-hidden  grainy">
       <section className="pt-12  sm:pt-16">

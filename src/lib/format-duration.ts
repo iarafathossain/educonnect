@@ -7,7 +7,5 @@ export const formatDuration = (duration) => {
 
   const durationString = `${hour}:${min}:${sec}`;
 
-  console.log(durationString);
-
   return durationString;
 };

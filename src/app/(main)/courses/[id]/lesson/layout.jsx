@@ -7,15 +7,11 @@ import { CourseSidebarMobile } from "./_components/course-sidebar-mobile";
 const CourseLayout = async ({ children, params: { id } }) => {
   const loggedInUser = await getLoggedInUser();
 
-  console.log("loggedInUser", loggedInUser);
-
   if (!loggedInUser) {
     redirect("/login");
   }
 
-  const isEnrolled = await hasEnrollmentForCourse(loggedInUser.id, id);
-
-  console.log("isEnrolled", isEnrolled);
+  const isEnrolled = await hasEnrollmentForCourse(id, loggedInUser.id);
 
   if (!isEnrolled) {
     redirect(`/courses/${id}`);

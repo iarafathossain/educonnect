@@ -73,7 +73,6 @@ const AddLive = () => {
     } catch (error) {
       toast.error("Something went wrong");
     }
-    console.log(values);
   };
   return (
     <section className="py-8">
@@ -131,7 +130,7 @@ const AddLive = () => {
                             variant={"outline"}
                             className={cn(
                               "pl-3 text-left font-normal",
-                              !field.value && "text-muted-foreground"
+                              !field.value && "text-muted-foreground",
                             )}
                           >
                             {field.value ? (

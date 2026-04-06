@@ -11,7 +11,7 @@ const sizeByVariant = {
   sm: "text-xs",
 };
 
-export const CourseProgress = ({ value, variant, size }) => {
+const CourseProgress = ({ value, variant, size }) => {
   return (
     <div>
       <Progress
@@ -23,7 +23,7 @@ export const CourseProgress = ({ value, variant, size }) => {
         className={cn(
           "font-medium mt-2 text-sky-700",
           colorByVariant[variant || "default"],
-          sizeByVariant[size || "default"]
+          sizeByVariant[size || "default"],
         )}
       >
         {Math.round(value)}% Complete
@@ -31,3 +31,5 @@ export const CourseProgress = ({ value, variant, size }) => {
     </div>
   );
 };
+
+export default CourseProgress;

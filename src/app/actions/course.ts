@@ -23,7 +23,6 @@ export const createCourseAction = async (payload: CreateCoursePayload) => {
     const newCourse = await createCourse(courseData);
     return newCourse;
   } catch (error) {
-    console.log(error);
     throw new Error("Failed to create course");
   }
 };
@@ -39,7 +38,6 @@ export const updateCourseAction = async <T>(
       { new: true },
     );
   } catch (error) {
-    console.log(error);
     throw new Error("Failed to update course");
   }
 };
@@ -54,7 +52,6 @@ export const changeCoursePublishState = async (courseId: string) => {
     await course.save();
     return course.active;
   } catch (error) {
-    console.log(error);
     throw new Error("Failed to change course publish state");
   }
 };
@@ -63,7 +60,6 @@ export const deleteCourse = async (courseId: string) => {
   try {
     await CourseModel.findByIdAndDelete(courseId);
   } catch (error) {
-    console.log(error);
     throw new Error("Failed to delete course");
   }
 };

@@ -1,6 +1,13 @@
+import { TUserRole } from "@/constants/enums";
 import SignupForm from "../_components/signup-form";
 
-const RegisterPage = ({ params: { role } }: { params: { role: string } }) => {
+interface RegisterPageProps {
+  params: {
+    role: TUserRole;
+  };
+}
+
+const RegisterPage = ({ params: { role } }: RegisterPageProps) => {
   return (
     <div className="w-full flex-col h-screen flex items-center justify-center">
       <div className="container">

@@ -1,3 +1,4 @@
+import CourseProgress from "@/components/course-progress";
 import { Badge } from "@/components/ui/badge";
 import { getCategoryById } from "@/queries/categories";
 import { getReportsForStudent } from "@/queries/reports";
@@ -11,7 +12,7 @@ const EnrolledCourseCard = async ({
   enrollment: IEnrollmentFrontend;
 }) => {
   const courseCategory = await getCategoryById(
-    enrollment.course.category as string
+    enrollment.course.category as string,
   );
 
   const filter = {
@@ -119,11 +120,11 @@ const EnrolledCourseCard = async ({
           </p>
         </div>
 
-        {/* <CourseProgress
-						size="sm"
-						value={80}
-						variant={110 === 100 ? "success" : ""}
-					/> */}
+        <CourseProgress
+          size="sm"
+          value={80}
+          variant={110 === 100 ? "success" : ""}
+        />
       </div>
     </div>
   );

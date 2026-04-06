@@ -2522,6 +2522,7 @@ __metadata:
     embla-carousel-react: "npm:^8.6.0"
     eslint: "npm:^8"
     eslint-config-next: "npm:14.2.33"
+    http-status: "npm:^2.1.0"
     lucide-react: "npm:^0.548.0"
     mongodb: "npm:^6.20.0"
     mongoose: "npm:^8.19.2"
@@ -3509,6 +3510,13 @@ __metadata:
     agent-base: "npm:^7.1.0"
     debug: "npm:^4.3.4"
   checksum: 10c0/4207b06a4580fb85dd6dff521f0abf6db517489e70863dca1a0291daa7f2d3d2d6015a57bd702af068ea5cf9f1f6ff72314f5f5b4228d299c0904135d2aef921
+  languageName: node
+  linkType: hard
+
+"http-status@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "http-status@npm:2.1.0"
+  checksum: 10c0/1580ba46fc8bf1c777beec55a4f7c0aecdeb8d42fea8761d2040327183bb398947664cde15cf76256aa036d5ccccf7c6bea971e5ec20daa474bc40ef3e578f5d
   languageName: node
   linkType: hard
 

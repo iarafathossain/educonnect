@@ -1,22 +1,40 @@
+import { TUserRole, USER_ROLES } from "@/constants/enums";
 import { mongooseTransform } from "@/lib/mongoose-transform.plugin";
-import { IUser } from "@/types/backend-index";
+import { TUserRegistration } from "@/validators/user-schema";
+
 import mongoose from "mongoose";
+
+export interface IUser
+  extends
+    mongoose.Document,
+    Omit<TUserRegistration, "password" | "confirmPassword"> {
+  passwordHash?: string; // optional for OAuth users
+  role: TUserRole;
+  phone?: string;
+  bio?: string;
+  website?: string;
+  image?: string;
+  designation?: string;
+  socialLinks?: {
+    linkedin?: string;
+    twitter?: string;
+    facebook?: string;
+    instagram?: string;
+  };
+}
 
 const userSchema = new mongoose.Schema<IUser>(
   {
     firstName: { type: String, required: true },
     lastName: { type: String, required: true },
     email: { type: String, required: true, unique: true },
-    // password is optional for OAuth users
-    password: { type: String },
-    role: { type: String, enum: ["student", "instructor"], required: true },
+    passwordHash: { type: String }, // optional for OAuth users
+    role: { type: String, enum: USER_ROLES, required: true },
     phone: { type: String },
     bio: { type: String },
     website: { type: String },
-    profilePictureUrl: { type: String },
+    image: { type: String },
     designation: { type: String },
-    createdAt: { type: Date, default: Date.now },
-    updatedAt: { type: Date, default: Date.now },
     socialLinks: {
       linkedin: { type: String },
       twitter: { type: String },
@@ -30,4 +48,4 @@ const userSchema = new mongoose.Schema<IUser>(
 userSchema.plugin(mongooseTransform);
 
 export const UserModel =
-  mongoose.models.User ?? mongoose.model("User", userSchema);
+  mongoose.models?.User || mongoose.model("User", userSchema);

@@ -35,6 +35,8 @@ const MainNav = ({ items }: Props) => {
     setLoginSession(session);
   }, [session]);
 
+  console.log("Session in MainNav:", loginSession);
+
   return (
     <>
       <div className="flex gap-6 lg:gap-10">
@@ -48,7 +50,7 @@ const MainNav = ({ items }: Props) => {
                 key={index}
                 href={item.disabled ? "#" : item.href}
                 className={cn(
-                  "flex items-center text-lg font-medium transition-colors hover:text-foreground/80 sm:text-sm"
+                  "flex items-center text-lg font-medium transition-colors hover:text-foreground/80 sm:text-sm",
                 )}
               >
                 {item.title}

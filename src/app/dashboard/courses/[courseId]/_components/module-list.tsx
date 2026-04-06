@@ -28,7 +28,6 @@ export const ModuleList = ({ items, onReorder, onEdit }: ModuleListProps) => {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onDragEnd = (result: any) => {
-    console.log("Drag result:", result);
     if (!result.destination) return;
 
     const items = Array.from(modules);

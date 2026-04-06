@@ -1,5 +1,6 @@
 "use client";
 
+import { userRegistrationAction } from "@/actions/auth-actions";
 import Field from "@/components/field";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,53 +12,62 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { catchError } from "@/lib/catch-error";
-import { IUserRegisterForm } from "@/types/frontend-index";
+import { TUserRole, USER_ROLES } from "@/constants/enums";
+import {
+  TUserRegistration,
+  userRegistrationZodSchema,
+} from "@/validators/user-schema";
+import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
-const SignupForm = ({ role }: { role: string }) => {
+interface SignupFormProps {
+  role: TUserRole;
+}
+
+const SignupForm = ({ role }: SignupFormProps) => {
   const router = useRouter();
 
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors, isSubmitting },
-  } = useForm<IUserRegisterForm & { confirmPassword?: string }>();
+  } = useForm<TUserRegistration>({
+    resolver: zodResolver(userRegistrationZodSchema),
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+      role: Object.values(USER_ROLES).includes(role)
+        ? role
+        : USER_ROLES.student,
+    },
+  });
 
-  const onSubmit = async (
-    formData: IUserRegisterForm & { confirmPassword?: string }
-  ) => {
-    const userRole =
-      role === "instructor" || role === "student" ? role : "student";
+  const onSubmit = async (payload: TUserRegistration) => {
+    console.log("Form data before submission:", payload);
 
-    try {
-      const response = await fetch("/api/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ ...formData, userRole }),
-      });
+    const result = await userRegistrationAction(payload);
 
-      const data = await response.json();
+    console.log("Registration payload:", payload);
+    console.log("Registration result:", result);
 
-      if (data.error) {
-        throw new Error(data.error);
+    if (!result.success) {
+      toast.error(result.error);
+
+      if (result.statusCode === 409) {
+        router.push("/login");
       }
 
-      if (!response.ok || response.status !== 201) {
-        throw new Error("Failed to register user");
-      }
-      router.push("/login");
-    } catch (e) {
-      const error = catchError(e);
-      toast.error(error || "Something went wrong");
       return;
     }
+
+    toast.success("Account created successfully! Please log in.");
+    router.push("/login");
   };
 
   return (
@@ -76,14 +86,7 @@ const SignupForm = ({ role }: { role: string }) => {
                 <Field error={errors.firstName}>
                   <Label htmlFor="firstName">First name</Label>
                   <Input
-                    {...register("firstName", {
-                      required: "First name is required",
-                      minLength: {
-                        value: 2,
-                        message:
-                          "First name must be at least 2 characters long",
-                      },
-                    })}
+                    {...register("firstName")}
                     id="firstName"
                     name="firstName"
                     type="text"
@@ -92,13 +95,7 @@ const SignupForm = ({ role }: { role: string }) => {
                 <Field error={errors.lastName}>
                   <Label htmlFor="lastName">Last name</Label>
                   <Input
-                    {...register("lastName", {
-                      required: "Last name is required",
-                      minLength: {
-                        value: 2,
-                        message: "Last name must be at least 2 characters long",
-                      },
-                    })}
+                    {...register("lastName")}
                     id="lastName"
                     name="lastName"
                     type="text"
@@ -108,13 +105,7 @@ const SignupForm = ({ role }: { role: string }) => {
               <Field error={errors.email}>
                 <Label htmlFor="email">Email</Label>
                 <Input
-                  {...register("email", {
-                    required: "Email is required",
-                    pattern: {
-                      value: /^\S+@\S+$/i,
-                      message: "Email is not valid",
-                    },
-                  })}
+                  {...register("email")}
                   type="email"
                   id="email"
                   name="email"
@@ -123,13 +114,7 @@ const SignupForm = ({ role }: { role: string }) => {
               <Field error={errors.password}>
                 <Label htmlFor="password">Password</Label>
                 <Input
-                  {...register("password", {
-                    required: "Password is required",
-                    minLength: {
-                      value: 6,
-                      message: "Password must be at least 6 characters long",
-                    },
-                  })}
+                  {...register("password")}
                   type="password"
                   id="password"
                   name="password"
@@ -138,11 +123,7 @@ const SignupForm = ({ role }: { role: string }) => {
               <Field error={errors.confirmPassword}>
                 <Label htmlFor="confirmPassword">Confirm Password</Label>
                 <Input
-                  {...register("confirmPassword", {
-                    required: "Confirm Password is required",
-                    validate: (value) =>
-                      value === watch("password") || "Passwords do not match",
-                  })}
+                  {...register("confirmPassword")}
                   type="password"
                   id="confirmPassword"
                   name="confirmPassword"

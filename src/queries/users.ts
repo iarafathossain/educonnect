@@ -10,10 +10,8 @@ export const getUserByEmail = async (email: string) => {
 };
 
 export async function getUserDetails(userId: string) {
-  console.log({ userId });
   await connectDB();
   const user = await UserModel.findById(userId).select("-password");
-  console.log("user: ", user);
   return user ? user.toJSON() : null;
 }
 

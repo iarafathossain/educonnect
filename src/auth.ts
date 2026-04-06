@@ -16,6 +16,45 @@ export const {
   ...authConfig,
   session: { strategy: "jwt" },
   adapter: MongoDBAdapter(client),
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user?.email) {
+        const dbUser = await UserModel.findOne({ email: user.email });
+        console.log("DB User in JWT callback:", dbUser);
+
+        if (dbUser) {
+          token.id = dbUser._id.toString();
+          token.role = dbUser.role;
+          token.firstName = dbUser.firstName;
+          token.lastName = dbUser.lastName;
+          token.picture = dbUser.profilePictureUrl ?? token.picture;
+          token.profilePictureUrl =
+            dbUser.profilePictureUrl ?? token.profilePictureUrl;
+        } else {
+          token.id = user.id;
+          token.firstName = user.name?.split(" ")[0] ?? "";
+          token.lastName = user.name?.split(" ").slice(1).join(" ") ?? "";
+          token.picture = user.image ?? token.picture;
+        }
+      }
+
+      return token;
+    },
+    async session({ session, token }) {
+      if (session.user) {
+        session.user.id = token.id as string;
+        session.user.role =
+          (token.role as "student" | "instructor") ?? "student";
+        session.user.firstName = token.firstName as string;
+        session.user.lastName = token.lastName as string;
+        session.user.image = token.picture ?? session.user.image;
+        session.user.profilePictureUrl =
+          (token.profilePictureUrl as string) ?? session.user.profilePictureUrl;
+      }
+
+      return session;
+    },
+  },
   providers: [
     CredentialsProvider({
       async authorize(credentials) {
@@ -31,7 +70,7 @@ export const {
 
           const isPasswordValid = await bcrypt.compare(
             credentials?.password as string,
-            user.password
+            user.password,
           );
           if (!isPasswordValid) {
             return null;
@@ -82,7 +121,7 @@ export const {
               role: "student",
             },
           },
-          { upsert: true, new: true, setDefaultsOnInsert: true }
+          { upsert: true, new: true, setDefaultsOnInsert: true },
         );
       } catch (err) {
         console.error("Error syncing OAuth user to UserModel:", err);

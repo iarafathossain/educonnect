@@ -9,8 +9,6 @@ export const getLoggedInUser = async () => {
       throw new Error("Please logged in to access");
     }
 
-    console.log("session", session);
-
     return getUserByEmail(session.user.email);
   } catch (error) {
     console.log(error);

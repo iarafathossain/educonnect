@@ -20,7 +20,7 @@ export interface IUserBase {
   phone?: string;
   website?: string;
   bio?: string;
-  profilePictureUrl?: string;
+  image?: string;
   designation?: string;
   socialLinks?: ISocialLinks;
 }
@@ -30,6 +30,7 @@ export interface ICourseBase {
   description: string;
   price: number;
   active: boolean;
+  image: string;
   createdAt?: Date | string;
   updatedAt?: Date | string;
 }
@@ -42,6 +43,14 @@ export interface IModuleBase {
   lessonIds: string[];
   duration: number;
   order: number;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+}
+
+export interface ICategoryBase {
+  label: string;
+  value: string;
+  image: string;
   createdAt?: Date | string;
   updatedAt?: Date | string;
 }

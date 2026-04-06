@@ -49,7 +49,6 @@ export const TitleForm = ({ initialData, courseId }: TitleFormProps) => {
       toggleEdit();
       router.refresh();
     } catch (error) {
-      console.log("error", error);
       toast.error("Something went wrong");
     }
   };
