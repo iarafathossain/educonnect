@@ -49,12 +49,7 @@ const SignupForm = ({ role }: SignupFormProps) => {
   });
 
   const onSubmit = async (payload: TUserRegistration) => {
-    console.log("Form data before submission:", payload);
-
     const result = await userRegistrationAction(payload);
-
-    console.log("Registration payload:", payload);
-    console.log("Registration result:", result);
 
     if (!result.success) {
       toast.error(result.error);

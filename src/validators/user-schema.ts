@@ -30,3 +30,16 @@ export const userRegistrationZodSchema = z
   });
 
 export type TUserRegistration = z.infer<typeof userRegistrationZodSchema>;
+
+export const userLoginZodSchema = z.object({
+  email: z
+    .string()
+    .email("Invalid email address!")
+    .max(255, "Email must be less than 255 characters!"),
+  password: z
+    .string()
+    .min(1, "Password is required!")
+    .max(255, "Password must be less than 255 characters!"),
+});
+
+export type TUserLogin = z.infer<typeof userLoginZodSchema>;

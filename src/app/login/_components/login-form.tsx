@@ -1,6 +1,6 @@
 "use client";
 
-import { credentialLoginAction } from "@/app/actions/auth";
+import { credentialLoginAction } from "@/actions/auth-actions";
 import Field from "@/components/field";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,33 +12,37 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { catchError } from "@/lib/catch-error";
+import { TUserLogin, userLoginZodSchema } from "@/validators/user-schema";
+import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 const LoginForm = () => {
+  const router = useRouter();
+
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<{ email: string; password: string }>();
+  } = useForm<TUserLogin>({
+    resolver: zodResolver(userLoginZodSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
 
-  const router = useRouter();
+  const onSubmit = async (formData: TUserLogin) => {
+    const result = await credentialLoginAction(formData);
 
-  const onSubmit = async (formData: { email: string; password: string }) => {
-    try {
-      const response = await credentialLoginAction(formData);
-      if (response?.error) {
-        throw new Error(response.error);
-      }
-      router.push("/courses");
-    } catch (e) {
-      const error = catchError(e);
-      toast.error(error || "Something went wrong");
+    if (!result.success) {
+      toast.error(result.error);
       return;
     }
+    toast.success("Logged in successfully!");
+    router.push("/courses");
   };
   return (
     <Card className="mx-auto max-w-sm w-full">
@@ -55,13 +59,7 @@ const LoginForm = () => {
               <Field error={errors.email}>
                 <Label htmlFor="email">Email</Label>
                 <Input
-                  {...register("email", {
-                    required: "Email is required",
-                    pattern: {
-                      value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                      message: "Email is invalid",
-                    },
-                  })}
+                  {...register("email")}
                   id="email"
                   name="email"
                   type="email"
@@ -71,13 +69,7 @@ const LoginForm = () => {
               <Field error={errors.password}>
                 <Label htmlFor="password">Password</Label>
                 <Input
-                  {...register("password", {
-                    required: "Password is required",
-                    minLength: {
-                      value: 6,
-                      message: "Password must be at least 6 characters",
-                    },
-                  })}
+                  {...register("password")}
                   id="password"
                   name="password"
                   type="password"

@@ -22,7 +22,6 @@ export const {
       // 'user' is only passed in on the initial sign-in
       if (user?.email) {
         const dbUser = await UserModel.findOne({ email: user.email });
-        console.log("DB User in JWT callback:", dbUser);
 
         if (dbUser) {
           token.id = dbUser._id.toString();
