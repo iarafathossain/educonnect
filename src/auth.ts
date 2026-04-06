@@ -2,6 +2,7 @@ import { USER_ROLES } from "@/constants/enums";
 import { MongoDBAdapter } from "@auth/mongodb-adapter";
 import bcrypt from "bcryptjs";
 import NextAuth from "next-auth";
+import type { Adapter } from "next-auth/adapters";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import { authConfig } from "./auth.config";
@@ -16,7 +17,7 @@ export const {
 } = NextAuth({
   ...authConfig,
   session: { strategy: "jwt" },
-  adapter: MongoDBAdapter(client),
+  adapter: MongoDBAdapter(client) as Adapter,
   callbacks: {
     async jwt({ token, user }) {
       // 'user' is only passed in on the initial sign-in
@@ -79,8 +80,9 @@ export const {
 
           return {
             id: user._id.toString(),
+            firstName: user.firstName,
+            lastName: user.lastName,
             email: user.email,
-            name: user.firstName + " " + user.lastName,
             role: user.role,
             image: user.image,
           };
