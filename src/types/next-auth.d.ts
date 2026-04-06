@@ -1,33 +1,32 @@
-import { DefaultSession } from "next-auth";
-
-type UserRole = "student" | "instructor";
+import { TUserRole } from "@/constants/enums";
+import { DefaultSession, DefaultUser } from "next-auth";
+import { DefaultJWT } from "next-auth/jwt";
 
 declare module "next-auth" {
   interface Session {
-    user?: {
+    // Note: 'image' is already included inside DefaultSession["user"]
+    user: {
       id: string;
-      role: UserRole;
+      role: TUserRole;
       firstName: string;
       lastName: string;
-      profilePictureUrl?: string | null;
     } & DefaultSession["user"];
   }
 
-  interface User {
-    role?: UserRole;
+  interface User extends DefaultUser {
+    // Note: 'image' is already included inside DefaultUser
+    role?: TUserRole;
     firstName?: string;
     lastName?: string;
-    profilePictureUrl?: string | null;
   }
 }
 
 declare module "next-auth/jwt" {
-  interface JWT {
-    id?: string;
-    role?: UserRole;
+  interface JWT extends DefaultJWT {
+    // Note: 'picture' is natively used by NextAuth in the JWT token to store the image URL
+    id: string;
+    role?: TUserRole;
     firstName?: string;
     lastName?: string;
-    picture?: string | null;
-    profilePictureUrl?: string | null;
   }
 }

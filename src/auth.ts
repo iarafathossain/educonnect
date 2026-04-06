@@ -1,3 +1,4 @@
+import { USER_ROLES } from "@/constants/enums";
 import { MongoDBAdapter } from "@auth/mongodb-adapter";
 import bcrypt from "bcryptjs";
 import NextAuth from "next-auth";
@@ -18,6 +19,7 @@ export const {
   adapter: MongoDBAdapter(client),
   callbacks: {
     async jwt({ token, user }) {
+      // 'user' is only passed in on the initial sign-in
       if (user?.email) {
         const dbUser = await UserModel.findOne({ email: user.email });
         console.log("DB User in JWT callback:", dbUser);
@@ -27,31 +29,29 @@ export const {
           token.role = dbUser.role;
           token.firstName = dbUser.firstName;
           token.lastName = dbUser.lastName;
-          token.picture = dbUser.profilePictureUrl ?? token.picture;
-          token.profilePictureUrl =
-            dbUser.profilePictureUrl ?? token.profilePictureUrl;
+          token.picture = dbUser.image ?? token.picture;
         } else {
-          token.id = user.id;
+          // Fallback for new Google OAuth users before the 'createUser' event finishes
+          token.id = user.id!;
           token.firstName = user.name?.split(" ")[0] ?? "";
           token.lastName = user.name?.split(" ").slice(1).join(" ") ?? "";
           token.picture = user.image ?? token.picture;
         }
       }
-
       return token;
     },
     async session({ session, token }) {
       if (session.user) {
         session.user.id = token.id as string;
         session.user.role =
-          (token.role as "student" | "instructor") ?? "student";
+          token.role === USER_ROLES.instructor
+            ? USER_ROLES.instructor
+            : USER_ROLES.student;
         session.user.firstName = token.firstName as string;
         session.user.lastName = token.lastName as string;
-        session.user.image = token.picture ?? session.user.image;
-        session.user.profilePictureUrl =
-          (token.profilePictureUrl as string) ?? session.user.profilePictureUrl;
+        session.user.image =
+          (token.picture as string | undefined) ?? session.user.image;
       }
-
       return session;
     },
   },
@@ -64,14 +64,16 @@ export const {
           }
 
           const user = await UserModel.findOne({ email: credentials.email });
-          if (!user) {
+          if (!user || !user.passwordHash) {
+            // Ensure user and passwordHash exist
             return null;
           }
 
           const isPasswordValid = await bcrypt.compare(
-            credentials?.password as string,
-            user.password,
+            credentials.password as string,
+            user.passwordHash, // Corrected from user.password
           );
+
           if (!isPasswordValid) {
             return null;
           }
@@ -81,6 +83,7 @@ export const {
             email: user.email,
             name: user.firstName + " " + user.lastName,
             role: user.role,
+            image: user.image,
           };
         } catch (error) {
           console.log(error);
@@ -116,9 +119,8 @@ export const {
               firstName: firstName || user.name || "",
               lastName: lastName,
               email: user.email,
-              profilePictureUrl: user.image || undefined,
-              // default role for OAuth signups
-              role: "student",
+              image: user.image || undefined,
+              role: USER_ROLES.student, // default role for OAuth signups
             },
           },
           { upsert: true, new: true, setDefaultsOnInsert: true },
