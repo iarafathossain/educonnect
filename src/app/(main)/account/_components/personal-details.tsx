@@ -7,11 +7,16 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { catchError } from "@/lib/catch-error";
-import { IUserFrontend, PersonalDetailsFormData } from "@/types/frontend-index";
+import { PersonalDetailsFormData } from "@/types/frontend-index";
+import { TSessionUser } from "@/types/user";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
-const PersonalDetails = ({ userInfo }: { userInfo: IUserFrontend }) => {
+interface PersonalDetailsProps {
+  userInfo: TSessionUser;
+}
+
+const PersonalDetails = ({ userInfo }: PersonalDetailsProps) => {
   const {
     register,
     handleSubmit,

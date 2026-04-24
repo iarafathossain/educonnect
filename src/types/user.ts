@@ -9,4 +9,11 @@ export type TSessionUser = {
   image?: string;
   phone?: string;
   designation?: string;
+  bio?: string;
+  website?: string;
+  socialLinks?: {
+    facebook?: string;
+    twitter?: string;
+    linkedin?: string;
+  };
 };

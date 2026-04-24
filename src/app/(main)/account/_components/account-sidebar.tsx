@@ -1,19 +1,16 @@
 import "@/models/user-model";
 
 import { auth } from "@/auth";
-import { getUserByEmail } from "@/queries/users";
 import Image from "next/image";
 import { redirect } from "next/navigation";
 import AccountMenu from "./account-menu";
 
 const AccountSidebar = async () => {
   const session = await auth();
-  if (!session?.user) {
+  if (!session || !session.user) {
     redirect("/login");
   }
-
-  const userEmail = session.user.email;
-  const loggedInUser = await getUserByEmail(userEmail!);
+  const user = session.user;
 
   return (
     <div className="lg:w-1/4 md:px-3">
@@ -29,12 +26,10 @@ const AccountSidebar = async () => {
             <div>
               <div className="relative size-28 mx-auto">
                 <Image
-                  src={
-                    loggedInUser?.profilePictureUrl || "/default-profile.png"
-                  }
+                  src={user?.image || "/default-profile.png"}
                   className="rounded-full shadow dark:shadow-gray-800 ring-4 ring-slate-50 dark:ring-slate-800"
                   id="profile-banner"
-                  alt={`${loggedInUser?.firstName} ${loggedInUser?.lastName}`}
+                  alt={`${user?.firstName} ${user?.lastName}`}
                   width={112}
                   height={112}
                 />
@@ -44,8 +39,8 @@ const AccountSidebar = async () => {
                 />
               </div>
               <div className="mt-4">
-                <h5 className="text-lg font-semibold">{`${loggedInUser?.firstName} ${loggedInUser?.lastName}`}</h5>
-                <p className="text-slate-400">{loggedInUser?.email}</p>
+                <h5 className="text-lg font-semibold">{`${user?.firstName} ${user?.lastName}`}</h5>
+                <p className="text-slate-400">{user?.email}</p>
               </div>
             </div>
           </div>

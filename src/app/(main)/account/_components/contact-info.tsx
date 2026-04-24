@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { catchError } from "@/lib/catch-error";
-import { IUserFrontend } from "@/types/frontend-index";
+import { TSessionUser } from "@/types/user";
 import { Link, Plus } from "lucide-react";
 import { AnyObject } from "mongoose";
 import { useEffect, useRef, useState } from "react";
@@ -19,7 +19,11 @@ type ContactItem = {
   hasContact: boolean;
 };
 
-const ContactInfo = ({ userInfo }: { userInfo: IUserFrontend }) => {
+interface ContactInfoProps {
+  userInfo: TSessionUser;
+}
+
+const ContactInfo = ({ userInfo }: ContactInfoProps) => {
   const [contactList, setContactList] = useState<ContactItem[]>([
     {
       type: "Phone",
@@ -140,7 +144,7 @@ const ContactInfo = ({ userInfo }: { userInfo: IUserFrontend }) => {
                           | "linkedin",
                         {
                           required: `${contact.type} is required`,
-                        }
+                        },
                       )}
                       id={contact.type.toLowerCase()}
                       type={
@@ -182,8 +186,8 @@ const ContactInfo = ({ userInfo }: { userInfo: IUserFrontend }) => {
                                 prev.map((c) =>
                                   c.type === contact.type
                                     ? { ...c, hasContact: true }
-                                    : c
-                                )
+                                    : c,
+                                ),
                               )
                             }
                             className="flex items-center justify-between py-1 px-4 gap-5 hover:bg-gray-100 hover:cursor-pointer border-b"
