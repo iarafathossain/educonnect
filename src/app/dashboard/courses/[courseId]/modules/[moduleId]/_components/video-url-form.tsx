@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
-import { updateLesson } from "@/app/actions/lesson";
+import { updateLessonAction } from "@/actions/lesson-actions";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -16,7 +16,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { VideoPlayer } from "@/components/video-player";
-import { catchError } from "@/lib/catch-error";
 import { Pencil } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -73,37 +72,39 @@ export const VideoUrlForm = ({ initialData, lessonId }: VideoUrlFormProps) => {
   const { isSubmitting, isValid } = form.formState;
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    try {
-      const payload = {
-        videoURL: "",
-        duration: 0,
-      };
-      payload.videoURL = values.url;
+    const payload = {
+      videoURL: "",
+      duration: 0,
+    };
+    payload.videoURL = values.url;
 
-      const durationParts = values.duration.split(":").map(Number);
+    const durationParts = values.duration.split(":").map(Number);
 
-      let totalSeconds = 0;
-      if (durationParts.length === 3) {
-        totalSeconds =
-          durationParts[0] * 3600 + durationParts[1] * 60 + durationParts[2];
-      } else if (durationParts.length === 2) {
-        totalSeconds = durationParts[0] * 60 + durationParts[1];
-      } else if (durationParts.length === 1) {
-        totalSeconds = durationParts[0];
-      }
-      payload.duration = totalSeconds;
-
-      await updateLesson(lessonId, payload);
-      setState({
-        url: values.url,
-        duration: values.duration,
-      });
-      toast.success("Lesson updated");
-      toggleEdit();
-      router.refresh();
-    } catch (error: unknown) {
-      toast.error(catchError(error));
+    let totalSeconds = 0;
+    if (durationParts.length === 3) {
+      totalSeconds =
+        durationParts[0] * 3600 + durationParts[1] * 60 + durationParts[2];
+    } else if (durationParts.length === 2) {
+      totalSeconds = durationParts[0] * 60 + durationParts[1];
+    } else if (durationParts.length === 1) {
+      totalSeconds = durationParts[0];
     }
+    payload.duration = totalSeconds;
+
+    const result = await updateLessonAction(lessonId, payload);
+
+    if (!result.success) {
+      toast.error(result.error);
+      return;
+    }
+
+    setState({
+      url: values.url,
+      duration: values.duration,
+    });
+    toast.success("Lesson updated");
+    toggleEdit();
+    router.refresh();
   };
 
   return (

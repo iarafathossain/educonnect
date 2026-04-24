@@ -8,8 +8,10 @@ import { useState } from "react";
 
 import { toast } from "sonner";
 
-import { changeLessonPublishState, deleteLesson } from "@/app/actions/lesson";
-import { catchError } from "@/lib/catch-error";
+import {
+  changeLessonPublishStateAction,
+  deleteLessonAction,
+} from "@/actions/lesson-actions";
 import { ILessonFrontend } from "@/types/frontend-index";
 
 interface LessonActionsProps {
@@ -32,8 +34,19 @@ export const LessonActions = ({
     try {
       switch (action) {
         case "change-active": {
-          const activeState = await changeLessonPublishState(lesson.id);
-          setPublished(!activeState);
+          const result = await changeLessonPublishStateAction(lesson.id);
+
+          if (!result.success) {
+            toast.error(result.error);
+            break;
+          }
+
+          if (typeof result.data !== "boolean") {
+            toast.error("Failed to update lesson state");
+            break;
+          }
+
+          setPublished(result.data);
           toast.success("The lesson has been updated");
           break;
         }
@@ -44,7 +57,16 @@ export const LessonActions = ({
               "A published lesson can not be deleted. First unpublish it, then delete.",
             );
           } else {
-            await deleteLesson(lesson.id, moduleId);
+            const result = await deleteLessonAction({
+              lessonId: lesson.id,
+              moduleId,
+            });
+
+            if (!result.success) {
+              toast.error(result.error);
+              break;
+            }
+
             onDelete();
           }
           break;
@@ -54,8 +76,8 @@ export const LessonActions = ({
           throw new Error("Invalid Lesson Action");
         }
       }
-    } catch (error: unknown) {
-      toast.error(catchError(error));
+    } catch {
+      toast.error("Something went wrong");
     }
   }
 

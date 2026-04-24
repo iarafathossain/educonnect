@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
-import { updateLesson } from "@/app/actions/lesson";
+import { updateLessonAction } from "@/actions/lesson-actions";
 import { Editor } from "@/components/editor";
 import { Preview } from "@/components/preview";
 import { Button } from "@/components/ui/button";
@@ -15,7 +15,6 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import { catchError } from "@/lib/catch-error";
 import { cn } from "@/lib/utils";
 import { Pencil } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -53,15 +52,17 @@ export const LessonDescriptionForm = ({
   const { isSubmitting, isValid } = form.formState;
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    try {
-      await updateLesson(lessonId, values);
-      setDescription(values.description);
-      toast.success("Lesson updated");
-      toggleEdit();
-      router.refresh();
-    } catch (error: unknown) {
-      toast.error(catchError(error));
+    const result = await updateLessonAction(lessonId, values);
+
+    if (!result.success) {
+      toast.error(result.error);
+      return;
     }
+
+    setDescription(values.description);
+    toast.success("Lesson updated");
+    toggleEdit();
+    router.refresh();
   };
 
   return (

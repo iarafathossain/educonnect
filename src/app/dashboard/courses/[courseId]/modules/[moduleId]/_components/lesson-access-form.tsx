@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
-import { updateLesson } from "@/app/actions/lesson";
+import { updateLessonAction } from "@/actions/lesson-actions";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -14,7 +14,6 @@ import {
   FormField,
   FormItem,
 } from "@/components/ui/form";
-import { catchError } from "@/lib/catch-error";
 import { cn } from "@/lib/utils";
 import { Pencil } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -52,19 +51,22 @@ export const LessonAccessForm = ({
   const { isSubmitting, isValid } = form.formState;
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    try {
-      const payload = {
-        isFree: values.isFree,
-        access: values.isFree ? "public" : "private",
-      };
-      await updateLesson(lessonId, payload);
-      setFree(!free);
-      toast.success("Lesson updated");
-      toggleEdit();
-      router.refresh();
-    } catch (error: unknown) {
-      toast.error(catchError(error));
+    const payload = {
+      isFree: values.isFree,
+      access: values.isFree ? "public" : "private",
+    };
+
+    const result = await updateLessonAction(lessonId, payload);
+
+    if (!result.success) {
+      toast.error(result.error);
+      return;
     }
+
+    setFree(values.isFree);
+    toast.success("Lesson updated");
+    toggleEdit();
+    router.refresh();
   };
 
   return (
