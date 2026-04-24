@@ -1,14 +1,18 @@
 "use client";
 
-import { updatePersonalDetailsAction } from "@/app/actions/account";
+import { updatePersonalDetailsAction } from "@/actions/account-actions";
 import Field from "@/components/field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { catchError } from "@/lib/catch-error";
-import { PersonalDetailsFormData } from "@/types/frontend-index";
 import { TSessionUser } from "@/types/user";
+import {
+  personalDetailsFormZodSchema,
+  TPersonalDetailsForm,
+  TPersonalDetailsUpdate,
+} from "@/validators/account-validator";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
@@ -21,44 +25,52 @@ const PersonalDetails = ({ userInfo }: PersonalDetailsProps) => {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm({
+  } = useForm<TPersonalDetailsForm>({
+    resolver: zodResolver(personalDetailsFormZodSchema),
     defaultValues: {
       firstName: userInfo.firstName,
       lastName: userInfo.lastName,
       email: userInfo.email,
-      designation: userInfo.designation,
-      bio: userInfo.bio,
+      designation: userInfo.designation || "",
+      bio: userInfo.bio || "",
     },
   });
 
-  const onSubmit = async (data: PersonalDetailsFormData) => {
-    try {
-      const email = userInfo.email;
-      const userDataToUpdate: PersonalDetailsFormData = {};
-      if (data.firstName !== userInfo.firstName) {
-        userDataToUpdate.firstName = data.firstName;
-      }
-      if (data.lastName !== userInfo.lastName) {
-        userDataToUpdate.lastName = data.lastName;
-      }
-      if (data.designation !== userInfo.designation) {
-        userDataToUpdate.designation = data.designation;
-      }
-      if (data.bio !== userInfo.bio) {
-        userDataToUpdate.bio = data.bio;
-      }
-      if (Object.keys(userDataToUpdate).length === 0) {
-        toast.info("No changes detected");
-        return;
-      }
-      await updatePersonalDetailsAction(email, userDataToUpdate);
+  const onSubmit = async (data: TPersonalDetailsForm) => {
+    const userDataToUpdate: TPersonalDetailsUpdate = {};
 
-      toast.success("Personal details updated successfully");
-    } catch (error) {
-      const errMsg = catchError(error);
-      toast.error(errMsg || "Failed to update personal details");
+    if (data.firstName !== userInfo.firstName) {
+      userDataToUpdate.firstName = data.firstName;
+    }
+
+    if (data.lastName !== userInfo.lastName) {
+      userDataToUpdate.lastName = data.lastName;
+    }
+
+    if (data.designation !== (userInfo.designation || "")) {
+      userDataToUpdate.designation = data.designation;
+    }
+
+    if (data.bio !== (userInfo.bio || "")) {
+      userDataToUpdate.bio = data.bio;
+    }
+
+    if (Object.keys(userDataToUpdate).length === 0) {
+      toast.info("No changes detected");
       return;
     }
+
+    const result = await updatePersonalDetailsAction(
+      userInfo.email,
+      userDataToUpdate,
+    );
+
+    if (!result.success) {
+      toast.error(result.error || "Failed to update personal details");
+      return;
+    }
+
+    toast.success("Personal details updated successfully");
   };
   return (
     <div className="p-6 rounded-md shadow dark:shadow-gray-800 bg-white dark:bg-slate-900">

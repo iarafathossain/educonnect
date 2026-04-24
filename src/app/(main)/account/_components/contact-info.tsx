@@ -1,14 +1,18 @@
 "use client";
 
-import { updateContactInfoAction } from "@/app/actions/account";
+import { updateContactInfoAction } from "@/actions/account-actions";
 import Field from "@/components/field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { catchError } from "@/lib/catch-error";
 import { TSessionUser } from "@/types/user";
+import {
+  contactInfoFormZodSchema,
+  TContactInfoForm,
+  TContactInfoUpdate,
+} from "@/validators/account-validator";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, Plus } from "lucide-react";
-import { AnyObject } from "mongoose";
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -59,24 +63,56 @@ const ContactInfo = ({ userInfo }: ContactInfoProps) => {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm({
+  } = useForm<TContactInfoForm>({
+    resolver: zodResolver(contactInfoFormZodSchema),
     defaultValues: {
-      phone: userInfo?.phone,
-      website: userInfo?.website,
-      facebook: userInfo?.socialLinks?.facebook,
-      twitter: userInfo?.socialLinks?.twitter,
-      linkedin: userInfo?.socialLinks?.linkedin,
+      phone: userInfo?.phone || "",
+      website: userInfo?.website || "",
+      facebook: userInfo?.socialLinks?.facebook || "",
+      twitter: userInfo?.socialLinks?.twitter || "",
+      linkedin: userInfo?.socialLinks?.linkedin || "",
     },
   });
 
-  const onSubmit = async (data: AnyObject) => {
-    try {
-      await updateContactInfoAction(userInfo.email, data);
-      toast.success("Contact information updated successfully");
-    } catch (error) {
-      const errMsg = catchError(error);
-      toast.error(errMsg);
+  const onSubmit = async (data: TContactInfoForm) => {
+    const contactDataToUpdate: TContactInfoUpdate = {};
+
+    if (data.phone !== (userInfo.phone || "")) {
+      contactDataToUpdate.phone = data.phone;
     }
+
+    if (data.website !== (userInfo.website || "")) {
+      contactDataToUpdate.website = data.website;
+    }
+
+    if (data.facebook !== (userInfo.socialLinks?.facebook || "")) {
+      contactDataToUpdate.facebook = data.facebook;
+    }
+
+    if (data.twitter !== (userInfo.socialLinks?.twitter || "")) {
+      contactDataToUpdate.twitter = data.twitter;
+    }
+
+    if (data.linkedin !== (userInfo.socialLinks?.linkedin || "")) {
+      contactDataToUpdate.linkedin = data.linkedin;
+    }
+
+    if (Object.keys(contactDataToUpdate).length === 0) {
+      toast.info("No changes detected");
+      return;
+    }
+
+    const result = await updateContactInfoAction(
+      userInfo.email,
+      contactDataToUpdate,
+    );
+
+    if (!result.success) {
+      toast.error(result.error || "Failed to update contact information");
+      return;
+    }
+
+    toast.success("Contact information updated successfully");
   };
 
   const PhoneField = (
@@ -86,21 +122,7 @@ const ContactInfo = ({ userInfo }: ContactInfoProps) => {
         id="phone"
         type="text"
         placeholder="Enter phone number"
-        {...register("phone", {
-          required: "Phone number is required",
-          pattern: {
-            value: /^[0-9]+$/,
-            message: "Invalid phone number",
-          },
-          maxLength: {
-            value: 11,
-            message: "Phone number cannot exceed 11 digits",
-          },
-          minLength: {
-            value: 10,
-            message: "Phone number must be at least 10 digits",
-          },
-        })}
+        {...register("phone")}
       />
     </Field>
   );
@@ -142,9 +164,6 @@ const ContactInfo = ({ userInfo }: ContactInfoProps) => {
                           | "facebook"
                           | "twitter"
                           | "linkedin",
-                        {
-                          required: `${contact.type} is required`,
-                        },
                       )}
                       id={contact.type.toLowerCase()}
                       type={

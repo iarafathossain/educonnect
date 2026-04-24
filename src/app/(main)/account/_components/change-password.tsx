@@ -1,11 +1,15 @@
 "use client";
 
-import { changePasswordAction } from "@/app/actions/account";
+import { changePasswordAction } from "@/actions/account-actions";
 import Field from "@/components/field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { catchError } from "@/lib/catch-error";
+import {
+  changePasswordFormZodSchema,
+  TChangePasswordForm,
+} from "@/validators/account-validator";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
@@ -13,19 +17,28 @@ const ChangePassword = ({ email }: { email: string }) => {
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors, isSubmitting },
-  } = useForm();
+  } = useForm<TChangePasswordForm>({
+    resolver: zodResolver(changePasswordFormZodSchema),
+    defaultValues: {
+      oldPassword: "",
+      newPassword: "",
+      retypeNewPassword: "",
+    },
+  });
 
-  const onSubmit = async () => {
-    const { oldPassword, newPassword } = watch();
-    try {
-      await changePasswordAction(email, oldPassword, newPassword);
-      toast.success("Password changed successfully");
-    } catch (error) {
-      const errMsg = catchError(error);
-      toast.error(errMsg);
+  const onSubmit = async (data: TChangePasswordForm) => {
+    const result = await changePasswordAction(email, {
+      oldPassword: data.oldPassword,
+      newPassword: data.newPassword,
+    });
+
+    if (!result.success) {
+      toast.error(result.error || "Failed to change password");
+      return;
     }
+
+    toast.success("Password changed successfully");
   };
   return (
     <div>
@@ -71,8 +84,6 @@ const ChangePassword = ({ email }: { email: string }) => {
                 id="retypeNewPassword"
                 {...register("retypeNewPassword", {
                   required: "Please re-type the new password",
-                  validate: (value) =>
-                    value === watch("newPassword") || "Passwords do not match",
                 })}
               />
             </Field>
