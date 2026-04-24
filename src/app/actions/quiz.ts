@@ -1,10 +1,10 @@
 "use server";
 
 import { catchError } from "@/lib/catch-error";
+import { connectDB } from "@/lib/connect-mongo";
 import { getSlug } from "@/lib/get-slug";
 import { QuizSet } from "@/models/quiz-set-model";
 import { quizQueries } from "@/queries/quiz";
-import { connectDB } from "@/services/connect-mongo";
 import { QuizFormValues } from "@/validations/quiz-validator";
 import { TitleFormValues } from "../dashboard/quiz-sets/[quizSetId]/_components/title-form";
 

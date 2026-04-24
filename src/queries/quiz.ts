@@ -1,7 +1,7 @@
 import { catchError } from "@/lib/catch-error";
+import { connectDB } from "@/lib/connect-mongo";
 import { Quiz } from "@/models/quiz-model";
 import { QuizSet } from "@/models/quiz-set-model";
-import { connectDB } from "@/services/connect-mongo";
 
 export const quizQueries = {
   getAllQuiSets: async (excludeUnpublished: boolean = false) => {

@@ -4,7 +4,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
-import { updateCourseAction } from "@/app/actions/course";
+import { updateCourseAction } from "@/actions/course-actions";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -44,13 +44,15 @@ export const TitleForm = ({ initialData, courseId }: TitleFormProps) => {
   const { isSubmitting, isValid } = form.formState;
 
   const onSubmit = async (values: UpdateCourseTitlePayload) => {
-    try {
-      await updateCourseAction<UpdateCourseTitlePayload>(courseId, values);
-      toggleEdit();
-      router.refresh();
-    } catch (error) {
-      toast.error("Something went wrong");
+    const result = await updateCourseAction(courseId, values);
+
+    if (!result.success) {
+      toast.error(result.error);
+      return;
     }
+
+    toggleEdit();
+    router.refresh();
   };
 
   return (

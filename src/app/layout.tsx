@@ -1,6 +1,6 @@
 import { Toaster } from "@/components/ui/sonner";
+import { connectDB } from "@/lib/connect-mongo";
 import { cn } from "@/lib/utils";
-import { connectDB } from "@/services/connect-mongo";
 import type { Metadata } from "next";
 import { Inter, Poppins } from "next/font/google";
 import "./globals.css";

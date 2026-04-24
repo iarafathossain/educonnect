@@ -1,10 +1,10 @@
 "use server";
 
 import { catchError } from "@/lib/catch-error";
+import { connectDB } from "@/lib/connect-mongo";
 import { LessonModel } from "@/models/lesson-model";
 import { ModuleModel } from "@/models/module-model";
 import { create } from "@/queries/lessons";
-import { connectDB } from "@/services/connect-mongo";
 import { IReorderItem } from "@/types/shared-index";
 
 export const createLesson = async (payload: FormData) => {

@@ -5,7 +5,7 @@ import { Trash } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 
-import { changeCoursePublishState, deleteCourse } from "@/app/actions/course";
+import { changeCoursePublishState, deleteCourse } from "@/actions/course-actions";
 
 import { toast } from "sonner";
 
@@ -28,9 +28,19 @@ export const CourseActions = ({ courseId, isActive }: CourseActionsProps) => {
     try {
       switch (action) {
         case "change-active": {
-          const activeState = await changeCoursePublishState(courseId);
+          const result = await changeCoursePublishState(courseId);
 
-          setPublished(activeState);
+          if (!result.success) {
+            toast.error(result.error);
+            break;
+          }
+
+          if (typeof result.data !== "boolean") {
+            toast.error("Failed to update course state");
+            break;
+          }
+
+          setPublished(result.data);
           toast.success("The course has been updated successfully.");
           router.refresh();
           break;
@@ -42,7 +52,13 @@ export const CourseActions = ({ courseId, isActive }: CourseActionsProps) => {
               "A published course can not be deleted. First unpublish it, then delete.",
             );
           } else {
-            await deleteCourse(courseId);
+            const result = await deleteCourse(courseId);
+
+            if (!result.success) {
+              toast.error(result.error);
+              break;
+            }
+
             toast.success("The course has been deleted successfully");
             router.push(`/dashboard/courses/`);
           }

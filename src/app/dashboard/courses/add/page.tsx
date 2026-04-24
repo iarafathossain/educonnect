@@ -1,6 +1,6 @@
 "use client";
 
-import { createCourseAction } from "@/app/actions/course";
+import { createCourseAction } from "@/actions/course-actions";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { catchError } from "@/lib/catch-error";
 import {
   courseCreateZodSchema,
   CreateCoursePayload,
@@ -38,13 +37,21 @@ const AddCoursePage = () => {
   const { isSubmitting, isValid } = form.formState;
 
   const onSubmit = async (values: CreateCoursePayload) => {
-    try {
-      const course = await createCourseAction(values);
-      router.push(`/dashboard/courses/${course.id}`);
-      toast.success("Course created");
-    } catch (error: unknown) {
-      toast.error(catchError(error));
+    const result = await createCourseAction(values);
+    console.log(result);
+
+    if (!result.success) {
+      toast.error(result.error);
+      return;
     }
+
+    if (!result.data) {
+      toast.error("Failed to create course");
+      return;
+    }
+
+    router.push(`/dashboard/courses/${result.data.id}`);
+    toast.success("Course created");
   };
   return (
     <div className="max-w-5xl mx-auto flex md:items-center md:justify-center h-full p-6">

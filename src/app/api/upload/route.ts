@@ -1,4 +1,4 @@
-import { updateCourseAction } from "@/app/actions/course";
+import { updateCourseAction } from "@/actions/course-actions";
 import fs from "fs";
 import { pipeline } from "stream";
 import { promisify } from "util";
@@ -26,7 +26,13 @@ export const POST = async (req: Request, res: Response) => {
     const filePath = `${destination}/${Date.now()}-${file.name}`;
 
     await pump(file.stream(), fs.createWriteStream(filePath));
-    await updateCourseAction(courseId, { thumbnail: filePath });
+    const updateResult = await updateCourseAction(courseId, {
+      thumbnail: filePath,
+    });
+
+    if (!updateResult.success) {
+      return new Response(updateResult.error, { status: updateResult.statusCode });
+    }
 
     return new Response(
       JSON.stringify({

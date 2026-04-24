@@ -1,6 +1,6 @@
 "use client";
 
-import { updateCourseAction } from "@/app/actions/course";
+import { updateCourseAction } from "@/actions/course-actions";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -10,7 +10,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
-import { catchError } from "@/lib/catch-error";
 import { cn } from "@/lib/utils";
 import {
   UpdateCourseDescriptionPayload,
@@ -49,14 +48,16 @@ export const DescriptionForm = ({
   const { isSubmitting, isValid } = form.formState;
 
   const onSubmit = async (values: UpdateCourseDescriptionPayload) => {
-    try {
-      await updateCourseAction(courseId, values);
-      toast.success("Course updated");
-      toggleEdit();
-      router.refresh();
-    } catch (error: unknown) {
-      toast.error(catchError(error));
+    const result = await updateCourseAction(courseId, values);
+
+    if (!result.success) {
+      toast.error(result.error);
+      return;
     }
+
+    toast.success("Course updated");
+    toggleEdit();
+    router.refresh();
   };
 
   return (

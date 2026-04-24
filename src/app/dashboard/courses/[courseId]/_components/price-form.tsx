@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
-import { updateCourseAction } from "@/app/actions/course";
+import { updateCourseAction } from "@/actions/course-actions";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -14,7 +14,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { catchError } from "@/lib/catch-error";
 import { formatPrice } from "@/lib/formate-price";
 import { cn } from "@/lib/utils";
 import { Pencil } from "lucide-react";
@@ -49,14 +48,16 @@ export const PriceForm = ({ initialData, courseId }: PriceFormProps) => {
   const { isSubmitting, isValid } = form.formState;
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    try {
-      await updateCourseAction(courseId, { price: values.price });
-      toast.success("Course updated");
-      toggleEdit();
-      router.refresh();
-    } catch (error: unknown) {
-      toast.error(catchError(error));
+    const result = await updateCourseAction(courseId, { price: values.price });
+
+    if (!result.success) {
+      toast.error(result.error);
+      return;
     }
+
+    toast.success("Course updated");
+    toggleEdit();
+    router.refresh();
   };
 
   return (

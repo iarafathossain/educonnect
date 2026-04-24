@@ -1,9 +1,9 @@
+import { connectDB } from "@/lib/connect-mongo";
 import "@/models/category-model";
 import { CourseModel } from "@/models/course-model";
 import "@/models/module-model";
 import "@/models/testimonial-model";
 import "@/models/user-model";
-import { connectDB } from "@/services/connect-mongo";
 import { ICourseFrontend } from "@/types/frontend-index";
 import { getEnrollmentsForCourse } from "./enrollments";
 import { getTestimonialsForCourse } from "./testimonials";

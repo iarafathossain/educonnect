@@ -1,7 +1,7 @@
 import { catchError } from "@/lib/catch-error";
+import { connectDB } from "@/lib/connect-mongo";
 import "@/models/lesson-model";
 import { ModuleModel } from "@/models/module-model";
-import { connectDB } from "@/services/connect-mongo";
 
 export const createModule = async (data) => {
   try {

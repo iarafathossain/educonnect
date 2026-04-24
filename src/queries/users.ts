@@ -1,5 +1,5 @@
+import { connectDB } from "@/lib/connect-mongo";
 import { UserModel } from "@/models/user-model";
-import { connectDB } from "@/services/connect-mongo";
 import bcrypt from "bcryptjs";
 
 export const getUserByEmail = async (email: string) => {

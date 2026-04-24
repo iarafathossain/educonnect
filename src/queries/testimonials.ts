@@ -1,5 +1,5 @@
+import { connectDB } from "@/lib/connect-mongo";
 import { TestimonialModel } from "@/models/testimonial-model";
-import { connectDB } from "@/services/connect-mongo";
 
 // Fetch all testimonials for a specific course
 export const getTestimonialsForCourse = async (courseId: string) => {

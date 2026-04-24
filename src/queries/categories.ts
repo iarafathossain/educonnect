@@ -1,5 +1,5 @@
+import { connectDB } from "@/lib/connect-mongo";
 import { CategoryModel } from "@/models/category-model";
-import { connectDB } from "@/services/connect-mongo";
 
 // Fetch all categories from the database
 export const getCategories = async () => {

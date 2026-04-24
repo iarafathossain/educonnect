@@ -1,5 +1,5 @@
+import { connectDB } from "@/lib/connect-mongo";
 import { LessonModel } from "@/models/lesson-model";
-import { connectDB } from "@/services/connect-mongo";
 
 export const getLesson = async (id: string) => {
   await connectDB();

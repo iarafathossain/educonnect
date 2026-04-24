@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
-import { updateCourseAction } from "@/app/actions/course";
+import { updateCourseAction } from "@/actions/course-actions";
 import { Button } from "@/components/ui/button";
 import { Combobox } from "@/components/ui/combobox";
 import {
@@ -14,7 +14,6 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import { catchError } from "@/lib/catch-error";
 import { cn } from "@/lib/utils";
 import { Pencil } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -57,18 +56,22 @@ export const CategoryForm = ({
   const { isSubmitting, isValid } = form.formState;
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    try {
-      const selectedCategory = options.find(
-        (option) => option.value === values.value,
-      );
+    const selectedCategory = options.find(
+      (option) => option.value === values.value,
+    );
 
-      await updateCourseAction(courseId, { category: selectedCategory!.id });
-      toast.success("Course updated");
-      toggleEdit();
-      router.refresh();
-    } catch (error: unknown) {
-      toast.error(catchError(error));
+    const result = await updateCourseAction(courseId, {
+      category: selectedCategory!.id,
+    });
+
+    if (!result.success) {
+      toast.error(result.error);
+      return;
     }
+
+    toast.success("Course updated");
+    toggleEdit();
+    router.refresh();
   };
 
   const selectedOptions = options.find(

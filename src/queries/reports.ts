@@ -1,8 +1,8 @@
 import "@/models/assessment-model";
 
 import { catchError } from "@/lib/catch-error";
+import { connectDB } from "@/lib/connect-mongo";
 import { ReportModel } from "@/models/report-model";
-import { connectDB } from "@/services/connect-mongo";
 
 export const getReportsForStudent = async (filter: {
   student: string;

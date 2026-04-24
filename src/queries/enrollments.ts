@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
 
 import { catchError } from "@/lib/catch-error";
+import { connectDB } from "@/lib/connect-mongo";
 import { EnrollmentModel } from "@/models/enrollment-model";
-import { connectDB } from "@/services/connect-mongo";
 import { IEnrollment } from "@/types/backend-index";
 
 export const getEnrollmentsForCourse = async (courseId: string) => {

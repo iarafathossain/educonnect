@@ -7,7 +7,7 @@ import { ImageIcon, Pencil, PlusCircle } from "lucide-react";
 import Image from "next/image";
 import { toast } from "sonner";
 
-import { updateCourseAction } from "@/app/actions/course";
+import { updateCourseAction } from "@/actions/course-actions";
 import { UploadDropzone } from "@/components/file-upload";
 import { Button } from "@/components/ui/button";
 import { catchError } from "@/lib/catch-error";
@@ -30,14 +30,16 @@ export const ImageForm = ({ initialData, courseId }: ImageFormProps) => {
   const toggleEdit = () => setIsEditing((current) => !current);
 
   const onSubmit = async (values: UpdateCourseImagePayload) => {
-    try {
-      await updateCourseAction(courseId, values);
-      toast.success("Course updated");
-      toggleEdit();
-      router.refresh();
-    } catch (error: unknown) {
-      toast.error(catchError(error));
+    const result = await updateCourseAction(courseId, values);
+
+    if (!result.success) {
+      toast.error(result.error);
+      return;
     }
+
+    toast.success("Course updated");
+    toggleEdit();
+    router.refresh();
   };
 
   useEffect(() => {
