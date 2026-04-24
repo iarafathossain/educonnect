@@ -5,7 +5,10 @@ import { Trash } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 
-import { changeCoursePublishState, deleteCourse } from "@/actions/course-actions";
+import {
+  changeCoursePublishState,
+  deleteCourse,
+} from "@/actions/course-actions";
 
 import { toast } from "sonner";
 
@@ -79,7 +82,7 @@ export const CourseActions = ({ courseId, isActive }: CourseActionsProps) => {
     <form onSubmit={handleSubmit}>
       <div className="flex items-center gap-x-2">
         <Button
-          type="button"
+          type="submit"
           variant="outline"
           size="sm"
           onClick={() => setAction("change-active")}
@@ -88,7 +91,7 @@ export const CourseActions = ({ courseId, isActive }: CourseActionsProps) => {
         </Button>
 
         <Button
-          type="button"
+          type="submit"
           name="action"
           value="delete"
           size="sm"
