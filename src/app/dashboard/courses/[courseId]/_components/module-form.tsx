@@ -4,7 +4,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
-import { createModuleAction, reorderModules } from "@/app/actions/module";
+import {
+  createModuleAction,
+  reorderModulesAction,
+} from "@/actions/module-actions";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -52,39 +55,50 @@ export const ModulesForm = ({ initialData, courseId }: ModulesFormProps) => {
   const { isSubmitting, isValid } = form.formState;
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    try {
-      const formData = new FormData();
-      formData.append("title", values.title);
-      formData.append("courseId", courseId);
-      formData.append("slug", getSlug(values.title));
-      formData.append("order", modules.length.toString());
+    const result = await createModuleAction({
+      title: values.title,
+      courseId,
+      slug: getSlug(values.title),
+      order: modules.length,
+    });
 
-      const newModule = await createModuleAction(formData);
-
-      setModules((modules) => [
-        ...modules,
-        {
-          id: newModule.id,
-          title: values.title,
-          order: modules.length,
-          active: newModule.active,
-          courseId: courseId,
-          slug: getSlug(values.title),
-          lessonIds: [],
-          duration: 0,
-        },
-      ]);
-      toast.success("Module created successfully!");
-      toggleCreating();
-      router.refresh();
-    } catch (error: unknown) {
-      toast.error(catchError(error));
+    if (!result.success) {
+      toast.error(result.error);
+      return;
     }
+
+    if (!result.data) {
+      toast.error("Failed to create module");
+      return;
+    }
+
+    setModules((currentModules) => [
+      ...currentModules,
+      {
+        id: result.data.id,
+        title: values.title,
+        order: currentModules.length,
+        active: result.data.active,
+        courseId,
+        slug: getSlug(values.title),
+        lessonIds: [],
+        duration: 0,
+      },
+    ]);
+    toast.success("Module created successfully!");
+    toggleCreating();
+    router.refresh();
   };
 
   const onReorder = async (updateData: IReorderItem[]) => {
     try {
-      await reorderModules(updateData);
+      const result = await reorderModulesAction(updateData);
+
+      if (!result.success) {
+        toast.error(result.error);
+        return;
+      }
+
       setIsUpdating(true);
 
       toast.success("Chapters reordered");

@@ -7,8 +7,10 @@ import { useState } from "react";
 
 import { toast } from "sonner";
 
-import { changeModulePublishState, deleteModule } from "@/app/actions/module";
-import { catchError } from "@/lib/catch-error";
+import {
+  changeModulePublishStateAction,
+  deleteModuleAction,
+} from "@/actions/module-actions";
 import { IModuleFrontend } from "@/types/frontend-index";
 import { useRouter } from "next/navigation";
 
@@ -31,9 +33,19 @@ export const ModuleActions = ({
     try {
       switch (action) {
         case "change-active": {
-          const activeState = await changeModulePublishState(moduleDetails.id);
+          const result = await changeModulePublishStateAction(moduleDetails.id);
 
-          setPublished(!activeState);
+          if (!result.success) {
+            toast.error(result.error);
+            break;
+          }
+
+          if (typeof result.data !== "boolean") {
+            toast.error("Failed to update module state");
+            break;
+          }
+
+          setPublished(result.data);
           toast.success("The module has been updated successfully.");
           router.refresh();
           break;
@@ -45,7 +57,16 @@ export const ModuleActions = ({
               "A published module can not be deleted. First unpublish it, then delete.",
             );
           } else {
-            await deleteModule(moduleDetails.id, courseId);
+            const result = await deleteModuleAction({
+              moduleId: moduleDetails.id,
+              courseId,
+            });
+
+            if (!result.success) {
+              toast.error(result.error);
+              break;
+            }
+
             // router.refresh();
             router.push(`/dashboard/courses/${courseId}`);
           }
@@ -58,7 +79,7 @@ export const ModuleActions = ({
       }
     } catch (error: unknown) {
       console.error("Error handling module action:", error);
-      toast.error(catchError(error));
+      toast.error("Something went wrong");
     }
   }
 

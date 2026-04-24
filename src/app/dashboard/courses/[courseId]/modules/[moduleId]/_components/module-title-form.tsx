@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
-import { updateModule } from "@/app/actions/module";
+import { updateModuleAction } from "@/actions/module-actions";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -14,7 +14,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { catchError } from "@/lib/catch-error";
 import { getSlug } from "@/lib/get-slug";
 import { Pencil } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -50,18 +49,21 @@ export const ModuleTitleForm = ({
   const { isSubmitting, isValid } = form.formState;
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    try {
-      const dataToSubmit = {
-        ...values,
-        slug: getSlug(values.title),
-      };
-      await updateModule(moduleId, dataToSubmit);
-      toast.success("Module title updated");
-      toggleEdit();
-      router.refresh();
-    } catch (error: unknown) {
-      toast.error(catchError(error));
+    const dataToSubmit = {
+      ...values,
+      slug: getSlug(values.title),
+    };
+
+    const result = await updateModuleAction(moduleId, dataToSubmit);
+
+    if (!result.success) {
+      toast.error(result.error);
+      return;
     }
+
+    toast.success("Module title updated");
+    toggleEdit();
+    router.refresh();
   };
 
   return (
