@@ -1,7 +1,5 @@
 "use client";
-import * as z from "zod";
-// import axios from "axios";
-import { createQuizSet } from "@/app/actions/quiz";
+import { createQuizSetAction } from "@/actions/quiz-actions";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -12,22 +10,21 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import {
+  quizSetCreateZodSchema,
+  TQuizSetCreatePayload,
+} from "@/validators/quiz-set-validator";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-const formSchema = z.object({
-  title: z.string().min(1, {
-    message: "Title is required!",
-  }),
-});
 
 const AddQuizSet = () => {
   const router = useRouter();
 
-  const form = useForm({
-    resolver: zodResolver(formSchema),
+  const form = useForm<TQuizSetCreatePayload>({
+    resolver: zodResolver(quizSetCreateZodSchema),
     defaultValues: {
       title: "",
     },
@@ -35,15 +32,21 @@ const AddQuizSet = () => {
 
   const { isSubmitting, isValid } = form.formState;
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    try {
-      const createdQuizSetId = await createQuizSet(values);
-      router.push(`/dashboard/quiz-sets/${createdQuizSetId}`);
-      toast.success("Quiz Set Created");
-    } catch (error) {
-      console.error("Error submitting form:", error);
-      toast.error("Something went wrong");
+  const onSubmit = async (values: TQuizSetCreatePayload) => {
+    const result = await createQuizSetAction(values);
+
+    if (!result.success) {
+      toast.error(result.error);
+      return;
     }
+
+    if (!result.data) {
+      toast.error("Something went wrong");
+      return;
+    }
+
+    router.push(`/dashboard/quiz-sets/${result.data}`);
+    toast.success("Quiz Set Created");
   };
   return (
     <div className="max-w-5xl mx-auto flex md:items-center md:justify-center h-full p-6">

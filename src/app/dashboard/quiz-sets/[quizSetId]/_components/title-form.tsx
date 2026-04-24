@@ -1,11 +1,10 @@
 "use client";
 
-import * as z from "zod";
 // import axios from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
-import { updateQuizSet } from "@/app/actions/quiz";
+import { updateQuizSetAction } from "@/actions/quiz-actions";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -15,19 +14,16 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { catchError } from "@/lib/catch-error";
+import {
+  quizSetUpdateZodSchema,
+  TQuizSetUpdatePayload,
+} from "@/validators/quiz-set-validator";
 import { Pencil } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
-const formSchema = z.object({
-  title: z.string().min(1, {
-    message: "Title is required",
-  }),
-});
-
-export type TitleFormValues = z.infer<typeof formSchema>;
+export type TitleFormValues = TQuizSetUpdatePayload;
 
 interface TitleFormProps {
   initialData: {
@@ -42,22 +38,24 @@ export const TitleForm = ({ initialData, quizSetId }: TitleFormProps) => {
 
   const toggleEdit = () => setIsEditing((current) => !current);
 
-  const form = useForm({
-    resolver: zodResolver(formSchema),
+  const form = useForm<TQuizSetUpdatePayload>({
+    resolver: zodResolver(quizSetUpdateZodSchema),
     defaultValues: initialData,
   });
 
   const { isSubmitting, isValid } = form.formState;
 
   const onSubmit = async (values: TitleFormValues) => {
-    try {
-      await updateQuizSet(quizSetId, values);
-      toggleEdit();
-      toast.success("Quiz set title updated successfully");
-      router.refresh();
-    } catch (error: unknown) {
-      toast.error(catchError(error));
+    const result = await updateQuizSetAction(quizSetId, values);
+
+    if (!result.success) {
+      toast.error(result.error);
+      return;
     }
+
+    toggleEdit();
+    toast.success("Quiz set title updated successfully");
+    router.refresh();
   };
 
   return (

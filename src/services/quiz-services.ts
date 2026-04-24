@@ -1,0 +1,110 @@
+import { AppError } from "@/lib/app-error";
+import { connectDB } from "@/lib/connect-mongo";
+import { getSlug } from "@/lib/get-slug";
+import { Quiz } from "@/models/quiz-model";
+import { QuizSet } from "@/models/quiz-set-model";
+import {
+  TQuizCreateInSetPayload,
+  TQuizSetCreatePayload,
+  TQuizSetUpdatePayload,
+} from "@/validators/quiz-set-validator";
+import status from "http-status";
+
+export const quizServices = {
+  createQuizSet: async (payload: TQuizSetCreatePayload) => {
+    await connectDB();
+
+    const slug = getSlug(payload.title);
+    const existingQuizSet = await QuizSet.findOne({ slug });
+
+    if (existingQuizSet) {
+      throw new AppError(
+        "A quiz set with this title already exists.",
+        status.CONFLICT,
+      );
+    }
+
+    const quizSet = await QuizSet.create({
+      title: payload.title,
+      slug,
+      active: false,
+    });
+
+    return quizSet.id;
+  },
+
+  addQuizToQuizSet: async (
+    quizSetId: string,
+    payload: TQuizCreateInSetPayload,
+  ) => {
+    await connectDB();
+
+    const quizSet = await QuizSet.findById(quizSetId);
+    if (!quizSet) {
+      throw new AppError("Quiz set not found", status.NOT_FOUND);
+    }
+
+    const createdQuiz = await Quiz.create({
+      title: payload.title,
+      slug: getSlug(payload.title),
+      explanation: "",
+      description: payload.description || "",
+      mark: 5,
+      options: [
+        {
+          text: payload.optionA.label,
+          is_correct: payload.optionA.isTrue || false,
+        },
+        {
+          text: payload.optionB.label,
+          is_correct: payload.optionB.isTrue || false,
+        },
+        {
+          text: payload.optionC.label,
+          is_correct: payload.optionC.isTrue || false,
+        },
+        {
+          text: payload.optionD.label,
+          is_correct: payload.optionD.isTrue || false,
+        },
+      ],
+    });
+
+    quizSet.quizIds.push(createdQuiz.id);
+    await quizSet.save();
+
+    return createdQuiz.toJSON();
+  },
+
+  updateQuizSet: async (quizSetId: string, payload: TQuizSetUpdatePayload) => {
+    await connectDB();
+
+    const slug = getSlug(payload.title);
+    const existingQuizSet = await QuizSet.findOne({
+      slug,
+      _id: { $ne: quizSetId },
+    });
+
+    if (existingQuizSet) {
+      throw new AppError(
+        "A quiz set with this title already exists.",
+        status.CONFLICT,
+      );
+    }
+
+    const updatedQuizSet = await QuizSet.findByIdAndUpdate(
+      quizSetId,
+      {
+        title: payload.title,
+        slug,
+      },
+      { new: true },
+    );
+
+    if (!updatedQuizSet) {
+      throw new AppError("Quiz set not found", status.NOT_FOUND);
+    }
+
+    return updatedQuizSet.toJSON();
+  },
+};

@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
-import { addQuizToQuizSet } from "@/app/actions/quiz";
+import { addQuizToQuizSetAction } from "@/actions/quiz-actions";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -18,18 +18,17 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { catchError } from "@/lib/catch-error";
 import {
-    QuizFormValues,
-    quizFormZodValidator,
-} from "@/validations/quiz-validator";
+  quizCreateInSetZodSchema,
+  TQuizCreateInSetPayload,
+} from "@/validators/quiz-set-validator";
 import { useRouter } from "next/navigation";
 
 export const AddQuizForm = ({ quizSetId }: { quizSetId: string }) => {
   const router = useRouter();
 
-  const form = useForm({
-    resolver: zodResolver(quizFormZodValidator),
+  const form = useForm<TQuizCreateInSetPayload>({
+    resolver: zodResolver(quizCreateInSetZodSchema),
     mode: "all",
     defaultValues: {
       title: "",
@@ -55,45 +54,36 @@ export const AddQuizForm = ({ quizSetId }: { quizSetId: string }) => {
 
   const { isSubmitting } = form.formState;
 
-  const onSubmit = async (values: QuizFormValues) => {
-    try {
-      const hasTrueOption =
-        values.optionA.isTrue ||
-        values.optionB.isTrue ||
-        values.optionC.isTrue ||
-        values.optionD.isTrue;
+  const onSubmit = async (values: TQuizCreateInSetPayload) => {
+    const result = await addQuizToQuizSetAction(quizSetId, values);
 
-      if (!hasTrueOption) {
-        toast.error("Please select at least one correct option.");
-        return;
-      }
-
-      await addQuizToQuizSet(quizSetId, values);
-      toast.success("Quiz added to the set successfully!");
-      form.reset({
-        title: "",
-        description: "",
-        optionA: {
-          label: "",
-          isTrue: false,
-        },
-        optionB: {
-          label: "",
-          isTrue: false,
-        },
-        optionC: {
-          label: "",
-          isTrue: false,
-        },
-        optionD: {
-          label: "",
-          isTrue: false,
-        },
-      });
-      router.refresh();
-    } catch (error: unknown) {
-      toast.error(catchError(error));
+    if (!result.success) {
+      toast.error(result.error);
+      return;
     }
+
+    toast.success("Quiz added to the set successfully!");
+    form.reset({
+      title: "",
+      description: "",
+      optionA: {
+        label: "",
+        isTrue: false,
+      },
+      optionB: {
+        label: "",
+        isTrue: false,
+      },
+      optionC: {
+        label: "",
+        isTrue: false,
+      },
+      optionD: {
+        label: "",
+        isTrue: false,
+      },
+    });
+    router.refresh();
   };
 
   return (
