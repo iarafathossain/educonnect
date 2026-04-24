@@ -4,7 +4,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
-import { createLesson, reorderLessons } from "@/app/actions/lesson";
+import {
+  createLessonAction,
+  reorderLessonsAction,
+} from "@/actions/lesson-actions";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -14,7 +17,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { catchError } from "@/lib/catch-error";
 import { getSlug } from "@/lib/get-slug";
 import { cn } from "@/lib/utils";
 import { ILessonFrontend } from "@/types/frontend-index";
@@ -64,41 +66,51 @@ export const LessonForm = ({
   const { isSubmitting, isValid } = form.formState;
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    try {
-      const formData = new FormData();
+    const result = await createLessonAction({
+      title: values.title,
+      slug: getSlug(values.title),
+      moduleId,
+      order: lessons.length,
+    });
 
-      formData.append("title", values.title);
-      formData.append("slug", getSlug(values.title));
-      formData.append("moduleId", moduleId);
-      formData.append("order", lessons.length.toString());
-
-      const lesson = await createLesson(formData);
-
-      setLessons((lessons) => [
-        ...lessons,
-        {
-          id: lesson.id,
-          title: values.title,
-          slug: getSlug(values.title),
-        },
-      ]);
-      toast.success("Lesson created");
-      toggleCreating();
-      router.refresh();
-    } catch (error: unknown) {
-      toast.error(catchError(error));
+    if (!result.success) {
+      toast.error(result.error);
+      return;
     }
+
+    if (!result.data) {
+      toast.error("Failed to create lesson");
+      return;
+    }
+
+    setLessons((currentLessons) => [
+      ...currentLessons,
+      {
+        id: result.data.id,
+        title: values.title,
+        slug: getSlug(values.title),
+      },
+    ]);
+    toast.success("Lesson created");
+    toggleCreating();
+    router.refresh();
   };
 
   const onReorder = async (updateData: IReorderItem[]) => {
     try {
       setIsUpdating(true);
 
-      await reorderLessons(updateData);
+      const result = await reorderLessonsAction(updateData);
+
+      if (!result.success) {
+        toast.error(result.error);
+        return;
+      }
+
       toast.success("Lesson reordered");
       router.refresh();
-    } catch (error: unknown) {
-      toast.error(catchError(error));
+    } catch {
+      toast.error("Something went wrong");
     } finally {
       setIsUpdating(false);
     }
