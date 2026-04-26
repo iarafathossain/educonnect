@@ -1,6 +1,6 @@
 "use client";
 
-import { createCheckoutSessionAction } from "@/app/actions/stripe";
+import { createCheckoutSessionAction } from "@/actions/stripe-actions";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { ICourseFrontend } from "@/types/frontend-index";

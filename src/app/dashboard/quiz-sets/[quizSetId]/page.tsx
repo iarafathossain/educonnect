@@ -1,6 +1,6 @@
 import AlertBanner from "@/components/alert-banner";
 import { cn } from "@/lib/utils";
-import { quizQueries } from "@/queries/quiz";
+import { getQuizSetById } from "@/services/quiz-services";
 import { IQuizFrontend } from "@/types/frontend-index";
 import { Circle, CircleCheck } from "lucide-react";
 import { AddQuizForm } from "./_components/add-quiz-form";
@@ -15,7 +15,7 @@ interface EditQuizSetProps {
 }
 
 const EditQuizSet = async ({ params: { quizSetId } }: EditQuizSetProps) => {
-  const quizSet = await quizQueries.getQuizSetById(quizSetId);
+  const quizSet = await getQuizSetById(quizSetId);
 
   const quizzes: IQuizFrontend[] = quizSet.quizIds.map(
     (quiz: IQuizFrontend) => {

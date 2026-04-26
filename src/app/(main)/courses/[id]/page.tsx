@@ -1,4 +1,4 @@
-import { getCourse } from "@/queries/courses";
+import { getCourse } from "@/services/course-services";
 import { ICourseFrontend } from "@/types/frontend-index";
 import CourseDetails from "./_components/course-details";
 import CourseDetailsInfo from "./_components/course-details-info";

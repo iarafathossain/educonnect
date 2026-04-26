@@ -2,7 +2,8 @@ import {
   ENROLLMENT_DATA,
   getInstructorDashboardData,
 } from "@/lib/dashboard-helper";
-import { getCourse } from "@/queries/courses";
+import { getCourse } from "@/services/course-services";
+import { IEnrollmentFrontend } from "@/types/frontend-index";
 import { columns } from "./_components/columns";
 import { DataTable } from "./_components/data-table";
 
@@ -16,17 +17,16 @@ const EnrollmentsPage = async ({
   params: { courseId },
 }: EnrollmentsPageProps) => {
   const course = await getCourse(courseId);
-  const allEnrollments = await getInstructorDashboardData(ENROLLMENT_DATA);
+  const allEnrollments = (await getInstructorDashboardData(ENROLLMENT_DATA)) as
+    | IEnrollmentFrontend[]
+    | undefined;
 
-  const enrollmentForCourse =
-    allEnrollments &&
-    allEnrollments.filter((enrollment) => enrollment?.course === courseId);
+  const enrollmentForCourse = (allEnrollments ?? []).filter(
+    (enrollment: IEnrollmentFrontend) => enrollment?.course?.id === courseId,
+  );
 
   return (
     <div className="p-6">
-      {/* <Link href="/teacher/create">
-        <Button>New Course</Button>
-      </Link> */}
       <h2>{course?.title}</h2>
       <DataTable columns={columns} data={enrollmentForCourse} />
     </div>

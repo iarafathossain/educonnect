@@ -2,9 +2,11 @@
 
 import { Button } from "@/components/ui/button";
 import { formatDate } from "@/lib/format-date";
+import { IEnrollmentFrontend } from "@/types/frontend-index";
+import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
 
-export const columns = [
+export const columns: ColumnDef<IEnrollmentFrontend>[] = [
   {
     id: "studentName",
     accessorKey: "studentName",
@@ -76,7 +78,7 @@ export const columns = [
     },
     cell: ({ row }) => {
       const enrollmentDate = row.getValue("createdAt");
-      return formatDate(enrollmentDate);
+      return formatDate(enrollmentDate as string);
     },
   },
   // {

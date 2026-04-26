@@ -1,6 +1,6 @@
 import { IconBadge } from "@/components/icon-badge";
-import { getCategories } from "@/queries/categories";
-import { getCourse } from "@/queries/courses";
+import { getCategories } from "@/services/category-services";
+import { getCourse } from "@/services/course-services";
 import { CircleDollarSign, LayoutDashboard, ListChecks } from "lucide-react";
 import { CategoryForm } from "./_components/category-form";
 

@@ -1,17 +1,43 @@
 import { auth } from "@/auth";
-import { getCourse, getCourseDetailsByInstructor } from "@/queries/courses";
-import { getReportsForStudent } from "@/queries/reports";
-import { getUserByEmail, getUserDetails } from "@/queries/users";
+import {
+  getCourse,
+  getCourseDetailsByInstructor,
+} from "@/services/course-services";
+import { getReportsForStudent } from "@/services/report-services";
+import { getUserByEmail, getUserDetails } from "@/services/user-services";
 import { IEnrollmentFrontend } from "@/types/frontend-index";
 
 export const COURSE_DATA = "course";
 export const ENROLLMENT_DATA = "enrollment";
 export const REVIEW_DATA = "review";
 
-const populateReviewData = async (reviews) => {
+type ReviewRow = {
+  user?: string;
+  studentName?: string;
+};
+
+type QuizAssessmentOption = {
+  isCorrect?: boolean;
+  isSelected?: boolean;
+};
+
+type QuizAssessmentEntry = {
+  attempted?: boolean;
+  options?: QuizAssessmentOption[];
+};
+
+type ReportRow = {
+  quizAssessment?: {
+    assessments?: QuizAssessmentEntry[];
+  };
+  totalCompletedModules?: unknown[];
+};
+
+const populateReviewData = async (reviews: ReviewRow[] = []) => {
   const populatedReviews = await Promise.all(
     reviews.map(async (review) => {
-      const student = await getUserDetails(review?.user);
+      if (!review?.user) return review;
+      const student = await getUserDetails(review.user);
       review["studentName"] = `${student?.firstName} ${student?.lastName}`;
       return review;
     }),
@@ -33,7 +59,7 @@ const populateEnrollmentData = async (enrollments: IEnrollmentFrontend[]) => {
         course: enrollment?.course?.id,
         student: enrollment?.student?.id,
       };
-      const report = await getReportsForStudent(filter);
+      const report = (await getReportsForStudent(filter)) as ReportRow | null;
 
       enrollment["progress"] = 0;
       enrollment["quizMark"] = 0;
@@ -48,11 +74,11 @@ const populateEnrollmentData = async (enrollments: IEnrollmentFrontend[]) => {
         enrollment["progress"] = progress;
 
         // Calculate Quiz Marks
-        const quizzes = report?.quizAssessment?.assessments;
+        const quizzes = report?.quizAssessment?.assessments ?? [];
         const quizzesTaken = quizzes.filter((q) => q.attempted);
         const totalCorrect = quizzesTaken
           .map((quiz) => {
-            const item = quiz.options;
+            const item = quiz.options ?? [];
             return item.filter((o) => {
               return o.isCorrect === true && o.isSelected === true;
             });
@@ -88,7 +114,9 @@ export async function getInstructorDashboardData(dataType: string) {
       case COURSE_DATA:
         return data?.courses;
       case REVIEW_DATA:
-        return populateReviewData(data?.reviews);
+        return populateReviewData(
+          Array.isArray(data?.reviews) ? (data.reviews as ReviewRow[]) : [],
+        );
       case ENROLLMENT_DATA:
         return populateEnrollmentData(
           data?.enrollments as IEnrollmentFrontend[],

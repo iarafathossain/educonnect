@@ -1,10 +1,10 @@
-import { quizQueries } from "@/queries/quiz";
+import { getAllQuizSets } from "@/services/quiz-services";
 import { IQuizSetFrontend } from "@/types/frontend-index";
 import { columns } from "./_components/columns";
 import { DataTable } from "./_components/data-table";
 
 const QuizSetsPage = async () => {
-  const quizzes = await quizQueries.getAllQuiSets(false);
+  const quizzes = await getAllQuizSets(false);
 
   const mappedQuizzes: IQuizSetFrontend[] =
     quizzes?.map((quizSet) => ({

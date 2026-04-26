@@ -1,8 +1,8 @@
 import SectionTitle from "@/components/section-title";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { getCategories } from "@/queries/categories";
-import { getCourses } from "@/queries/courses";
+import { getCategories } from "@/services/category-services";
+import { getCourses } from "@/services/course-services";
 import { ICategoryFrontend, ICourseFrontend } from "@/types/frontend-index";
 import { ArrowRightIcon } from "lucide-react";
 import Image from "next/image";

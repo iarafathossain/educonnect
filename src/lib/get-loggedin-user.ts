@@ -1,5 +1,5 @@
 import { auth } from "@/auth";
-import { getUserByEmail } from "@/queries/users";
+import { getUserByEmail } from "@/services/user-services";
 
 export const getLoggedInUser = async () => {
   try {

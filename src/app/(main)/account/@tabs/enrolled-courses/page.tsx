@@ -1,6 +1,6 @@
 import { auth } from "@/auth";
-import { getEnrollmentsForStudent } from "@/queries/enrollments";
-import { getUserByEmail } from "@/queries/users";
+import { getEnrollmentsForStudent } from "@/services/enrollment-services";
+import { getUserByEmail } from "@/services/user-services";
 import { redirect } from "next/navigation";
 import EnrolledCourseCard from "../../_components/enrolled-course-card";
 

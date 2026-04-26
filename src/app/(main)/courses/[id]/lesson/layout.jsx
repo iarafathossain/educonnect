@@ -1,5 +1,5 @@
 import { getLoggedInUser } from "@/lib/get-loggedin-user";
-import { hasEnrollmentForCourse } from "@/queries/enrollments";
+import { hasEnrollmentForCourse } from "@/services/enrollment-services";
 import { redirect } from "next/navigation";
 import { CourseSidebar } from "./_components/course-sidebar";
 import { CourseSidebarMobile } from "./_components/course-sidebar-mobile";

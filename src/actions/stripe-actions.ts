@@ -2,10 +2,10 @@
 
 import { formatStripeAmount } from "@/lib/formate-stripe-amount";
 import { stripe } from "@/lib/stripe";
-import { getCourse } from "@/queries/courses";
+import { getCourse } from "@/services/course-services";
 import { headers } from "next/headers";
 
-const CURRENCY = "BDT";
+const CURRENCY = "usd";
 
 export const createCheckoutSessionAction = async (formData: FormData) => {
   const courseId = formData.get("courseId") as string;

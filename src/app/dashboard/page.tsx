@@ -1,8 +1,8 @@
 import { auth } from "@/auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatPrice } from "@/lib/formate-price";
-import { getCourseDetailsByInstructor } from "@/queries/courses";
-import { getUserByEmail } from "@/queries/users";
+import { getCourseDetailsByInstructor } from "@/services/course-services";
+import { getUserByEmail } from "@/services/user-services";
 import { redirect } from "next/navigation";
 
 const DashboardPage = async () => {

@@ -2,7 +2,7 @@ import { MessageSquare, Presentation, Star, UsersRound } from "lucide-react";
 
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { getCourseDetailsByInstructor } from "@/queries/courses";
+import { getCourseDetailsByInstructor } from "@/services/course-services";
 import { ICourseFrontend } from "@/types/frontend-index";
 import Image from "next/image";
 import Link from "next/link";

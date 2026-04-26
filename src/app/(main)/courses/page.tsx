@@ -1,4 +1,4 @@
-import { getCourses } from "@/queries/courses";
+import { getCourses } from "@/services/course-services";
 import ActiveFilters from "./_components/active-filter";
 import CourseCard from "./_components/course-card";
 import FilterCourse from "./_components/filter-course";

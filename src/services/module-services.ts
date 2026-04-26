@@ -9,6 +9,15 @@ import {
 import status from "http-status";
 
 export const moduleServices = {
+  getModule: async (moduleId: string) => {
+    const result = await ModuleModel.findById(moduleId).populate({
+      path: "lessonIds",
+      model: "Lesson",
+    });
+
+    return result ? result.toJSON() : null;
+  },
+
   create: async (payload: TModuleCreatePayload) => {
     const { courseId, ...moduleData } = payload;
 
@@ -38,9 +47,13 @@ export const moduleServices = {
   },
 
   update: async (moduleId: string, payload: TModuleUpdatePayload) => {
-    const updatedModule = await ModuleModel.findByIdAndUpdate(moduleId, payload, {
-      new: true,
-    });
+    const updatedModule = await ModuleModel.findByIdAndUpdate(
+      moduleId,
+      payload,
+      {
+        new: true,
+      },
+    );
 
     if (!updatedModule) {
       throw new AppError("Module not found", status.NOT_FOUND);
@@ -82,3 +95,10 @@ export const moduleServices = {
     await course.save();
   },
 };
+
+export const getModule = moduleServices.getModule;
+export const createModule = moduleServices.create;
+export const reorderModules = moduleServices.reorder;
+export const updateModule = moduleServices.update;
+export const changeModulePublishState = moduleServices.changePublishState;
+export const deleteModule = moduleServices.delete;

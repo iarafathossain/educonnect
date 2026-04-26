@@ -11,6 +11,29 @@ import {
 import status from "http-status";
 
 export const quizServices = {
+  getAllQuizSets: async (excludeUnpublished: boolean = false) => {
+    await connectDB();
+    const quizSets = excludeUnpublished
+      ? await QuizSet.find({ active: true })
+      : await QuizSet.find();
+
+    return quizSets.map((quizSet) => quizSet.toJSON());
+  },
+
+  getQuizSetById: async (quizSetId: string) => {
+    await connectDB();
+    const quizSet = await QuizSet.findById(quizSetId).populate({
+      path: "quizIds",
+      model: "Quiz",
+    });
+
+    if (!quizSet) {
+      throw new AppError("Quiz set not found", status.NOT_FOUND);
+    }
+
+    return quizSet.toJSON();
+  },
+
   createQuizSet: async (payload: TQuizSetCreatePayload) => {
     await connectDB();
 
@@ -108,3 +131,9 @@ export const quizServices = {
     return updatedQuizSet.toJSON();
   },
 };
+
+export const getAllQuizSets = quizServices.getAllQuizSets;
+export const getQuizSetById = quizServices.getQuizSetById;
+export const createQuizSet = quizServices.createQuizSet;
+export const addQuizToQuizSet = quizServices.addQuizToQuizSet;
+export const updateQuizSet = quizServices.updateQuizSet;

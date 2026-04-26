@@ -1,5 +1,6 @@
 "use client";
 import {
+  ColumnDef,
   ColumnFiltersState,
   flexRender,
   getCoreRowModel,
@@ -21,11 +22,17 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { IEnrollmentFrontend } from "@/types/frontend-index";
 
-export function DataTable({ columns, data }) {
+interface DataTableProps {
+  columns: ColumnDef<IEnrollmentFrontend>[];
+  data: IEnrollmentFrontend[];
+}
+
+export function DataTable({ columns, data }: DataTableProps) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
+    [],
   );
 
   const table = useReactTable({
@@ -43,12 +50,15 @@ export function DataTable({ columns, data }) {
     },
   });
 
+  const studentNameFilter =
+    (table.getColumn("studentName")?.getFilterValue() as string) ?? "";
+
   return (
     <div>
       <div className="flex items-center justify-between py-4">
         <Input
           placeholder="Filter by student name..."
-          value={table.getColumn("studentName")?.getFilterValue() ?? ""}
+          value={studentNameFilter}
           onChange={(event) =>
             table.getColumn("studentName")?.setFilterValue(event.target.value)
           }
@@ -67,7 +77,7 @@ export function DataTable({ columns, data }) {
                         ? null
                         : flexRender(
                             header.column.columnDef.header,
-                            header.getContext()
+                            header.getContext(),
                           )}
                     </TableHead>
                   );
@@ -86,7 +96,7 @@ export function DataTable({ columns, data }) {
                     <TableCell key={cell.id}>
                       {flexRender(
                         cell.column.columnDef.cell,
-                        cell.getContext()
+                        cell.getContext(),
                       )}
                     </TableCell>
                   ))}

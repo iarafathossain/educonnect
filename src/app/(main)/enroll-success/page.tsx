@@ -2,9 +2,9 @@ import { auth } from "@/auth";
 import { Button } from "@/components/ui/button";
 import { sendEmail } from "@/lib/send-email";
 import { stripe } from "@/lib/stripe";
-import { getCourse } from "@/queries/courses";
-import { createEnrollment } from "@/queries/enrollments";
-import { getUserByEmail } from "@/queries/users";
+import { getCourse } from "@/services/course-services";
+import { createEnrollment, hasEnrollmentForCourse } from "@/services/enrollment-services";
+import { getUserByEmail } from "@/services/user-services";
 import { CircleCheck } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -51,7 +51,15 @@ const EnrollSuccessPage = async ({
   const productName = course.title;
 
   if (paymentStatus === "succeeded") {
-    await createEnrollment(course_id, loggedInUser.id, "stripe");
+    // Check if enrollment already exists to prevent duplicates on page refresh
+    const existingEnrollment = await hasEnrollmentForCourse(
+      course_id,
+      loggedInUser.id,
+    );
+
+    if (!existingEnrollment) {
+      await createEnrollment(course_id, loggedInUser.id, "stripe");
+    }
 
     const instructorName = `${course.instructor.firstName} ${course.instructor.lastName}`;
     const instructorEmail = course.instructor.email;

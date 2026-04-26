@@ -11,6 +11,12 @@ import {
 import status from "http-status";
 
 export const lessonServices = {
+  getLesson: async (id: string) => {
+    await connectDB();
+    const lesson = await LessonModel.findById(id);
+    return lesson ? lesson.toJSON() : null;
+  },
+
   create: async (payload: TLessonCreatePayload) => {
     await connectDB();
 
@@ -43,9 +49,13 @@ export const lessonServices = {
   update: async (lessonId: string, payload: TLessonUpdatePayload) => {
     await connectDB();
 
-    const updatedLesson = await LessonModel.findByIdAndUpdate(lessonId, payload, {
-      new: true,
-    });
+    const updatedLesson = await LessonModel.findByIdAndUpdate(
+      lessonId,
+      payload,
+      {
+        new: true,
+      },
+    );
 
     if (!updatedLesson) {
       throw new AppError("Lesson not found", status.NOT_FOUND);
@@ -90,3 +100,10 @@ export const lessonServices = {
     await existingModule.save();
   },
 };
+
+export const getLesson = lessonServices.getLesson;
+export const createLesson = lessonServices.create;
+export const reorderLessons = lessonServices.reorder;
+export const updateLesson = lessonServices.update;
+export const changeLessonPublishState = lessonServices.changePublishState;
+export const deleteLesson = lessonServices.delete;

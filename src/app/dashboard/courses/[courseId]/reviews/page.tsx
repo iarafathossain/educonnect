@@ -2,7 +2,7 @@ import {
   getInstructorDashboardData,
   REVIEW_DATA,
 } from "@/lib/dashboard-helper";
-import { getCourse } from "@/queries/courses";
+import { getCourse } from "@/services/course-services";
 import { columns } from "./_components/columns";
 import { DataTable } from "./_components/data-table";
 
