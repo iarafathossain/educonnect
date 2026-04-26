@@ -1,4 +1,5 @@
 import { auth } from "@/auth";
+import { getUserDetails } from "@/services/user-services";
 import { redirect } from "next/navigation";
 import ChangePassword from "../_components/change-password";
 import ContactInfo from "../_components/contact-info";
@@ -10,7 +11,8 @@ const ProfilePage = async () => {
     redirect("/login");
   }
 
-  const user = session.user;
+  const userId = session.user.id;
+  const user = await getUserDetails(userId);
 
   return (
     <>

@@ -13,6 +13,8 @@ export const userServices = {
   getUserDetails: async (userId: string) => {
     await connectDB();
     const user = await UserModel.findById(userId).select("-passwordHash");
+    console.log("user details", user);
+    console.log("user details JSON", user?.toJSON());
     return user ? user.toJSON() : null;
   },
 

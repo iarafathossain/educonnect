@@ -27,6 +27,12 @@ export const personalDetailsFormZodSchema = z.object({
     .max(300, "Bio cannot exceed 300 characters")
     .optional()
     .or(z.literal("")),
+  image: z
+    .string()
+    .trim()
+    .max(255, "Image URL must be less than 255 characters")
+    .optional()
+    .or(z.literal("")),
 });
 
 export const personalDetailsUpdateZodSchema = personalDetailsFormZodSchema
@@ -35,6 +41,7 @@ export const personalDetailsUpdateZodSchema = personalDetailsFormZodSchema
     lastName: true,
     designation: true,
     bio: true,
+    image: true,
   })
   .partial();
 

@@ -1,16 +1,18 @@
 import "@/models/user-model";
 
 import { auth } from "@/auth";
-import Image from "next/image";
+import { getUserDetails } from "@/services/user-services";
 import { redirect } from "next/navigation";
 import AccountMenu from "./account-menu";
+import UpdateAvatar from "./update-avatar";
 
 const AccountSidebar = async () => {
   const session = await auth();
   if (!session || !session.user) {
     redirect("/login");
   }
-  const user = session.user;
+  const userId = session.user.id;
+  const user = await getUserDetails(userId);
 
   return (
     <div className="lg:w-1/4 md:px-3">
@@ -24,20 +26,7 @@ const AccountSidebar = async () => {
               className="hidden"
             />
             <div>
-              <div className="relative size-28 mx-auto">
-                <Image
-                  src={user?.image || "/default-profile.png"}
-                  className="rounded-full shadow dark:shadow-gray-800 ring-4 ring-slate-50 dark:ring-slate-800"
-                  id="profile-banner"
-                  alt={`${user?.firstName} ${user?.lastName}`}
-                  width={112}
-                  height={112}
-                />
-                <label
-                  className="absolute inset-0 cursor-pointer"
-                  htmlFor="pro-img"
-                />
-              </div>
+              <UpdateAvatar user={user} />
               <div className="mt-4">
                 <h5 className="text-lg font-semibold">{`${user?.firstName} ${user?.lastName}`}</h5>
                 <p className="text-slate-400">{user?.email}</p>
