@@ -1,17 +1,16 @@
 import SectionTitle from "@/components/section-title";
 import { buttonVariants } from "@/components/ui/button";
+import { courseCategories } from "@/constants/data";
+import { iconMapper } from "@/lib/icon-mapper";
 import { cn } from "@/lib/utils";
-import { getCategories } from "@/services/category-services";
 import { getCourses } from "@/services/course-services";
-import { ICategoryFrontend, ICourseFrontend } from "@/types/frontend-index";
-import { ArrowRightIcon } from "lucide-react";
-import Image from "next/image";
+import { ICourseFrontend } from "@/types/frontend-index";
+import { ArrowRightIcon, LucideIcon } from "lucide-react";
 import Link from "next/link";
 import CourseCard from "./courses/_components/course-card";
 
 const HomePage = async () => {
   const courses: ICourseFrontend[] = await getCourses();
-  const categories: ICategoryFrontend[] = await getCategories();
 
   return (
     <>
@@ -76,24 +75,19 @@ const HomePage = async () => {
           </Link>
         </div>
         <div className="mx-auto grid justify-center gap-4 grid-cols-2  md:grid-cols-3 2xl:grid-cols-4">
-          {categories && categories.length > 0 ? (
-            categories.map((category) => (
-              <Link
-                href={`/categories/${category.id}`}
-                key={category.id}
-                className="relative overflow-hidden rounded-lg border bg-background p-2 hover:scale-105 transition-all duration-500 ease-in-out"
-              >
-                <div className="flex  flex-col gap-4 items-center justify-between rounded-md p-6">
-                  <Image
-                    src={category.thumbnailUrl}
-                    alt={category.label}
-                    width={100}
-                    height={100}
-                  />
-                  <h3 className="font-bold">{category.label}</h3>
+          {courseCategories && courseCategories.length > 0 ? (
+            courseCategories.map((category) => {
+              const IconComponent = iconMapper(category.icon) as LucideIcon;
+              return (
+                <div
+                  key={category.title}
+                  className="flex flex-col items-center gap-2 rounded-lg border p-4 hover:bg-muted transition cursor-pointer"
+                >
+                  <IconComponent className="h-8 w-8 text-primary" />
+                  <span className="text-sm font-medium">{category.title}</span>
                 </div>
-              </Link>
-            ))
+              );
+            })
           ) : (
             <p className="text-sm">No categories available.</p>
           )}
