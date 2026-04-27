@@ -15,24 +15,20 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { cn } from "@/lib/utils";
+import { ICategoryFrontend } from "@/validators/frontend-types";
 import { Pencil } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
 const formSchema = z.object({
-  value: z.string().min(1),
+  title: z.string().min(1, "Category is required"),
 });
 
 interface CategoryFormProps {
-  initialData: {
-    value: string;
-  };
+  initialData: ICategoryFrontend | null;
   courseId: string;
-  options: {
-    title: string;
-    icon: string;
-  }[];
+  options: ICategoryFrontend[];
 }
 
 export const CategoryForm = ({
@@ -45,10 +41,10 @@ export const CategoryForm = ({
 
   const toggleEdit = () => setIsEditing((current) => !current);
 
-  const form = useForm({
+  const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      value: initialData?.value || "",
+      title: initialData?.title || "",
     },
   });
 
@@ -56,11 +52,22 @@ export const CategoryForm = ({
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     const selectedCategory = options.find(
-      (option) => option.title === values.value,
+      (option) => option.title === values.title,
     );
 
+    if (!selectedCategory) {
+      toast.error("Selected category not found");
+      return;
+    }
+
+    const categoryId = selectedCategory.id;
+    if (!categoryId) {
+      toast.error("Selected category is missing id");
+      return;
+    }
+
     const result = await updateCourseAction(courseId, {
-      category: selectedCategory!.title,
+      category: categoryId,
     });
 
     if (!result.success) {
@@ -74,7 +81,7 @@ export const CategoryForm = ({
   };
 
   const selectedOptions = options.find(
-    (option) => option.title === initialData.value,
+    (option) => option.title === initialData?.title,
   );
 
   return (
@@ -96,7 +103,7 @@ export const CategoryForm = ({
         <p
           className={cn(
             "text-sm mt-2",
-            !initialData.value && "text-slate-500 italic",
+            !initialData?.title && "text-slate-500 italic",
           )}
         >
           {selectedOptions?.title || "No category"}
@@ -111,7 +118,7 @@ export const CategoryForm = ({
           >
             <FormField
               control={form.control}
-              name="value"
+              name="title"
               render={({ field }) => (
                 <FormItem>
                   <FormControl>

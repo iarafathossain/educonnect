@@ -2,18 +2,20 @@ import { mongooseTransform } from "@/lib/mongoose-transform.plugin";
 import mongoose from "mongoose";
 
 export interface ICategoryModel extends mongoose.Document {
-  label: string;
-  value: string;
-  image: string;
-  createdAt?: Date;
-  updatedAt?: Date;
+  title: string;
+  icon: string;
 }
 
 const categorySchema = new mongoose.Schema<ICategoryModel>(
   {
-    label: { type: String, required: true },
-    value: { type: String, required: true },
-    image: { type: String, required: true },
+    title: {
+      type: String,
+      required: true,
+    },
+    icon: {
+      type: String,
+      required: true,
+    },
   },
   { timestamps: true },
 );

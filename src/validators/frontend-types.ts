@@ -52,6 +52,7 @@ export const moduleFrontendSchema = z.object({
 });
 
 export const categoryFrontendSchema = z.object({
+  id: z.string(),
   title: z.string(),
   icon: z.string(),
 });
@@ -157,8 +158,6 @@ export const quizFrontendSchema = z.object({
   ),
 });
 
-export type IUserRegisterForm = z.infer<typeof userRegisterFormSchema>;
-export type IUserFrontend = z.infer<typeof userFrontendSchema>;
 export type IModuleFrontend = z.infer<typeof moduleFrontendSchema>;
 export type ICategoryFrontend = z.infer<typeof categoryFrontendSchema>;
 export type ILessonFrontend = z.infer<typeof lessonFrontendSchema>;

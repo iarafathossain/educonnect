@@ -4,7 +4,7 @@ import { CircleDollarSign, LayoutDashboard, ListChecks } from "lucide-react";
 import { CategoryForm } from "./_components/category-form";
 
 import AlertBanner from "@/components/alert-banner";
-import { courseCategories } from "@/constants/data";
+import { getCategories } from "@/services/category-services";
 import type { IModuleFrontend } from "@/validators/frontend-types";
 import { CourseActions } from "./_components/course-actions";
 import { DescriptionForm } from "./_components/description-form";
@@ -20,6 +20,7 @@ const EditCoursePage = async ({
   params: { courseId: string };
 }) => {
   const course = await getCourse(courseId);
+  const categories = await getCategories();
 
   if (!course) {
     return <AlertBanner label="Course not found." variant="warning" />;
@@ -64,9 +65,9 @@ const EditCoursePage = async ({
               courseId={courseId}
             />
             <CategoryForm
-              initialData={{ value: course?.category?.value }}
+              initialData={course.category}
               courseId={courseId}
-              options={courseCategories}
+              options={categories}
             />
 
             <QuizSetForm initialData={{}} courseId={courseId} />

@@ -25,7 +25,7 @@ export const enrollmentServices = {
   createEnrollment: async (
     courseId: string,
     userId: string,
-    paymentMethod: "credit_card" | "paypal" | "stripe",
+    paymentMethod: "stripe",
   ) => {
     try {
       await connectDB();

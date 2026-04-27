@@ -1,8 +1,8 @@
 import SectionTitle from "@/components/section-title";
 import { buttonVariants } from "@/components/ui/button";
-import { courseCategories } from "@/constants/data";
 import { iconMapper } from "@/lib/icon-mapper";
 import { cn } from "@/lib/utils";
+import { getCategories } from "@/services/category-services";
 import { getCourses } from "@/services/course-services";
 import type { ICourseFrontend } from "@/validators/frontend-types";
 import { ArrowRightIcon, LucideIcon } from "lucide-react";
@@ -11,6 +11,7 @@ import CourseCard from "./courses/_components/course-card";
 
 const HomePage = async () => {
   const courses: ICourseFrontend[] = await getCourses();
+  const categories = await getCategories();
 
   return (
     <>
@@ -75,8 +76,8 @@ const HomePage = async () => {
           </Link>
         </div>
         <div className="mx-auto grid justify-center gap-4 grid-cols-2  md:grid-cols-3 2xl:grid-cols-4">
-          {courseCategories && courseCategories.length > 0 ? (
-            courseCategories.map((category) => {
+          {categories && categories.length > 0 ? (
+            categories.map((category) => {
               const IconComponent = iconMapper(category.icon) as LucideIcon;
               return (
                 <div

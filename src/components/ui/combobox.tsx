@@ -17,9 +17,17 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { iconMapper } from "@/lib/icon-mapper";
 import { cn } from "@/lib/utils";
+import { CreateCategoryPayload } from "@/validators/category-validator";
 
-export function Combobox({ options, value, onChange }) {
+interface ComboboxProps {
+  options: CreateCategoryPayload[];
+  value: string;
+  onChange: (value: string) => void;
+}
+
+export function Combobox({ options, value, onChange }: ComboboxProps) {
   const [open, setOpen] = React.useState(false);
 
   return (
@@ -32,7 +40,7 @@ export function Combobox({ options, value, onChange }) {
           className="w-[200px] justify-between"
         >
           {value
-            ? options.find((option) => option.value === value)?.label
+            ? options.find((option) => option.title === value)?.title
             : "Select category..."}
           <ChevronsUpDown className="opacity-50" />
         </Button>
@@ -43,24 +51,29 @@ export function Combobox({ options, value, onChange }) {
           <CommandList>
             <CommandEmpty>No category found.</CommandEmpty>
             <CommandGroup>
-              {options.map((option) => (
-                <CommandItem
-                  key={option.value}
-                  value={option.value}
-                  onSelect={(currentValue) => {
-                    onChange(currentValue === value ? "" : currentValue);
-                    setOpen(false);
-                  }}
-                >
-                  {option.label}
-                  <Check
-                    className={cn(
-                      "ml-auto",
-                      value === option.value ? "opacity-100" : "opacity-0"
-                    )}
-                  />
-                </CommandItem>
-              ))}
+              {options.map((option) => {
+                const isSelected = value === option.title;
+                const Icon = iconMapper(option.icon);
+                return (
+                  <CommandItem
+                    key={option.title}
+                    value={option.title}
+                    onSelect={(currentValue) => {
+                      onChange(currentValue === value ? "" : currentValue);
+                      setOpen(false);
+                    }}
+                  >
+                    {Icon && <Icon className="mr-2 h-4 w-4" />}
+                    {option.title}
+                    <Check
+                      className={cn(
+                        "ml-auto",
+                        isSelected ? "opacity-100" : "opacity-0",
+                      )}
+                    />
+                  </CommandItem>
+                );
+              })}
             </CommandGroup>
           </CommandList>
         </Command>
