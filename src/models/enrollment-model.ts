@@ -1,20 +1,33 @@
+import {
+  ENROLLMENT_STATUSES,
+  PAYMENT_METHODS,
+  TEnrollmentStatus,
+  TPaymentMethod,
+} from "@/constants/enums";
 import { mongooseTransform } from "@/lib/mongoose-transform.plugin";
-import { IEnrollment } from "@/types/backend-index";
 import mongoose from "mongoose";
 
-export interface IEnrollmentModel extends mongoose.Document, IEnrollment {}
+export interface IEnrollmentModel extends mongoose.Document {
+  status: TEnrollmentStatus;
+  completionDate?: Date;
+  paymentMethod: TPaymentMethod;
+  student: mongoose.Types.ObjectId;
+  course: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
 
 const enrollmentSchema = new mongoose.Schema<IEnrollmentModel>(
   {
     status: {
       type: String,
-      enum: ["not-started", "completed", "cancelled"],
+      enum: ENROLLMENT_STATUSES,
       default: "not-started",
     },
     completionDate: { type: Date },
     paymentMethod: {
       type: String,
-      enum: ["credit_card", "paypal", "stripe"],
+      enum: PAYMENT_METHODS,
       required: true,
     },
     student: {

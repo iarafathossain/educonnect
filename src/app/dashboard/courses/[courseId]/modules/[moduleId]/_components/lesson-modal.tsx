@@ -1,6 +1,6 @@
 import { IconBadge } from "@/components/icon-badge";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { ILessonFrontend } from "@/types/frontend-index";
+import type { ILessonFrontend } from "@/validators/frontend-types";
 import { ArrowLeft, Eye, LayoutDashboard, Video } from "lucide-react";
 import Link from "next/link";
 import { LessonAccessForm } from "./lesson-access-form";

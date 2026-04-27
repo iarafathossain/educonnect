@@ -1,7 +1,7 @@
 import AlertBanner from "@/components/alert-banner";
 import { IconBadge } from "@/components/icon-badge";
 import { getModule } from "@/services/module-services";
-import { ILessonFrontend } from "@/types/frontend-index";
+import type { ILessonFrontend } from "@/validators/frontend-types";
 import { ArrowLeft, BookOpenCheck, LayoutDashboard } from "lucide-react";
 import Link from "next/link";
 import { LessonForm } from "./_components/lesson-form";

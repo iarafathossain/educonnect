@@ -7,7 +7,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { ITestimonialFrontend } from "@/types/frontend-index";
+import type { ITestimonialFrontend } from "@/validators/frontend-types";
 import Image from "next/image";
 
 const Testimonials = ({

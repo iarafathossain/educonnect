@@ -9,7 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
-import { IQuizSetFrontend } from "@/types/frontend-index";
+import type { IQuizSetFrontend } from "@/validators/frontend-types";
 import type {
   CellContext,
   ColumnDef,

@@ -1,4 +1,4 @@
-import { ICourseFrontend } from "@/types/frontend-index";
+import type { ICourseFrontend } from "@/validators/frontend-types";
 import { CheckCheck } from "lucide-react";
 
 const CourseOverview = ({ course }: { course: ICourseFrontend }) => {

@@ -21,7 +21,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { IQuizSetFrontend } from "@/types/frontend-index";
+import type { IQuizSetFrontend } from "@/validators/frontend-types";
 import { PlusCircle } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";

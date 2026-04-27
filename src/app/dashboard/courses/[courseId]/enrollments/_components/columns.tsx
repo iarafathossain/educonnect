@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { formatDate } from "@/lib/format-date";
-import { IEnrollmentFrontend } from "@/types/frontend-index";
+import type { IEnrollmentFrontend } from "@/validators/frontend-types";
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
 

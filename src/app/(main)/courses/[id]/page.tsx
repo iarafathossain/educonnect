@@ -1,5 +1,5 @@
 import { getCourse } from "@/services/course-services";
-import { ICourseFrontend } from "@/types/frontend-index";
+import type { ICourseFrontend } from "@/validators/frontend-types";
 import CourseDetails from "./_components/course-details";
 import CourseDetailsInfo from "./_components/course-details-info";
 import RelatedCourses from "./_components/related-course";

@@ -4,7 +4,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { hasEnrollmentForCourse } from "@/services/enrollment-services";
 import { getUserByEmail } from "@/services/user-services";
-import { ICourseFrontend } from "@/types/frontend-index";
+import type { ICourseFrontend } from "@/validators/frontend-types";
 import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";

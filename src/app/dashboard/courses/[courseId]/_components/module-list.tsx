@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { IModuleFrontend } from "@/types/frontend-index";
+import type { IModuleFrontend } from "@/validators/frontend-types";
 
 interface ModuleListProps {
   items: IModuleFrontend[];

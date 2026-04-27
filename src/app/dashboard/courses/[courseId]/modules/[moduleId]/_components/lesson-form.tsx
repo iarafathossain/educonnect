@@ -19,8 +19,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { getSlug } from "@/lib/get-slug";
 import { cn } from "@/lib/utils";
-import { ILessonFrontend } from "@/types/frontend-index";
-import { IReorderItem } from "@/types/shared-index";
+import type { ILessonFrontend } from "@/validators/frontend-types";
+import type { IReorderItem } from "@/validators/frontend-types";
 import { Loader2, PlusCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";

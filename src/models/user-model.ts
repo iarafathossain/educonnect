@@ -1,6 +1,6 @@
 import { TUserRole, USER_ROLES } from "@/constants/enums";
 import { mongooseTransform } from "@/lib/mongoose-transform.plugin";
-import { TUserRegistration } from "@/validators/user-schema";
+import { TUserRegistration } from "@/validators/user-validator";
 
 import mongoose from "mongoose";
 

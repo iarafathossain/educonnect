@@ -1,7 +1,6 @@
 import { catchError } from "@/lib/catch-error";
 import { connectDB } from "@/lib/connect-mongo";
-import { EnrollmentModel } from "@/models/enrollment-model";
-import { IEnrollment } from "@/types/backend-index";
+import { EnrollmentModel, IEnrollmentModel } from "@/models/enrollment-model";
 import mongoose from "mongoose";
 
 export const enrollmentServices = {
@@ -30,7 +29,7 @@ export const enrollmentServices = {
   ) => {
     try {
       await connectDB();
-      const newEnrollment: IEnrollment = {
+      const newEnrollment: Omit<IEnrollmentModel, keyof mongoose.Document> = {
         student: new mongoose.Types.ObjectId(userId),
         course: new mongoose.Types.ObjectId(courseId),
         paymentMethod,

@@ -1,7 +1,7 @@
 import AlertBanner from "@/components/alert-banner";
 import { cn } from "@/lib/utils";
 import { getQuizSetById } from "@/services/quiz-services";
-import { IQuizFrontend } from "@/types/frontend-index";
+import type { IQuizFrontend } from "@/validators/frontend-types";
 import { Circle, CircleCheck } from "lucide-react";
 import { AddQuizForm } from "./_components/add-quiz-form";
 import { QuizCardActions } from "./_components/quiz-card-actions";

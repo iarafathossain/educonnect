@@ -6,7 +6,7 @@ import { authServices } from "@/services/auth-services";
 import {
   TUserLogin,
   userRegistrationZodSchema,
-} from "@/validators/user-schema";
+} from "@/validators/user-validator";
 import status from "http-status";
 
 export const userRegistrationAction = actionWrapper(

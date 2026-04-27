@@ -4,7 +4,7 @@ import { courseCategories } from "@/constants/data";
 import { iconMapper } from "@/lib/icon-mapper";
 import { cn } from "@/lib/utils";
 import { getCourses } from "@/services/course-services";
-import { ICourseFrontend } from "@/types/frontend-index";
+import type { ICourseFrontend } from "@/validators/frontend-types";
 import { ArrowRightIcon, LucideIcon } from "lucide-react";
 import Link from "next/link";
 import CourseCard from "./courses/_components/course-card";

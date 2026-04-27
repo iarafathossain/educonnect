@@ -1,5 +1,5 @@
 import { getAllQuizSets } from "@/services/quiz-services";
-import { IQuizSetFrontend } from "@/types/frontend-index";
+import type { IQuizSetFrontend } from "@/validators/frontend-types";
 import { columns } from "./_components/columns";
 import { DataTable } from "./_components/data-table";
 

@@ -1,8 +1,14 @@
 import { mongooseTransform } from "@/lib/mongoose-transform.plugin";
-import { ITestimonial } from "@/types/backend-index";
 import mongoose from "mongoose";
 
-export interface ITestimonialModel extends mongoose.Document, ITestimonial {}
+export interface ITestimonialModel extends mongoose.Document {
+  content: string;
+  user: mongoose.Types.ObjectId;
+  course: mongoose.Types.ObjectId;
+  rating: number;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
 
 const testimonialSchema = new mongoose.Schema<ITestimonialModel>(
   {

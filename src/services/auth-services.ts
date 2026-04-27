@@ -1,6 +1,6 @@
 import { AppError } from "@/lib/app-error";
 import { UserModel } from "@/models/user-model";
-import { TUserRegistration } from "@/validators/user-schema";
+import { TUserRegistration } from "@/validators/user-validator";
 import bcrypt from "bcryptjs";
 import status from "http-status";
 

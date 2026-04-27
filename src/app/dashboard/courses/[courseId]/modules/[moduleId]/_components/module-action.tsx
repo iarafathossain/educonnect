@@ -11,7 +11,7 @@ import {
   changeModulePublishStateAction,
   deleteModuleAction,
 } from "@/actions/module-actions";
-import { IModuleFrontend } from "@/types/frontend-index";
+import type { IModuleFrontend } from "@/validators/frontend-types";
 import { useRouter } from "next/navigation";
 
 interface ModuleActionsProps {

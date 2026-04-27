@@ -2,7 +2,7 @@ import CourseProgress from "@/components/course-progress";
 import { Badge } from "@/components/ui/badge";
 import { getCategoryById } from "@/services/category-services";
 import { getReportsForStudent } from "@/services/report-services";
-import { IEnrollmentFrontend } from "@/types/frontend-index";
+import type { IEnrollmentFrontend } from "@/validators/frontend-types";
 import { BookOpen } from "lucide-react";
 import Image from "next/image";
 

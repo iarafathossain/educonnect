@@ -12,7 +12,7 @@ import {
   changeLessonPublishStateAction,
   deleteLessonAction,
 } from "@/actions/lesson-actions";
-import { ILessonFrontend } from "@/types/frontend-index";
+import type { ILessonFrontend } from "@/validators/frontend-types";
 
 interface LessonActionsProps {
   lesson: ILessonFrontend;

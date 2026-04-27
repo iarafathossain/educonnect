@@ -22,7 +22,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { IEnrollmentFrontend } from "@/types/frontend-index";
+import type { IEnrollmentFrontend } from "@/validators/frontend-types";
 
 interface DataTableProps {
   columns: ColumnDef<IEnrollmentFrontend>[];

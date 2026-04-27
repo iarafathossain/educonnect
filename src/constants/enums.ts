@@ -1,12 +1,24 @@
-// 1. Define the values as a read-only array
+// user roles
 export const USER_ROLES = {
   student: "student",
   instructor: "instructor",
   admin: "admin",
 } as const;
+
+// course statuses
 export const COURSE_STATUSES = ["draft", "published", "archived"] as const;
 
-// 2. Export the derived TypeScript types (Optional, but highly useful)
-// This creates: type TUserRole = "student" | "instructor" | "admin"
+// enrollment statuses
+export const ENROLLMENT_STATUSES = [
+  "not-started",
+  "completed",
+  "cancelled",
+] as const;
+
+// payment methods
+export const PAYMENT_METHODS = ["stripe"] as const;
+
 export type TUserRole = (typeof USER_ROLES)[keyof typeof USER_ROLES];
 export type TCourseStatus = (typeof COURSE_STATUSES)[number];
+export type TEnrollmentStatus = (typeof ENROLLMENT_STATUSES)[number];
+export type TPaymentMethod = (typeof PAYMENT_METHODS)[number];

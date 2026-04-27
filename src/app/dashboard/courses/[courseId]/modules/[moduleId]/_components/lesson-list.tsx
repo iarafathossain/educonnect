@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { ILessonFrontend } from "@/types/frontend-index";
+import type { ILessonFrontend } from "@/validators/frontend-types";
 import { CirclePlay } from "lucide-react";
 
 interface LessonListProps {

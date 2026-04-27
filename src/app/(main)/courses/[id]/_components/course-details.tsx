@@ -1,6 +1,6 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { formatDate } from "@/lib/format-date";
-import { ICourseFrontend } from "@/types/frontend-index";
+import type { ICourseFrontend } from "@/validators/frontend-types";
 import Image from "next/image";
 import CourseCurriculum from "./course-curriculum";
 import CourseInstructor from "./course-instructor";

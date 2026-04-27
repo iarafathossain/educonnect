@@ -1,4 +1,4 @@
-import { ActionResponse } from "@/types";
+import type { ActionResponse } from "@/lib/action-types";
 import status from "http-status";
 import { AppError } from "./app-error";
 

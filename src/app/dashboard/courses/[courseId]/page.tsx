@@ -5,7 +5,7 @@ import { CategoryForm } from "./_components/category-form";
 
 import AlertBanner from "@/components/alert-banner";
 import { courseCategories } from "@/constants/data";
-import { IModuleFrontend } from "@/types/frontend-index";
+import type { IModuleFrontend } from "@/validators/frontend-types";
 import { CourseActions } from "./_components/course-actions";
 import { DescriptionForm } from "./_components/description-form";
 import { ImageForm } from "./_components/image-form";

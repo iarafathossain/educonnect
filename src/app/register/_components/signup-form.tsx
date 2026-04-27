@@ -16,7 +16,7 @@ import { TUserRole, USER_ROLES } from "@/constants/enums";
 import {
   TUserRegistration,
   userRegistrationZodSchema,
-} from "@/validators/user-schema";
+} from "@/validators/user-validator";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useRouter } from "next/navigation";

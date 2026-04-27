@@ -1,7 +1,7 @@
 import CardImage from "@/components/card-image";
 import EnrollCourse from "@/components/enroll-course";
 import { formatPrice } from "@/lib/formate-price";
-import { ICourseFrontend } from "@/types/frontend-index";
+import type { ICourseFrontend } from "@/validators/frontend-types";
 import { BookOpen } from "lucide-react";
 import Link from "next/link";
 

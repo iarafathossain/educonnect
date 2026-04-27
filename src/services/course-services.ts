@@ -7,7 +7,7 @@ import "@/models/testimonial-model";
 import "@/models/user-model";
 import { getEnrollmentsForCourse } from "@/services/enrollment-services";
 import { getTestimonialsForCourse } from "@/services/testimonial-services";
-import { ICourseFrontend } from "@/types/frontend-index";
+import type { ICourseFrontend } from "@/validators/frontend-types";
 import { CreateCoursePayload } from "@/validators/course-validator";
 import status from "http-status";
 

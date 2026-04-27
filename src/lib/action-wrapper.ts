@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ActionResponse } from "@/types";
+import type { ActionResponse } from "@/lib/action-types";
 import { handleActionError } from "./handle-action-error";
 
 type AsyncAction<Args extends any[], Return> = (

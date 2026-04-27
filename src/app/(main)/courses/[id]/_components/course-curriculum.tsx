@@ -1,4 +1,4 @@
-import { ICourseFrontend } from "@/types/frontend-index";
+import type { ICourseFrontend } from "@/validators/frontend-types";
 import { Accordion } from "@radix-ui/react-accordion";
 import { BookCheck, Clock10 } from "lucide-react";
 import CourseModuleList from "./module/course-module";

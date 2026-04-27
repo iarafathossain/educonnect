@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { TUserLogin, userLoginZodSchema } from "@/validators/user-schema";
+import { TUserLogin, userLoginZodSchema } from "@/validators/user-validator";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useRouter } from "next/navigation";

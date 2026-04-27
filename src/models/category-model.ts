@@ -1,8 +1,13 @@
 import { mongooseTransform } from "@/lib/mongoose-transform.plugin";
-import { ICategory } from "@/types/backend-index";
 import mongoose from "mongoose";
 
-export interface ICategoryModel extends mongoose.Document, ICategory {}
+export interface ICategoryModel extends mongoose.Document {
+  label: string;
+  value: string;
+  image: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
 
 const categorySchema = new mongoose.Schema<ICategoryModel>(
   {

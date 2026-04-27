@@ -3,7 +3,7 @@ import {
   getInstructorDashboardData,
 } from "@/lib/dashboard-helper";
 import { getCourse } from "@/services/course-services";
-import { IEnrollmentFrontend } from "@/types/frontend-index";
+import type { IEnrollmentFrontend } from "@/validators/frontend-types";
 import { columns } from "./_components/columns";
 import { DataTable } from "./_components/data-table";
 

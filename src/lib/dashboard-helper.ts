@@ -5,7 +5,7 @@ import {
 } from "@/services/course-services";
 import { getReportsForStudent } from "@/services/report-services";
 import { getUserByEmail, getUserDetails } from "@/services/user-services";
-import { IEnrollmentFrontend } from "@/types/frontend-index";
+import type { IEnrollmentFrontend } from "@/validators/frontend-types";
 
 export const COURSE_DATA = "course";
 export const ENROLLMENT_DATA = "enrollment";
