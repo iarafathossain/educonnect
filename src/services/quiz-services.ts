@@ -1,8 +1,8 @@
 import { AppError } from "@/lib/app-error";
 import { connectDB } from "@/lib/connect-mongo";
 import { getSlug } from "@/lib/get-slug";
-import { Quiz } from "@/models/quiz-model";
-import { QuizSet } from "@/models/quiz-set-model";
+import { QuizModel } from "@/models/quiz-model";
+import { QuizSetModel } from "@/models/quiz-set-model";
 import {
   TQuizCreateInSetPayload,
   TQuizSetCreatePayload,
@@ -14,15 +14,15 @@ export const quizServices = {
   getAllQuizSets: async (excludeUnpublished: boolean = false) => {
     await connectDB();
     const quizSets = excludeUnpublished
-      ? await QuizSet.find({ active: true })
-      : await QuizSet.find();
+      ? await QuizSetModel.find({ active: true })
+      : await QuizSetModel.find();
 
     return quizSets.map((quizSet) => quizSet.toJSON());
   },
 
   getQuizSetById: async (quizSetId: string) => {
     await connectDB();
-    const quizSet = await QuizSet.findById(quizSetId).populate({
+    const quizSet = await QuizSetModel.findById(quizSetId).populate({
       path: "quizIds",
       model: "Quiz",
     });
@@ -38,7 +38,7 @@ export const quizServices = {
     await connectDB();
 
     const slug = getSlug(payload.title);
-    const existingQuizSet = await QuizSet.findOne({ slug });
+    const existingQuizSet = await QuizSetModel.findOne({ slug });
 
     if (existingQuizSet) {
       throw new AppError(
@@ -47,7 +47,7 @@ export const quizServices = {
       );
     }
 
-    const quizSet = await QuizSet.create({
+    const quizSet = await QuizSetModel.create({
       title: payload.title,
       slug,
       active: false,
@@ -62,12 +62,12 @@ export const quizServices = {
   ) => {
     await connectDB();
 
-    const quizSet = await QuizSet.findById(quizSetId);
+    const quizSet = await QuizSetModel.findById(quizSetId);
     if (!quizSet) {
       throw new AppError("Quiz set not found", status.NOT_FOUND);
     }
 
-    const createdQuiz = await Quiz.create({
+    const createdQuiz = await QuizModel.create({
       title: payload.title,
       slug: getSlug(payload.title),
       explanation: "",
@@ -103,7 +103,7 @@ export const quizServices = {
     await connectDB();
 
     const slug = getSlug(payload.title);
-    const existingQuizSet = await QuizSet.findOne({
+    const existingQuizSet = await QuizSetModel.findOne({
       slug,
       _id: { $ne: quizSetId },
     });
@@ -115,7 +115,7 @@ export const quizServices = {
       );
     }
 
-    const updatedQuizSet = await QuizSet.findByIdAndUpdate(
+    const updatedQuizSet = await QuizSetModel.findByIdAndUpdate(
       quizSetId,
       {
         title: payload.title,

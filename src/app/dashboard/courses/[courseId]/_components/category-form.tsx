@@ -30,9 +30,8 @@ interface CategoryFormProps {
   };
   courseId: string;
   options: {
-    id: string;
-    label: string;
-    value: string;
+    title: string;
+    icon: string;
   }[];
 }
 
@@ -57,11 +56,11 @@ export const CategoryForm = ({
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     const selectedCategory = options.find(
-      (option) => option.value === values.value,
+      (option) => option.title === values.value,
     );
 
     const result = await updateCourseAction(courseId, {
-      category: selectedCategory!.id,
+      category: selectedCategory!.title,
     });
 
     if (!result.success) {
@@ -75,7 +74,7 @@ export const CategoryForm = ({
   };
 
   const selectedOptions = options.find(
-    (option) => option.value === initialData.value,
+    (option) => option.title === initialData.value,
   );
 
   return (
@@ -100,7 +99,7 @@ export const CategoryForm = ({
             !initialData.value && "text-slate-500 italic",
           )}
         >
-          {selectedOptions?.label || "No category"}
+          {selectedOptions?.title || "No category"}
         </p>
       )}
 

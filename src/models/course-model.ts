@@ -1,7 +1,22 @@
 import { mongooseTransform } from "@/lib/mongoose-transform.plugin";
 import mongoose from "mongoose";
 
-const courseSchema = new mongoose.Schema(
+export interface ICourse extends mongoose.Document {
+  title: string;
+  subtitle?: string;
+  description: string;
+  image?: string;
+  modules?: mongoose.Types.ObjectId[];
+  price: number;
+  active: boolean;
+  category?: mongoose.Types.ObjectId;
+  instructor?: mongoose.Types.ObjectId;
+  quizSet?: mongoose.Types.ObjectId;
+  testimonials?: mongoose.Types.ObjectId[];
+  learning?: string[];
+}
+
+const courseSchema = new mongoose.Schema<ICourse>(
   {
     title: {
       required: true,
@@ -14,7 +29,7 @@ const courseSchema = new mongoose.Schema(
       required: true,
       type: String,
     },
-    thumbnail: {
+    image: {
       type: String,
     },
     modules: [{ type: mongoose.Schema.Types.ObjectId, ref: "Module" }],
@@ -34,7 +49,7 @@ const courseSchema = new mongoose.Schema(
 
     instructor: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
 
-    quizSet: { type: mongoose.Schema.Types.ObjectId, ref: "Quizset" },
+    quizSet: { type: mongoose.Schema.Types.ObjectId, ref: "QuizSet" },
     testimonials: [
       { type: mongoose.Schema.Types.ObjectId, ref: "Testimonial" },
     ],
@@ -51,4 +66,4 @@ const courseSchema = new mongoose.Schema(
 courseSchema.plugin(mongooseTransform);
 
 export const CourseModel =
-  mongoose.models.Course ?? mongoose.model("Course", courseSchema);
+  mongoose.models?.Course || mongoose.model("Course", courseSchema);

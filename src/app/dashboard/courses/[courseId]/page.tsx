@@ -1,10 +1,10 @@
 import { IconBadge } from "@/components/icon-badge";
-import { getCategories } from "@/services/category-services";
 import { getCourse } from "@/services/course-services";
 import { CircleDollarSign, LayoutDashboard, ListChecks } from "lucide-react";
 import { CategoryForm } from "./_components/category-form";
 
 import AlertBanner from "@/components/alert-banner";
+import { courseCategories } from "@/constants/data";
 import { IModuleFrontend } from "@/types/frontend-index";
 import { CourseActions } from "./_components/course-actions";
 import { DescriptionForm } from "./_components/description-form";
@@ -24,8 +24,6 @@ const EditCoursePage = async ({
   if (!course) {
     return <AlertBanner label="Course not found." variant="warning" />;
   }
-
-  const categories = await getCategories();
 
   const sortedModules: IModuleFrontend[] = course.modules
     ? course.modules.sort(
@@ -61,14 +59,14 @@ const EditCoursePage = async ({
             />
             <ImageForm
               initialData={{
-                imageUrl: course?.thumbnailUrl,
+                imageUrl: course?.image,
               }}
               courseId={courseId}
             />
             <CategoryForm
               initialData={{ value: course?.category?.value }}
               courseId={courseId}
-              options={categories}
+              options={courseCategories}
             />
 
             <QuizSetForm initialData={{}} courseId={courseId} />

@@ -38,7 +38,6 @@ const AddCoursePage = () => {
 
   const onSubmit = async (values: CreateCoursePayload) => {
     const result = await createCourseAction(values);
-    console.log(result);
 
     if (!result.success) {
       toast.error(result.error);

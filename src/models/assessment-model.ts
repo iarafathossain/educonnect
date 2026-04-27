@@ -1,18 +1,23 @@
 import { mongooseTransform } from "@/lib/mongoose-transform.plugin";
-import mongoose, { Schema } from "mongoose";
+import mongoose from "mongoose";
 
-const assessmentSchema = new Schema({
+export interface IAssessment extends mongoose.Document {
+  assessments: unknown[];
+  otherMarks: number;
+}
+
+const assessmentSchema = new mongoose.Schema<IAssessment>({
   assessments: {
-    required: true,
     type: Array,
+    required: true,
   },
   otherMarks: {
-    required: true,
     type: Number,
+    required: true,
   },
 });
 
 assessmentSchema.plugin(mongooseTransform);
 
-export const Assessment =
-  mongoose.models.Assessment ?? mongoose.model("Assessment", assessmentSchema);
+export const AssessmentModel =
+  mongoose.models?.Assessment || mongoose.model("Assessment", assessmentSchema);

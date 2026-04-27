@@ -2,7 +2,9 @@ import { mongooseTransform } from "@/lib/mongoose-transform.plugin";
 import { IEnrollment } from "@/types/backend-index";
 import mongoose from "mongoose";
 
-const enrollmentSchema = new mongoose.Schema<IEnrollment>(
+export interface IEnrollmentModel extends mongoose.Document, IEnrollment {}
+
+const enrollmentSchema = new mongoose.Schema<IEnrollmentModel>(
   {
     status: {
       type: String,
@@ -32,4 +34,4 @@ const enrollmentSchema = new mongoose.Schema<IEnrollment>(
 enrollmentSchema.plugin(mongooseTransform);
 
 export const EnrollmentModel =
-  mongoose.models.Enrollment ?? mongoose.model("Enrollment", enrollmentSchema);
+  mongoose.models?.Enrollment || mongoose.model("Enrollment", enrollmentSchema);

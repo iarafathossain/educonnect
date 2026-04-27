@@ -32,10 +32,8 @@ export interface IModuleFrontend extends IModuleBase {
 }
 
 export interface ICategoryFrontend {
-  id: string;
-  label: string;
-  value: string;
-  thumbnailUrl: string;
+  title: string;
+  icon: string;
 }
 
 export interface ILessonFrontend extends ILessonBase {
@@ -52,7 +50,6 @@ export interface ICourseFrontend extends ICourseBase {
   id: string;
   subtitle?: string;
   quizSet?: string;
-  thumbnailUrl?: string;
   instructor: IUserFrontend;
   modules: IModuleFrontend[];
   learning?: string[];

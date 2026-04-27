@@ -2,7 +2,9 @@ import { mongooseTransform } from "@/lib/mongoose-transform.plugin";
 import { IReport } from "@/types/backend-index";
 import mongoose from "mongoose";
 
-const reportSchema = new mongoose.Schema<IReport>(
+export interface IReportModel extends mongoose.Document, IReport {}
+
+const reportSchema = new mongoose.Schema<IReportModel>(
   {
     student: {
       type: mongoose.Schema.Types.ObjectId,
@@ -37,4 +39,4 @@ const reportSchema = new mongoose.Schema<IReport>(
 reportSchema.plugin(mongooseTransform);
 
 export const ReportModel =
-  mongoose.models.Report ?? mongoose.model("Report", reportSchema);
+  mongoose.models?.Report || mongoose.model("Report", reportSchema);

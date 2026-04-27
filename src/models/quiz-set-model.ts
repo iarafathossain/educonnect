@@ -1,7 +1,15 @@
 import { mongooseTransform } from "@/lib/mongoose-transform.plugin";
 import mongoose from "mongoose";
 
-const quizSetSchema = new mongoose.Schema({
+export interface IQuizSet extends mongoose.Document {
+  title: string;
+  slug: string;
+  description?: string;
+  quizIds?: mongoose.Types.ObjectId[];
+  active: boolean;
+}
+
+const quizSetSchema = new mongoose.Schema<IQuizSet>({
   title: {
     type: String,
     required: true,
@@ -24,5 +32,5 @@ const quizSetSchema = new mongoose.Schema({
 
 quizSetSchema.plugin(mongooseTransform);
 
-export const QuizSet =
-  mongoose.models.QuizSet ?? mongoose.model("QuizSet", quizSetSchema);
+export const QuizSetModel =
+  mongoose.models?.QuizSet || mongoose.model("QuizSet", quizSetSchema);

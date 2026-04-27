@@ -1,7 +1,18 @@
 import { mongooseTransform } from "@/lib/mongoose-transform.plugin";
 import mongoose from "mongoose";
 
-const lessonSchema = new mongoose.Schema({
+export interface ILesson extends mongoose.Document {
+  title: string;
+  description?: string;
+  duration: number;
+  videoURL?: string;
+  active: boolean;
+  slug: string;
+  access: string;
+  order: number;
+}
+
+const lessonSchema = new mongoose.Schema<ILesson>({
   title: {
     required: true,
     type: String,
@@ -40,4 +51,4 @@ const lessonSchema = new mongoose.Schema({
 lessonSchema.plugin(mongooseTransform);
 
 export const LessonModel =
-  mongoose.models.Lesson ?? mongoose.model("Lesson", lessonSchema);
+  mongoose.models?.Lesson || mongoose.model("Lesson", lessonSchema);

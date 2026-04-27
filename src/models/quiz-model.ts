@@ -1,7 +1,16 @@
 import { mongooseTransform } from "@/lib/mongoose-transform.plugin";
 import mongoose from "mongoose";
 
-const quizSchema = new mongoose.Schema({
+export interface IQuiz extends mongoose.Document {
+  title: string;
+  slug: string;
+  explanation?: string;
+  description?: string;
+  options?: unknown[];
+  mark: number;
+}
+
+const quizSchema = new mongoose.Schema<IQuiz>({
   title: {
     type: String,
     required: true,
@@ -29,4 +38,5 @@ const quizSchema = new mongoose.Schema({
 
 quizSchema.plugin(mongooseTransform);
 
-export const Quiz = mongoose.models.Quiz ?? mongoose.model("Quiz", quizSchema);
+export const QuizModel =
+  mongoose.models?.Quiz || mongoose.model("Quiz", quizSchema);

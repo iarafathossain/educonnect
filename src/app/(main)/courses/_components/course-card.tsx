@@ -6,11 +6,12 @@ import { BookOpen } from "lucide-react";
 import Link from "next/link";
 
 const CourseCard = ({ course }: { course: ICourseFrontend }) => {
+  console.log("CourseCard rendered for course:", course);
   return (
     <div className="group hover:shadow-sm transition overflow-hidden border rounded-lg p-3 h-full">
       <Link key={course.id} href={`/courses/${course.id}`}>
         <div>
-          <CardImage url={course?.thumbnailUrl} title={course?.title} />
+          <CardImage url={course?.image} title={course?.title} />
           <div className="flex flex-col pt-2">
             <div className="text-lg md:text-base font-medium group-hover:text-sky-700 line-clamp-2">
               {course?.title}
