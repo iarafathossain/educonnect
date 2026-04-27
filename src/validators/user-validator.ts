@@ -43,3 +43,32 @@ export const userLoginZodSchema = z.object({
 });
 
 export type TUserLogin = z.infer<typeof userLoginZodSchema>;
+
+export const socialLinksSchema = z
+  .object({
+    linkedin: z.string().optional(),
+    twitter: z.string().optional(),
+    facebook: z.string().optional(),
+    instagram: z.string().optional(),
+  })
+  .optional();
+
+const dateLikeSchema = z.union([z.date(), z.string()]);
+
+export const userFrontendSchema = z.object({
+  id: z.string(),
+  firstName: z.string(),
+  lastName: z.string(),
+  email: z.string().email(),
+  role: z.enum(USER_ROLES),
+  phone: z.string().optional(),
+  website: z.string().optional(),
+  bio: z.string().optional(),
+  image: z.string().optional(),
+  designation: z.string().optional(),
+  socialLinks: socialLinksSchema,
+  createdAt: dateLikeSchema.optional(),
+  updatedAt: dateLikeSchema.optional(),
+});
+
+export type IUserFrontend = z.infer<typeof userFrontendSchema>;

@@ -1,5 +1,6 @@
 import { AppError } from "@/lib/app-error";
 import { connectDB } from "@/lib/connect-mongo";
+import { getLoggedInUser } from "@/lib/get-loggedin-user";
 import { getSlug } from "@/lib/get-slug";
 import { QuizModel } from "@/models/quiz-model";
 import { QuizSetModel } from "@/models/quiz-set-model";
@@ -47,7 +48,14 @@ export const quizServices = {
       );
     }
 
+    const loggedInUser = await getLoggedInUser();
+
+    if (!loggedInUser) {
+      throw new AppError("Unauthorized", status.UNAUTHORIZED);
+    }
+
     const quizSet = await QuizSetModel.create({
+      instructor: loggedInUser.id,
       title: payload.title,
       slug,
       active: false,
@@ -68,6 +76,7 @@ export const quizServices = {
     }
 
     const createdQuiz = await QuizModel.create({
+      quizSet: quizSet.id,
       title: payload.title,
       slug: getSlug(payload.title),
       explanation: "",

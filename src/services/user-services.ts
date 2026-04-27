@@ -1,21 +1,29 @@
 import { connectDB } from "@/lib/connect-mongo";
 import { UserModel } from "@/models/user-model";
+import { IUserFrontend, userFrontendSchema } from "@/validators/user-validator";
 import bcrypt from "bcryptjs";
 
 export const userServices = {
-  getUserByEmail: async (email: string) => {
+  getUserByEmail: async (email: string): Promise<IUserFrontend | null> => {
     await connectDB();
 
-    const user = await UserModel.findOne({ email });
-    return user ? user.toJSON() : null;
+    const user = await UserModel.findOne({ email }).select("-passwordHash");
+    if (!user) {
+      return null;
+    }
+
+    return userFrontendSchema.parse(user.toJSON());
   },
 
-  getUserDetails: async (userId: string) => {
+  getUserDetails: async (userId: string): Promise<IUserFrontend | null> => {
     await connectDB();
     const user = await UserModel.findById(userId).select("-passwordHash");
-    console.log("user details", user);
-    console.log("user details JSON", user?.toJSON());
-    return user ? user.toJSON() : null;
+
+    if (!user) {
+      return null;
+    }
+
+    return userFrontendSchema.parse(user.toJSON());
   },
 
   validatePassword: async (email: string, oldPassword: string) => {

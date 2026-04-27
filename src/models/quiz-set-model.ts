@@ -2,6 +2,7 @@ import { mongooseTransform } from "@/lib/mongoose-transform.plugin";
 import mongoose from "mongoose";
 
 export interface IQuizSet extends mongoose.Document {
+  instructor: mongoose.Types.ObjectId;
   title: string;
   slug: string;
   description?: string;
@@ -10,6 +11,11 @@ export interface IQuizSet extends mongoose.Document {
 }
 
 const quizSetSchema = new mongoose.Schema<IQuizSet>({
+  instructor: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
   title: {
     type: String,
     required: true,

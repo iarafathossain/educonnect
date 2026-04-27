@@ -1,17 +1,10 @@
-import { auth } from "@/auth";
+import { getLoggedInUser } from "@/lib/get-loggedin-user";
 import { getEnrollmentsForStudent } from "@/services/enrollment-services";
-import { getUserByEmail } from "@/services/user-services";
 import { redirect } from "next/navigation";
 import EnrolledCourseCard from "../../_components/enrolled-course-card";
 
 const EnrolledCoursesPage = async () => {
-  const session = await auth();
-
-  if (!session?.user) {
-    redirect("/login");
-  }
-
-  const loggedInUser = await getUserByEmail(session.user.email!);
+  const loggedInUser = await getLoggedInUser();
   if (!loggedInUser) {
     redirect("/login");
   }
