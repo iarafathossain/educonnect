@@ -1,30 +1,22 @@
+import { getLoggedInUser } from "@/lib/get-loggedin-user";
+import { getLivesByInstructor } from "@/services/live-services";
 import { columns } from "./_components/columns";
 import { DataTable } from "./_components/data-table";
 
-const lives = [
-  {
-    id: 1,
-    title: "Career In Backend Web Development",
-    date: "10 Nov 2022",
-    time: "10:00 AM",
-  },
-  {
-    id: 2,
-    title: "Career In Frontend Development",
-    date: "10 Nov 2022",
-    time: "08:30 PM",
-  },
-];
+const LivesPage = async () => {
+  const loggedInUser = await getLoggedInUser();
 
-const LivePage = () => {
+  if (!loggedInUser) {
+    return <div className="p-6">Please log in to view your live sessions</div>;
+  }
+
+  const lives = await getLivesByInstructor(loggedInUser.id);
+
   return (
     <div className="p-6">
-      {/* <Link href="/teacher/create">
-        <Button>New Course</Button>
-      </Link> */}
       <DataTable columns={columns} data={lives} />
     </div>
   );
 };
 
-export default LivePage;
+export default LivesPage;

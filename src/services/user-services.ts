@@ -26,6 +26,12 @@ export const userServices = {
     return userFrontendSchema.parse(user.toJSON());
   },
 
+  getUsers: async (): Promise<IUserFrontend[]> => {
+    await connectDB();
+    const users = await UserModel.find().select("-passwordHash");
+    return users.map((user) => userFrontendSchema.parse(user.toJSON()));
+  },
+
   validatePassword: async (email: string, oldPassword: string) => {
     await connectDB();
     const user = await UserModel.findOne({ email });
@@ -44,4 +50,5 @@ export const userServices = {
 
 export const getUserByEmail = userServices.getUserByEmail;
 export const getUserDetails = userServices.getUserDetails;
+export const getUsers = userServices.getUsers;
 export const validatePassword = userServices.validatePassword;

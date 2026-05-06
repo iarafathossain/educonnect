@@ -1,4 +1,5 @@
 import { AppError } from "@/lib/app-error";
+import { connectDB } from "@/lib/connect-mongo";
 import { UserModel } from "@/models/user-model";
 import {
   TChangePasswordPayload,
@@ -13,6 +14,7 @@ export const accountServices = {
     email: string,
     payload: TPersonalDetailsUpdate,
   ) => {
+    await connectDB();
     const updatedUser = await UserModel.findOneAndUpdate({ email }, payload, {
       new: true,
     });
@@ -28,6 +30,7 @@ export const accountServices = {
   },
 
   updateContactInfo: async (email: string, payload: TContactInfoUpdate) => {
+    await connectDB();
     const { phone, website, facebook, twitter, linkedin } = payload;
 
     const updatedUser = await UserModel.findOneAndUpdate(
@@ -55,6 +58,7 @@ export const accountServices = {
   },
 
   changePassword: async (email: string, payload: TChangePasswordPayload) => {
+    await connectDB();
     const { oldPassword, newPassword } = payload;
 
     const user = await UserModel.findOne({ email });

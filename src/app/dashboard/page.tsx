@@ -1,7 +1,12 @@
 import { auth } from "@/auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatPrice } from "@/lib/formate-price";
-import { getCourseDetailsByInstructor } from "@/services/course-services";
+import {
+  getCourseDetailsByInstructor,
+  getCourses,
+} from "@/services/course-services";
+import { getEnrollmentsForCourse } from "@/services/enrollment-services";
+import { getTestimonialsForCourse } from "@/services/testimonial-services";
 import { getUserByEmail } from "@/services/user-services";
 import { redirect } from "next/navigation";
 
@@ -12,9 +17,42 @@ const DashboardPage = async () => {
 
   const user = await getUserByEmail(session.user.email!);
 
-  if (user?.role !== "instructor") redirect("/login");
+  if (!user) {
+    redirect("/login");
+  }
 
-  const courseStats = await getCourseDetailsByInstructor(user.id);
+  if (user?.role !== "instructor" && user?.role !== "admin") {
+    redirect("/");
+  }
+
+  const courseStats =
+    user.role === "admin"
+      ? await (async () => {
+          const courses = await getCourses();
+
+          const enrollments = await Promise.all(
+            courses.map(async (course) => getEnrollmentsForCourse(course.id)),
+          );
+
+          const reviews = await Promise.all(
+            courses.map(async (course) => getTestimonialsForCourse(course.id)),
+          );
+
+          const totalRevenue = courses.reduce((acc, course, index) => {
+            return (
+              acc + (enrollments[index]?.length ?? 0) * (course.price ?? 0)
+            );
+          }, 0);
+
+          return {
+            courses: courses.length,
+            enrollments: enrollments.flat().length,
+            reviews: reviews.flat().length,
+            ratings: "0",
+            revenue: totalRevenue,
+          };
+        })()
+      : await getCourseDetailsByInstructor(user.id);
 
   const { courses, enrollments, revenue } = courseStats;
 

@@ -46,6 +46,8 @@ export const {
         session.user.role =
           token.role === USER_ROLES.instructor
             ? USER_ROLES.instructor
+            : token.role === USER_ROLES.admin
+            ? USER_ROLES.admin
             : USER_ROLES.student;
         session.user.firstName = token.firstName as string;
         session.user.lastName = token.lastName as string;

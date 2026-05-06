@@ -14,6 +14,10 @@ const ProfilePage = async () => {
   const userId = session.user.id;
   const user = await getUserDetails(userId);
 
+  if (!user) {
+    redirect("/login");
+  }
+
   return (
     <>
       <PersonalDetails userInfo={user} />

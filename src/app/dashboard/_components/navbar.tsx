@@ -7,13 +7,14 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { TUserRole } from "@/constants/enums";
 import Link from "next/link";
 import MobileSidebar from "./mobile-sidebar";
 
-const Navbar = () => {
+const Navbar = ({ role }: { role: TUserRole }) => {
   return (
     <div className="p-4 border-b h-full flex items-center bg-white shadow-sm">
-      <MobileSidebar />
+      <MobileSidebar role={role} />
       <div className="flex items-center justify-end  w-full">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

@@ -35,6 +35,12 @@ export const quizServices = {
     return quizSet.toJSON();
   },
 
+  getQuizSetByInstructor: async (instructorId: string) => {
+    await connectDB();
+    const quizSets = await QuizSetModel.find({ instructor: instructorId });
+    return quizSets.map((quizSet) => quizSet.toJSON());
+  },
+
   createQuizSet: async (payload: TQuizSetCreatePayload) => {
     await connectDB();
 

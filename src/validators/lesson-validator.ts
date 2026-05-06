@@ -28,7 +28,6 @@ export const lessonUpdateZodSchema = z
       .optional(),
     slug: z.string().trim().min(1, "Slug is required").optional(),
     description: z.string().trim().min(1, "Description is required").optional(),
-    isFree: z.boolean().optional(),
     access: z.enum(["public", "private"]).optional(),
     videoURL: z.string().trim().min(1, "Video URL is required").optional(),
     duration: z.number().int().min(0, "Duration cannot be negative").optional(),

@@ -1,8 +1,9 @@
+import { USER_ROLES } from "@/constants/enums";
 import { z } from "zod";
 
 const dateLikeSchema = z.union([z.date(), z.string()]);
 
-export const userRoleSchema = z.enum(["student", "instructor"]);
+export const userRoleSchema = z.enum(USER_ROLES);
 
 export const userRegisterFormSchema = z.object({
   firstName: z.string().min(1),
@@ -65,7 +66,7 @@ export const lessonFrontendSchema = z.object({
   duration: z.number().optional(),
   active: z.boolean().optional(),
   slug: z.string(),
-  access: z.string().optional(),
+  access: z.enum(["public", "private"]).optional(),
   createdAt: dateLikeSchema.optional(),
   updatedAt: dateLikeSchema.optional(),
 });
@@ -75,7 +76,7 @@ export const testimonialFrontendSchema = z.object({
   rating: z.number(),
   content: z.string(),
   user: userFrontendSchema,
-  courseId: z.string(),
+  course: z.string(),
   createdAt: dateLikeSchema.optional(),
   updatedAt: dateLikeSchema.optional(),
 });

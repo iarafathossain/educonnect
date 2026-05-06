@@ -1,9 +1,10 @@
 "use client";
 
+import { TUserRole } from "@/constants/enums";
 import { BarChart, BookA, BookOpen, Radio } from "lucide-react";
 import SidebarItem from "./sidebar-item";
 
-const routes = [
+const instructorRoutes = [
   {
     icon: BarChart,
     label: "Analytics",
@@ -31,18 +32,46 @@ const routes = [
   },
 ];
 
-const SidebarRoutes = () => {
-  // const pathname = usePathname();
+const adminRoutes = [
+  {
+    icon: BarChart,
+    label: "Analytics",
+    href: "/dashboard",
+  },
+  {
+    icon: BookOpen,
+    label: "Manage Courses",
+    href: "/dashboard/courses",
+  },
+  {
+    icon: BookOpen,
+    label: "Manage Categories",
+    href: "/dashboard/admin/categories",
+  },
+  {
+    icon: Radio,
+    label: "Manage Users",
+    href: "/dashboard/admin/users",
+  },
+  {
+    icon: BookA,
+    label: "Manage Testimonials",
+    href: "/dashboard/admin/testimonials",
+  },
+];
 
-  // const isTeacherPage = pathname?.includes("/teacher");
+type SidebarRoutesProps = {
+  role?: TUserRole;
+};
 
-  // const routes = isTeacherPage ? teacherRoutes : guestRoutes;
+const SidebarRoutes = ({ role }: SidebarRoutesProps) => {
+  const routes = role === "admin" ? adminRoutes : instructorRoutes;
 
   return (
     <div className="flex flex-col w-full">
       {routes.map((route) => (
         <SidebarItem
-          key={route.href}
+          key={`${route.href}-${route.label}`}
           icon={route.icon}
           label={route.label}
           href={route.href}

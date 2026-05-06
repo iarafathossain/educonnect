@@ -15,6 +15,10 @@ export const env = createEnv({
     STRIPE_SECRET_KEY: z.string().min(1),
     RESEND_API_KEY: z.string().min(1),
     CLOUDINARY_API_SECRET: z.string().min(1),
+    SEED_ADMIN_EMAIL: z.string(),
+    SEED_ADMIN_PASSWORD: z.string().min(6),
+    SEED_ADMIN_FIRST_NAME: z.string().min(2).max(100),
+    SEED_ADMIN_LAST_NAME: z.string().min(2).max(100),
   },
   runtimeEnv: {
     NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY:
@@ -29,5 +33,9 @@ export const env = createEnv({
     STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
     RESEND_API_KEY: process.env.RESEND_API_KEY,
     CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET,
+    SEED_ADMIN_EMAIL: process.env.SEED_ADMIN_EMAIL,
+    SEED_ADMIN_PASSWORD: process.env.SEED_ADMIN_PASSWORD,
+    SEED_ADMIN_FIRST_NAME: process.env.SEED_ADMIN_FIRST_NAME,
+    SEED_ADMIN_LAST_NAME: process.env.SEED_ADMIN_LAST_NAME,
   },
 });

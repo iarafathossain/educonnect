@@ -1,4 +1,5 @@
 import { AppError } from "@/lib/app-error";
+import { connectDB } from "@/lib/connect-mongo";
 import { UserModel } from "@/models/user-model";
 import { TUserRegistration } from "@/validators/user-validator";
 import bcrypt from "bcryptjs";
@@ -6,6 +7,7 @@ import status from "http-status";
 
 export const authServices = {
   register: async (payload: TUserRegistration) => {
+    await connectDB();
     // destructure
     const { firstName, lastName, email, password, role } = payload;
 

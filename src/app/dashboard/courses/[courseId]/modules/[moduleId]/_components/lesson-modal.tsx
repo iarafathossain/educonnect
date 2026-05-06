@@ -82,7 +82,7 @@ export const LessonModal = ({
                   <h2 className="text-xl">Access Settings</h2>
                 </div>
                 <LessonAccessForm
-                  initialData={{ isFree: lesson?.access !== "private" }}
+                  initialData={{ access: lesson?.access }}
                   lessonId={lesson?.id}
                 />
               </div>

@@ -7,8 +7,8 @@ import "@/models/testimonial-model";
 import "@/models/user-model";
 import { getEnrollmentsForCourse } from "@/services/enrollment-services";
 import { getTestimonialsForCourse } from "@/services/testimonial-services";
-import type { ICourseFrontend } from "@/validators/frontend-types";
 import { CreateCoursePayload } from "@/validators/course-validator";
+import type { ICourseFrontend } from "@/validators/frontend-types";
 import status from "http-status";
 
 export const courseServices = {
@@ -70,7 +70,6 @@ export const courseServices = {
   ) => {
     await connectDB();
     const courses = await CourseModel.find({ instructor: instructorId });
-    console.log("Courses:", courses);
 
     const enrollments = await Promise.all(
       courses.map(async (course) => {
@@ -121,6 +120,7 @@ export const courseServices = {
   },
 
   create: async (payload: CreateCoursePayload, instructorId: string) => {
+    await connectDB();
     const courseData = {
       ...payload,
       instructor: instructorId,
@@ -131,6 +131,7 @@ export const courseServices = {
   },
 
   update: async (courseId: string, payload: Record<string, unknown>) => {
+    await connectDB();
     const updatedCourse = await CourseModel.findByIdAndUpdate(
       courseId,
       payload,
@@ -147,6 +148,7 @@ export const courseServices = {
   },
 
   changePublishState: async (courseId: string) => {
+    await connectDB();
     const course = await CourseModel.findById(courseId);
 
     if (!course) {
@@ -160,6 +162,7 @@ export const courseServices = {
   },
 
   delete: async (courseId: string) => {
+    await connectDB();
     const deletedCourse = await CourseModel.findByIdAndDelete(courseId);
 
     if (!deletedCourse) {

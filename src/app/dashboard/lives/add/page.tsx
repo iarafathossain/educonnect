@@ -29,26 +29,16 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import type { CreateLivePayload } from "@/validators/live-validator";
+import { createLiveAction } from "@/actions/live-actions";
 const formSchema = z.object({
-  title: z.string().min(1, {
-    message: "Title is required!",
-  }),
-  date: z.date({ required_error: "Date is required!" }),
-  time: z.string({ required_error: "Time is required!" }).min(1, {
-    message: "Time is required!",
-  }),
-  description: z.string().min(1, {
-    message: "Description is required!",
-  }),
-  thumbnail: z.string().min(1, {
-    message: "Thumbnail is required!",
-  }),
-  url: z.string().min(1, {
-    message: "Thumbnail is required!",
-  }),
-  quizSet: z.string().min(1, {
-    message: "Quiz Set is required!",
-  }),
+  title: z.string().min(1, { message: "Title is required!" }),
+  date: z.date(),
+  time: z.string().min(1, "Time is required!"),
+  description: z.string().min(1, { message: "Description is required!" }),
+  thumbnail: z.string().optional(),
+  url: z.string().optional(),
+  quizSet: z.string().optional(),
 });
 
 const AddLive = () => {
@@ -59,18 +49,32 @@ const AddLive = () => {
     defaultValues: {
       title: "",
       description: "",
-      date: "",
+      date: undefined,
       time: "",
+      quizSet: "",
+      thumbnail: "",
     },
   });
 
-  const { isSubmitting, isValid } = form.formState;
+  const { isSubmitting } = form.formState;
 
-  const onSubmit = async (values) => {
+  const onSubmit = async (values: CreateLivePayload) => {
     try {
-      router.push(`/dashboard/lives`);
+      const result = await createLiveAction(values);
+
+      if (!result.success) {
+        toast.error(result.error || "Failed to create live");
+        return;
+      }
+
+      if (!result.data) {
+        toast.error("Failed to create live");
+        return;
+      }
+
+      router.push(`/dashboard/lives/${result.data.id}`);
       toast.success("Live created");
-    } catch (error) {
+    } catch {
       toast.error("Something went wrong");
     }
   };
@@ -104,12 +108,12 @@ const AddLive = () => {
               {/* Thumbnail */}
               <FormField
                 control={form.control}
-                name="title"
+                name="thumbnail"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Thumbnail</FormLabel>
                     <FormControl>
-                      <UploadDropzone />
+                      <UploadDropzone {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -208,15 +212,16 @@ const AddLive = () => {
                       <Combobox
                         options={[
                           {
-                            label: "Reactive Accelerator Quizes",
-                            value: "1",
+                            title: "Reactive Accelerator Quizes",
+                            icon: "book",
                           },
                           {
-                            label: "Think In A Redux Way Quizes",
-                            value: "2",
+                            title: "Think In A Redux Way Quizes",
+                            icon: "book",
                           },
                         ]}
-                        {...field}
+                        value={field.value ?? ""}
+                        onChange={(val) => field.onChange(val)}
                       />
                     </FormControl>
                     <FormMessage />

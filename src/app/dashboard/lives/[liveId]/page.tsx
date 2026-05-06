@@ -1,193 +1,130 @@
-"use client";
-import * as z from "zod";
-// import axios from "axios";
-import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Textarea } from "@/components/ui/textarea";
-import { cn } from "@/lib/utils";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { format } from "date-fns";
-import { CalendarIcon } from "lucide-react";
+import AlertBanner from "@/components/alert-banner";
+import { IconBadge } from "@/components/icon-badge";
+import { getLive } from "@/services/live-services";
+import { CalendarDays, Clock3, Link as LinkIcon, Tv2 } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-const formSchema = z.object({
-  title: z.string().min(1, {
-    message: "Title is required!",
-  }),
-  date: z.date({ required_error: "Date is required!" }),
-  time: z.string({ required_error: "Time is required!" }).min(1, {
-    message: "Time is required!",
-  }),
-  description: z.string().min(1, {
-    message: "Description is required!",
-  }),
-});
 
-const EditLive = () => {
-  const router = useRouter();
+type Props = {
+  params: { liveId: string };
+};
 
-  const form = useForm({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      title: "",
-      description: "",
-      date: "",
-      time: "",
-    },
-  });
+const LiveDetailPage = async ({ params }: Props) => {
+  const live = await getLive(params.liveId);
 
-  const { isSubmitting, isValid } = form.formState;
+  if (!live) {
+    return <AlertBanner label="Live not found." variant="warning" />;
+  }
 
-  const onSubmit = async (values) => {
-    try {
-      router.push(`/dashboard/lives`);
-      toast.success("Live created");
-    } catch (error) {
-      toast.error("Something went wrong");
-    }
-  };
   return (
-    <div className="max-w-5xl mx-auto flex md:items-center md:justify-center h-full p-6">
-      <div className="max-w-full w-[536px]">
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-8 mt-8"
-          >
-            {/* title */}
-            <FormField
-              control={form.control}
-              name="title"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Live Title</FormLabel>
-                  <FormControl>
-                    <Input
-                      disabled={isSubmitting}
-                      placeholder="e.g 'Reactive Accelerator'"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            {/* date */}
-            <FormField
-              control={form.control}
-              name="date"
-              render={({ field }) => (
-                <FormItem className="flex flex-col">
-                  <FormLabel>Date</FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant={"outline"}
-                          className={cn(
-                            "pl-3 text-left font-normal",
-                            !field.value && "text-muted-foreground",
-                          )}
-                        >
-                          {field.value ? (
-                            format(field.value, "PPP")
-                          ) : (
-                            <span>Pick a date</span>
-                          )}
-                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={field.value}
-                        onSelect={field.onChange}
-                        disabled={(date) => date < new Date()}
-                      />
-                    </PopoverContent>
-                  </Popover>
-                  <FormDescription>
-                    Your date of birth is used to calculate your age.
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            {/* time */}
-            <FormField
-              control={form.control}
-              name="time"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Time</FormLabel>
-                  <FormControl>
-                    <Input
-                      className="block"
-                      disabled={isSubmitting}
-                      placeholder="Select time"
-                      {...field}
-                      type="time"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+    <div className="p-6">
+      {!live.active && (
+        <AlertBanner
+          label="This live session is unpublished and will not be visible to learners."
+          variant="warning"
+        />
+      )}
 
-            {/* description */}
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Live Description</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Live overview"
-                      className="resize-none"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    Write a brief description of your live
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+      <div className="mt-6 flex items-center justify-between gap-4">
+        <div>
+          <div className="flex items-center gap-x-2">
+            <IconBadge icon={Tv2} variant="default" size="md" />
+            <h1 className="text-2xl font-semibold">{live.title}</h1>
+          </div>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Review the live session details and update it from the add flow if
+            needed.
+          </p>
+        </div>
+
+        <Link
+          href="/dashboard/lives"
+          className="rounded-md border px-4 py-2 text-sm font-medium transition-colors hover:bg-muted"
+        >
+          Back
+        </Link>
+      </div>
+
+      <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-2">
+        <div className="space-y-6">
+          <div className="rounded-lg border bg-background p-6 shadow-sm">
             <div className="flex items-center gap-x-2">
-              <Link href="/dashboard/lives">
-                <Button variant="outline" type="button">
-                  Cancel
-                </Button>
-              </Link>
-              <Button type="submit" disabled={isSubmitting}>
-                Continue
-              </Button>
+              <IconBadge icon={CalendarDays} variant="default" size="md" />
+              <h2 className="text-xl font-medium">Session details</h2>
             </div>
-          </form>
-        </Form>
+
+            <div className="mt-6 space-y-4 text-sm">
+              <div>
+                <p className="font-medium text-foreground">Date</p>
+                <p className="text-muted-foreground">
+                  {live.date ? new Date(live.date).toLocaleDateString() : "-"}
+                </p>
+              </div>
+              <div>
+                <p className="font-medium text-foreground">Time</p>
+                <p className="text-muted-foreground">{live.time || "-"}</p>
+              </div>
+              <div>
+                <p className="font-medium text-foreground">Stream URL</p>
+                {live.url ? (
+                  <a
+                    href={live.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-2 text-primary hover:underline"
+                  >
+                    <LinkIcon className="h-4 w-4" />
+                    Open stream
+                  </a>
+                ) : (
+                  <p className="text-muted-foreground">-</p>
+                )}
+              </div>
+              <div>
+                <p className="font-medium text-foreground">Status</p>
+                <p className="text-muted-foreground">
+                  {live.active ? "Published" : "Unpublished"}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-lg border bg-background p-6 shadow-sm">
+            <div className="flex items-center gap-x-2">
+              <IconBadge icon={Clock3} variant="default" size="md" />
+              <h2 className="text-xl font-medium">Description</h2>
+            </div>
+            <p className="mt-4 whitespace-pre-wrap text-sm leading-6 text-muted-foreground">
+              {live.description}
+            </p>
+          </div>
+        </div>
+
+        <div className="space-y-6">
+          <div className="rounded-lg border bg-background p-6 shadow-sm">
+            <div className="flex items-center gap-x-2">
+              <IconBadge icon={Tv2} variant="default" size="md" />
+              <h2 className="text-xl font-medium">Thumbnail</h2>
+            </div>
+
+            <div className="mt-6 overflow-hidden rounded-md border bg-muted/30">
+              {live.thumbnail ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={live.thumbnail}
+                  alt={live.title}
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <div className="flex min-h-[280px] items-center justify-center text-sm text-muted-foreground">
+                  No thumbnail provided.
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
 };
 
-export default EditLive;
+export default LiveDetailPage;

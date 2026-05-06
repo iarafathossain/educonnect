@@ -21,12 +21,12 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 const formSchema = z.object({
-  isFree: z.boolean().default(false),
+  access: z.boolean().default(false),
 });
 
 interface LessonAccessFormProps {
   initialData: {
-    isFree?: boolean;
+    access?: string;
   };
   lessonId: string;
 }
@@ -37,14 +37,14 @@ export const LessonAccessForm = ({
 }: LessonAccessFormProps) => {
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
-  const [free, setFree] = useState(!!initialData.isFree);
+  const [isPublic, setIsPublic] = useState(initialData.access !== "private");
 
   const toggleEdit = () => setIsEditing((current) => !current);
 
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      isFree: !!initialData.isFree,
+      access: initialData.access !== "private",
     },
   });
 
@@ -52,8 +52,7 @@ export const LessonAccessForm = ({
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     const payload = {
-      isFree: values.isFree,
-      access: values.isFree ? "public" : "private",
+      access: values.access ? "public" : "private",
     };
 
     const result = await updateLessonAction(lessonId, payload);
@@ -63,7 +62,7 @@ export const LessonAccessForm = ({
       return;
     }
 
-    setFree(values.isFree);
+    setIsPublic(values.access);
     toast.success("Lesson updated");
     toggleEdit();
     router.refresh();
@@ -88,10 +87,10 @@ export const LessonAccessForm = ({
         <p
           className={cn(
             "text-sm mt-2",
-            !initialData.isFree && "text-slate-500 italic",
+            initialData.access === "private" && "text-slate-500 italic",
           )}
         >
-          {free ? (
+          {isPublic ? (
             <>This chapter is free for preview</>
           ) : (
             <>This chapter is not free</>
@@ -106,7 +105,7 @@ export const LessonAccessForm = ({
           >
             <FormField
               control={form.control}
-              name="isFree"
+              name="access"
               render={({ field }) => (
                 <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
                   <FormControl>

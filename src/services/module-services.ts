@@ -1,4 +1,5 @@
 import { AppError } from "@/lib/app-error";
+import { connectDB } from "@/lib/connect-mongo";
 import { CourseModel } from "@/models/course-model";
 import { ModuleModel } from "@/models/module-model";
 import {
@@ -10,6 +11,7 @@ import status from "http-status";
 
 export const moduleServices = {
   getModule: async (moduleId: string) => {
+    await connectDB();
     const result = await ModuleModel.findById(moduleId).populate({
       path: "lessonIds",
       model: "Lesson",
@@ -19,6 +21,7 @@ export const moduleServices = {
   },
 
   create: async (payload: TModuleCreatePayload) => {
+    await connectDB();
     const { courseId, ...moduleData } = payload;
 
     const course = await CourseModel.findById(courseId);
@@ -39,6 +42,7 @@ export const moduleServices = {
   },
 
   reorder: async (payload: TModuleReorderPayload) => {
+    await connectDB();
     await Promise.all(
       payload.map(async (item) => {
         await ModuleModel.findByIdAndUpdate(item.id, { order: item.position });
@@ -47,6 +51,7 @@ export const moduleServices = {
   },
 
   update: async (moduleId: string, payload: TModuleUpdatePayload) => {
+    await connectDB();
     const updatedModule = await ModuleModel.findByIdAndUpdate(
       moduleId,
       payload,
@@ -63,6 +68,7 @@ export const moduleServices = {
   },
 
   changePublishState: async (moduleId: string) => {
+    await connectDB();
     const existingModule = await ModuleModel.findById(moduleId);
 
     if (!existingModule) {
@@ -76,6 +82,7 @@ export const moduleServices = {
   },
 
   delete: async (moduleId: string, courseId: string) => {
+    await connectDB();
     const course = await CourseModel.findById(courseId);
 
     if (!course) {

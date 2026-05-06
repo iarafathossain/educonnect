@@ -2,8 +2,11 @@ import { auth } from "@/auth";
 import {
   getCourse,
   getCourseDetailsByInstructor,
+  getCourses,
 } from "@/services/course-services";
+import { getEnrollmentsForCourse } from "@/services/enrollment-services";
 import { getReportsForStudent } from "@/services/report-services";
+import { getTestimonialsForCourse } from "@/services/testimonial-services";
 import { getUserByEmail, getUserDetails } from "@/services/user-services";
 import type { IEnrollmentFrontend } from "@/validators/frontend-types";
 
@@ -102,24 +105,47 @@ export async function getInstructorDashboardData(dataType: string) {
       throw new Error("Unauthorized");
     }
 
-    const instructor = await getUserByEmail(session.user.email);
+    const user = await getUserByEmail(session.user.email);
 
-    if (instructor?.role !== "instructor") {
+    if (user?.role !== "instructor" && user?.role !== "admin") {
       throw new Error("Forbidden");
     }
 
-    const data = await getCourseDetailsByInstructor(instructor.id, true);
+    const data =
+      user.role === "admin"
+        ? await (async () => {
+            const courses = await getCourses();
+
+            const enrollments = await Promise.all(
+              courses.map(async (course) => getEnrollmentsForCourse(course.id)),
+            );
+
+            const reviews = await Promise.all(
+              courses.map(async (course) =>
+                getTestimonialsForCourse(course.id),
+              ),
+            );
+
+            return {
+              courses,
+              enrollments: enrollments.flat(),
+              reviews: reviews.flat(),
+            };
+          })()
+        : await getCourseDetailsByInstructor(user.id, true);
 
     switch (dataType) {
       case COURSE_DATA:
-        return data?.courses;
+        return Array.isArray(data?.courses) ? data.courses : [];
       case REVIEW_DATA:
         return populateReviewData(
           Array.isArray(data?.reviews) ? (data.reviews as ReviewRow[]) : [],
         );
       case ENROLLMENT_DATA:
         return populateEnrollmentData(
-          data?.enrollments as IEnrollmentFrontend[],
+          Array.isArray(data?.enrollments)
+            ? (data.enrollments as IEnrollmentFrontend[])
+            : [],
         );
 
       default:
@@ -127,5 +153,6 @@ export async function getInstructorDashboardData(dataType: string) {
     }
   } catch (error) {
     console.error("Error in getInstructorDashboardData:", error);
+    return [];
   }
 }
