@@ -1,4 +1,16 @@
 "use client";
+
+import PopupWrapper from "@/components/popup-wrapper";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -10,36 +22,42 @@ import {
   SortingState,
   useReactTable,
 } from "@tanstack/react-table";
-import * as React from "react";
-
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { ILiveFrontend } from "@/validators/frontend-types";
 import { PlusCircle } from "lucide-react";
-import Link from "next/link";
-import { useState } from "react";
+import React, { useState } from "react";
+import AddCategory from "./add-category";
+import type { CategoryRow } from "./columns";
+import EditCategory from "./edit-category";
 
 interface DataTableProps {
-  columns: ColumnDef<ILiveFrontend>[] | (() => ColumnDef<ILiveFrontend>[]);
-  data: ILiveFrontend[];
+  columns:
+    | ColumnDef<CategoryRow>[]
+    | ((onEdit: (category: CategoryRow) => void) => ColumnDef<CategoryRow>[]);
+  data: CategoryRow[];
 }
 
-export function DataTable({ columns, data }: DataTableProps) {
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+const DataTable = ({ columns, data }: DataTableProps) => {
+  const [open, setOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<CategoryRow | null>(
+    null,
+  );
+  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    [],
+  );
+
+  const handleEdit = React.useCallback((category: CategoryRow) => {
+    setSelectedCategory(category);
+    setEditOpen(true);
+  }, []);
 
   const tableColumns = React.useMemo(() => {
-    if (typeof columns === "function") return columns();
-    return columns as ColumnDef<ILiveFrontend>[];
-  }, [columns]);
+    if (typeof columns === "function") {
+      return columns(handleEdit);
+    }
+
+    return columns;
+  }, [columns, handleEdit]);
 
   const table = useReactTable({
     data,
@@ -60,19 +78,36 @@ export function DataTable({ columns, data }: DataTableProps) {
     <div>
       <div className="flex items-center justify-between py-4">
         <Input
-          placeholder="Filter lives..."
+          placeholder="Filter categories..."
           value={(table.getColumn("title")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
             table.getColumn("title")?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
         />
-        <Link href="/dashboard/lives/add">
-          <Button>
-            <PlusCircle className="h-4 w-4 mr-2" />
-            New Live
-          </Button>
-        </Link>
+        <Button onClick={() => setOpen(true)}>
+          <PlusCircle className="h-4 w-4 mr-2" />
+          New Category
+        </Button>
+
+        <PopupWrapper
+          isOpen={open}
+          onClose={() => setOpen(false)}
+          title="New Category"
+        >
+          <AddCategory onSuccess={() => setOpen(false)} />
+        </PopupWrapper>
+
+        <PopupWrapper
+          isOpen={editOpen}
+          onClose={() => setEditOpen(false)}
+          title="Edit Category"
+        >
+          <EditCategory
+            initialData={selectedCategory}
+            onSuccess={() => setEditOpen(false)}
+          />
+        </PopupWrapper>
       </div>
       <div className="rounded-md border">
         <Table>
@@ -114,7 +149,7 @@ export function DataTable({ columns, data }: DataTableProps) {
             ) : (
               <TableRow>
                 <TableCell
-                  colSpan={columns.length}
+                  colSpan={tableColumns.length}
                   className="h-24 text-center"
                 >
                   No results.
@@ -144,4 +179,6 @@ export function DataTable({ columns, data }: DataTableProps) {
       </div>
     </div>
   );
-}
+};
+
+export default DataTable;

@@ -40,11 +40,6 @@ const adminRoutes = [
   },
   {
     icon: BookOpen,
-    label: "Manage Courses",
-    href: "/dashboard/courses",
-  },
-  {
-    icon: BookOpen,
     label: "Manage Categories",
     href: "/dashboard/admin/categories",
   },

@@ -10,6 +10,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { formatPrice } from "@/lib/formate-price";
 import { cn } from "@/lib/utils";
+import { ICourseFrontend } from "@/validators/frontend-types";
+import { ColumnDef } from "@tanstack/react-table";
 import {
   ArrowUpDown,
   GraduationCap,
@@ -19,10 +21,10 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
-export const columns = [
+export const columns: ColumnDef<ICourseFrontend>[] = [
   {
     accessorKey: "title",
-    header: ({ column }: { column: any }) => {
+    header: ({ column }) => {
       return (
         <Button
           variant="ghost"
@@ -35,7 +37,7 @@ export const columns = [
   },
   {
     accessorKey: "price",
-    header: ({ column }: { column: any }) => {
+    header: ({ column }) => {
       return (
         <Button
           variant="ghost"
@@ -45,14 +47,14 @@ export const columns = [
         </Button>
       );
     },
-    cell: ({ row }: { row: any }) => {
+    cell: ({ row }) => {
       const price = parseFloat(row.getValue("price") || "0");
       return <div>{formatPrice(price)}</div>;
     },
   },
   {
     accessorKey: "active",
-    header: ({ column }: { column: any }) => {
+    header: ({ column }) => {
       return (
         <Button
           variant="ghost"
@@ -62,7 +64,7 @@ export const columns = [
         </Button>
       );
     },
-    cell: ({ row }: { row: any }) => {
+    cell: ({ row }) => {
       const isPublished = row.getValue("active") || false;
       return (
         <Badge className={cn("bg-gray-500", isPublished && "bg-success")}>
@@ -73,7 +75,7 @@ export const columns = [
   },
   {
     id: "actions",
-    cell: ({ row }: { row: any }) => {
+    cell: ({ row }) => {
       const { id } = row.original;
       return (
         <DropdownMenu>

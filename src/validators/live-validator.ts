@@ -9,7 +9,7 @@ export const liveCreateZodSchema = zod.object({
     .string()
     .min(1, "Description is required!")
     .max(2000, "Description must be less than 2000 characters!"),
-  date: zod.date({ required_error: "Date is required!" }),
+  date: zod.date({ message: "Date is required!" }),
   time: zod.string().min(1, "Time is required!"),
   thumbnail: zod.string().optional(),
   url: zod.string().optional(),

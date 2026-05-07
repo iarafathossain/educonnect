@@ -7,10 +7,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { ILiveFrontend } from "@/validators/frontend-types";
+import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown, MoreHorizontal, Pencil } from "lucide-react";
 import Link from "next/link";
 
-export const columns = [
+export const columns: ColumnDef<ILiveFrontend>[] = [
   {
     accessorKey: "title",
     header: ({ column }) => {

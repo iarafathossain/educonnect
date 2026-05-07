@@ -159,6 +159,18 @@ export const quizFrontendSchema = z.object({
   ),
 });
 
+export const liveFrontendSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  description: z.string(),
+  date: dateLikeSchema,
+  time: z.string(),
+  thumbnail: z.string().optional(),
+  url: z.string().optional(),
+  createdAt: dateLikeSchema.optional(),
+  updatedAt: dateLikeSchema.optional(),
+});
+
 export type IModuleFrontend = z.infer<typeof moduleFrontendSchema>;
 export type ICategoryFrontend = z.infer<typeof categoryFrontendSchema>;
 export type ILessonFrontend = z.infer<typeof lessonFrontendSchema>;
@@ -172,3 +184,4 @@ export type ILessonPayload = z.infer<typeof lessonPayloadSchema>;
 export type IReorderItem = z.infer<typeof reorderItemSchema>;
 export type IQuizSetFrontend = z.infer<typeof quizSetFrontendSchema>;
 export type IQuizFrontend = z.infer<typeof quizFrontendSchema>;
+export type ILiveFrontend = z.infer<typeof liveFrontendSchema>;

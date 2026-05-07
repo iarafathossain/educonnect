@@ -10,6 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import type { ColumnDef } from "@tanstack/react-table";
 import {
   ColumnFiltersState,
   flexRender,
@@ -24,15 +25,25 @@ import { PlusCircle } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 
-const DataTable = ({ columns, data }) => {
+interface DataTableProps {
+  columns: ColumnDef<unknown>[] | (() => ColumnDef<unknown>[]);
+  data: unknown[];
+}
+
+const DataTable = ({ columns, data }: DataTableProps) => {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
+    [],
   );
+
+  const tableColumns = React.useMemo(() => {
+    if (typeof columns === "function") return columns();
+    return columns as ColumnDef<unknown>[];
+  }, [columns]);
 
   const table = useReactTable({
     data,
-    columns,
+    columns: tableColumns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,
@@ -50,7 +61,7 @@ const DataTable = ({ columns, data }) => {
       <div className="flex items-center justify-between py-4">
         <Input
           placeholder="Filter courses..."
-          value={table.getColumn("title")?.getFilterValue() ?? ""}
+          value={(table.getColumn("title")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
             table.getColumn("title")?.setFilterValue(event.target.value)
           }
@@ -75,7 +86,7 @@ const DataTable = ({ columns, data }) => {
                         ? null
                         : flexRender(
                             header.column.columnDef.header,
-                            header.getContext()
+                            header.getContext(),
                           )}
                     </TableHead>
                   );
@@ -94,7 +105,7 @@ const DataTable = ({ columns, data }) => {
                     <TableCell key={cell.id}>
                       {flexRender(
                         cell.column.columnDef.cell,
-                        cell.getContext()
+                        cell.getContext(),
                       )}
                     </TableCell>
                   ))}
@@ -103,7 +114,7 @@ const DataTable = ({ columns, data }) => {
             ) : (
               <TableRow>
                 <TableCell
-                  colSpan={columns.length}
+                  colSpan={tableColumns.length}
                   className="h-24 text-center"
                 >
                   No results.
