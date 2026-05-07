@@ -7,8 +7,6 @@ const AdminCategoriesPage = async () => {
   await requireDashboardRole(["admin"]);
   const categories = await getCategories();
 
-  console.log("Fetched categories:", categories);
-
   return (
     <div className="rounded-md border overflow-hidden p-6">
       <DataTable columns={columns} data={categories} />

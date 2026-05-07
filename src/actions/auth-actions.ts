@@ -3,6 +3,7 @@
 import { signIn } from "@/auth";
 import { actionWrapper } from "@/lib/action-wrapper";
 import { authServices } from "@/services/auth-services";
+import { userServices } from "@/services/user-services";
 import {
   TUserLogin,
   userRegistrationZodSchema,
@@ -50,10 +51,13 @@ export const credentialLoginAction = actionWrapper(
       };
     }
 
+    const user = await userServices.getUserByEmail(payload.email);
+
     return {
       success: true,
       message: "Logged in successfully",
       statusCode: status.OK,
+      data: user,
     };
   },
 );

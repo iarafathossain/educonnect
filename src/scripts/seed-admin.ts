@@ -23,8 +23,6 @@ async function seedAdmin() {
     existingUser.role = USER_ROLES.admin;
     existingUser.passwordHash = passwordHash;
     await existingUser.save();
-
-    console.log(`Updated admin user: ${env.SEED_ADMIN_EMAIL}`);
     return;
   }
 
@@ -35,8 +33,6 @@ async function seedAdmin() {
     role: USER_ROLES.admin,
     passwordHash,
   });
-
-  console.log(`Created admin user: ${env.SEED_ADMIN_EMAIL}`);
 }
 
 seedAdmin()

@@ -42,7 +42,12 @@ const LoginForm = () => {
       return;
     }
     toast.success("Logged in successfully!");
-    router.push("/courses");
+
+    if (result.data?.role === "instructor" || result.data?.role === "admin") {
+      router.push("/dashboard");
+    } else {
+      router.push("/courses");
+    }
   };
   return (
     <Card className="mx-auto max-w-sm w-full">
